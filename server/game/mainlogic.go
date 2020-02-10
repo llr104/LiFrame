@@ -1,0 +1,141 @@
+package game
+
+import (
+	"LiFrame/core/liFace"
+	"LiFrame/proto"
+	"encoding/json"
+)
+
+var game mainLogic
+
+func init() {
+	game = mainLogic{make(map[int]iScene), false}
+	game.scenes[0] = NewScene1()
+}
+
+type mainLogic struct {
+	scenes     map[int]iScene
+	isShutDown bool
+}
+
+func (s *mainLogic) enterGame(req proto.EnterGameReq) bool{
+	if s.isShutDown {
+		return false
+	}
+
+	return true
+}
+
+func (s *mainLogic) enterScene(userId uint32, sceneId int, conn liFace.IConnection) bool{
+
+	ea := enterSceneAck{}
+	ea.SceneId = sceneId
+
+	scene, ok := s.scenes[sceneId]
+	if ok == false {
+		ea.Code = proto.Code_EnterSceneError
+		data, _ := json.Marshal(ea)
+		conn.SendMsg(protoEnterSceneAck, data)
+		return false
+	}
+
+	isIn, state := GUserMgr.UserIsIn(userId)
+	if isIn{
+		if state.SceneId != sceneId{
+			t := s.scenes[state.SceneId]
+			t.ExitScene(userId)
+		}
+	}
+	ok = scene.EnterScene(userId)
+	if ok {
+		ea.Code = proto.Code_Success
+		GUserMgr.UserChangeState(userId, GUserStateOnline, sceneId, conn)
+	}else{
+		ea.Code = proto.Code_EnterSceneError
+	}
+
+	data, _ := json.Marshal(ea)
+	conn.SendMsg(protoEnterSceneAck, data)
+
+	return ok
+}
+
+func (s *mainLogic) exitScene(userId uint32, sceneId int, conn liFace.IConnection){
+	scene, ok := s.scenes[sceneId]
+	ea := exitSceneAck{}
+	ea.SceneId = sceneId
+
+	if ok == false {
+		ea.Code = proto.Code_ExitSceneError
+		data, _ := json.Marshal(ea)
+		conn.SendMsg(protoExitSceneAck, data)
+		return
+	}
+
+	isIn, state := GUserMgr.UserIsIn(userId)
+	if isIn{
+		if state.SceneId != sceneId{
+			ea.Code = proto.Code_ExitSceneError
+		}else{
+			scene.ExitScene(userId)
+			GUserMgr.UserChangeState(userId, GUserStateLeave, -1, conn)
+			ea.Code = proto.Code_Success
+		}
+	}else{
+		ea.Code = proto.Code_ExitSceneError
+	}
+
+	data, _ := json.Marshal(ea)
+	conn.SendMsg(protoExitSceneAck, data)
+}
+
+func (s *mainLogic) gameMessage(userId uint32, msgName string, data []byte, conn liFace.IConnection){
+	if s.isShutDown {
+		return
+	}
+
+	if msgName == protoEnterSceneReq{
+		e := enterSceneReq{}
+		json.Unmarshal(data, &e)
+		s.enterScene(userId, e.SceneId, conn)
+	}else if msgName == protoExitSceneReq{
+		e := exitSceneReq{}
+		json.Unmarshal(data, &e)
+		s.exitScene(userId, e.SceneId, conn)
+	}else{
+		if ok, state := GUserMgr.UserIsIn(userId); ok {
+			if t, isOk := s.scenes[state.SceneId]; isOk{
+				t.GameMessage(userId, msgName, data)
+			}
+		}
+	}
+}
+
+/*
+返回true:用户离开了游戏，返回false:用户断线，保留用户的游戏状态
+*/
+func (s *mainLogic) userOffLine(userId uint32) bool{
+
+	if ok, state := GUserMgr.UserIsIn(userId); ok {
+		if t, isOk := s.scenes[state.SceneId]; isOk{
+			return t.UserOffLine(userId)
+		}
+	}
+
+	return true
+}
+
+func (s *mainLogic) userLogout(userId uint32) bool{
+	return s.userOffLine(userId)
+}
+
+
+func (s *mainLogic) shutDown(){
+	if s.isShutDown{
+		return
+	}
+
+	//关闭前处理
+
+	s.isShutDown = true
+}

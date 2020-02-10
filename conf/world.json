@@ -1,0 +1,16 @@
+{
+    "ServerName":"worldServer",
+    "ServerId":"worldServer01",
+    "Host":"127.0.0.1",
+    "TcpPort":8003,
+    "LogFile":"./logout/world.log",
+    "DataBase": {
+      "User":"root",
+      "Password":"123456abc",
+      "Name":"li_db",
+      "Port":3306,
+      "IP": "127.0.0.1"
+    },
+    "Master":{"RemoteHost": "127.0.0.1", "RemoteTcpPort": 8001, "ClientName": "WorldClientName1", "ClientId": "WorldClientId1"}
+  }
+  
