@@ -45,7 +45,7 @@ func (s*scene1) calMonsterPosition()(bool, int, int){
 		ok := true
 		for _, v := range s.monsters  {
 			d := (x-v.X)*(x-v.X) + (y-v.Y)*(y-v.Y)
-			if d <900{
+			if d <4900{
 				ok = false
 				break
 			}
