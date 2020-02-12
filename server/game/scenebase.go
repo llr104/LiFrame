@@ -9,12 +9,14 @@ import (
 )
 
 type sceneBase struct {
-	maxUser  int
-	users    map[uint32] *dbobject.User
-	players  map[uint32] *player
-	monsters map[uint32] *monster
-	curId    uint32
-	lock     sync.Mutex
+	maxUser  	int
+	users    	map[uint32] *dbobject.User
+	players  	map[uint32] *player
+	monsters 	map[uint32] *monster
+	curId    	uint32
+	lock     	sync.Mutex
+	sceneName 	string
+	sceneId     int
 }
 
 func  (s *sceneBase) init() {
@@ -22,6 +24,23 @@ func  (s *sceneBase) init() {
 	s.players = make(map[uint32] *player)
 	s.monsters = make(map[uint32] *monster)
 }
+
+func (s *sceneBase) Name() string{
+	return s.sceneName
+}
+
+func (s *sceneBase) Id() int{
+	return s.sceneId
+}
+
+func (s *sceneBase) SetName(n string){
+	s.sceneName = n
+}
+
+func (s *sceneBase) SetId(id int){
+	s.sceneId = id
+}
+
 func (s *sceneBase) FindUser(userId uint32) (*dbobject.User, bool) {
 	u, ok := s.users[userId]
 	return u, ok

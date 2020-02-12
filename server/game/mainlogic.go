@@ -10,7 +10,15 @@ var game mainLogic
 
 func init() {
 	game = mainLogic{make(map[int]iScene), false}
-	game.scenes[0] = NewScene1()
+	s1 := NewScene1()
+	s1.SetId(0)
+	s1.SetName("场景1")
+	game.scenes[0] = s1
+
+	s2 := NewScene1()
+	s2.SetId(1)
+	s2.SetName("场景2")
+	game.scenes[1] = s2
 }
 
 type mainLogic struct {
@@ -49,6 +57,7 @@ func (s *mainLogic) enterScene(userId uint32, sceneId int, conn liFace.IConnecti
 	ok = scene.EnterScene(userId)
 	if ok {
 		ea.Code = proto.Code_Success
+		ea.SceneName = scene.Name()
 		GUserMgr.UserChangeState(userId, GUserStateOnline, sceneId, conn)
 	}else{
 		ea.Code = proto.Code_EnterSceneError
@@ -94,7 +103,18 @@ func (s *mainLogic) gameMessage(userId uint32, msgName string, data []byte, conn
 		return
 	}
 
-	if msgName == protoEnterSceneReq{
+	if msgName == protoSceneListReq{
+		a := sceneListAck{}
+		a.SceneId = make([]int, len(s.scenes))
+		a.SceneName = make([]string, len(s.scenes))
+		for k, v := range s.scenes{
+			a.SceneName[k] = v.Name()
+			a.SceneId[k] = v.Id()
+		}
+		data, _ := json.Marshal(a)
+		conn.SendMsg(protoSceneListAck, data)
+
+	} else if msgName == protoEnterSceneReq{
 		e := enterSceneReq{}
 		json.Unmarshal(data, &e)
 		s.enterScene(userId, e.SceneId, conn)

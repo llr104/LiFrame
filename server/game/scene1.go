@@ -2,6 +2,8 @@ package game
 
 import (
 	"LiFrame/utils"
+	"fmt"
+	"math/rand"
 	"time"
 )
 
@@ -28,13 +30,51 @@ func update(args ...interface{}){
 	s.step()
 }
 
+func (s*scene1) calMonsterPosition()(bool, int, int){
+	if len(s.monsters) == 0{
+		x := rand.Intn(1000)+100
+		y := rand.Intn(360)+200
+		return true, x, y
+	}
+
+
+	for i:=0; i<=100; i++ {
+		x := rand.Intn(1160)+40
+		y := rand.Intn(400)+180
+
+		ok := true
+		for _, v := range s.monsters  {
+			d := (x-v.X)*(x-v.X) + (y-v.Y)*(y-v.Y)
+			if d <900{
+				ok = false
+				break
+			}
+		}
+
+		if ok{
+			return true, x, y
+		}
+	}
+	return false, 0, 0
+}
+
 func (s*scene1) step(){
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	if len(s.monsters) <= 20{
-		s.curId++
+	if len(s.monsters) <= 15{
+
 		m := newRandomMonster()
+		ok, x, y := s.calMonsterPosition()
+		if ok == false{
+			return
+		}
+
+		s.curId++
+		m.X = x
+		m.Y = y
+		m.Name = fmt.Sprintf("陪练 %d", s.curId)
+
 		m.Id = s.curId
 		s.monsters[s.curId] = m
 

@@ -8,6 +8,10 @@ const protoHeartBeatReq = "heartBeatReq"
 const protoHeartBeatAck = "heartBeatAck"
 const protoLogoutReq = "logoutReq"
 const protoLogoutAck = "logoutAck"
+
+const protoSceneListReq = "sceneListReq"
+const protoSceneListAck = "sceneListAck"
+
 const protoEnterSceneReq = "enterSceneReq"
 const protoEnterSceneAck = "enterSceneAck"
 const protoExitSceneReq = "exitSceneReq"
@@ -32,6 +36,11 @@ type heartBeat struct {
 	ServerTimeStamp int64		`json:"serverTimeStamp"`
 }
 
+type sceneListAck struct {
+	SceneId     []int      	`json:"sceneId"`
+	SceneName   []string     `json:"sceneName"`
+}
+
 type enterSceneReq struct {
 	SceneId     int      	`json:"sceneId"`
 }
@@ -39,6 +48,7 @@ type enterSceneReq struct {
 type enterSceneAck struct {
 	proto.BaseAck
 	SceneId     int      `json:"sceneId"`
+	SceneName   string    `json:"sceneName"`
 }
 
 type exitSceneReq struct {

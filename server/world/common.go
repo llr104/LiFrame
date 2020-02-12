@@ -119,15 +119,15 @@ func (s *Common) UserLogoutReq(req liFace.IRequest) {
 	utils.Log.Info("UserLogoutReq end: %v", reqInfo)
 }
 
-func (s *Common) GameScenesReq(req liFace.IRequest) {
-	utils.Log.Info("GameScenesReq begin: %s", req.GetMsgName())
-	reqInfo := proto.GameScenesReq{}
-	ackInfo := proto.GameScenesAck{}
+func (s *Common) GameServersReq(req liFace.IRequest) {
+	utils.Log.Info("GameServersReq begin: %s", req.GetMsgName())
+	reqInfo := proto.GameServersReq{}
+	ackInfo := proto.GameServersAck{}
 
 	m := app.ServerMgr.GetGameScenesMap()
-	ackInfo.Scenes = m
+	ackInfo.Servers = m
 	ackInfo.Code = proto.Code_Success
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(proto.CommonWorldGameScenesAck, data)
-	utils.Log.Info("GameScenesReq end: %v", reqInfo)
+	req.GetConnection().SendMsg(proto.CommonWorldGameServersAck, data)
+	utils.Log.Info("GameServersReq end: %v", reqInfo)
 }

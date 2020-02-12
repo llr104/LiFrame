@@ -7,4 +7,8 @@ type iScene interface {
 	UserOffLine(userId uint32) bool
 	SendMessageToUser(userId uint32, msgName string, msg interface{})
     SendMessageToAll(msgName string, msg interface{})
+	Name()string
+	Id()int
+	SetName(string)
+	SetId(int)
 }

@@ -32,14 +32,14 @@ func (s *ServerManager) GetServerMap() map[string] proto.ServerInfo {
 	return s.serverMap
 }
 
-func (s *ServerManager) GetGameScenesMap() map[string] proto.ScenesInfo {
+func (s *ServerManager) GetGameScenesMap() map[string] proto.GameServersInfo {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	m := make(map[string] proto.ScenesInfo)
+	m := make(map[string] proto.GameServersInfo)
 
 	for k, v:= range s.serverMap{
 		if v.State == proto.ServerStateNormal && v.Type == proto.ServerTypeGame{
-			s := proto.ScenesInfo{}
+			s := proto.GameServersInfo{}
 			s.Id = v.Id
 			s.Name = v.Name
 			s.ProxyName = v.ProxyName

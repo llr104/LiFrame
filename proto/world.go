@@ -19,17 +19,17 @@ type UserLogoutAck struct {
 	BaseAck
 }
 
-type ScenesInfo struct {
+type GameServersInfo struct {
 	Id        string
 	Name      string
 	ProxyName string
 }
 
-type GameScenesReq struct {
+type GameServersReq struct {
 	UserId uint32
 }
 
-type GameScenesAck struct {
+type GameServersAck struct {
 	BaseAck
-	Scenes map[string]ScenesInfo
+	Servers map[string]GameServersInfo
 }
