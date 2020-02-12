@@ -21,3 +21,5 @@
 # 对应的demo客户端 https://github.com/llr104/LiFrameDemo
 
 # linux环境下部署方式和windows雷同
+
+# 如果你有对项目有建议或疑惑，QQ947491240欢迎拍砖
