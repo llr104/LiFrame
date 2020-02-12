@@ -87,7 +87,7 @@ func (mh *MsgHandle) DoMsgHandler(request liFace.IRequest) {
 	}
 
 	if isFound == false{
-		utils.Log.Error("DoMsgHandler not found: %s handler",msgName)
+		utils.Log.Warning("DoMsgHandler not found: %s handler",msgName)
 	}
 
 }

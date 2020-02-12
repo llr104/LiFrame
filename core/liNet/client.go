@@ -79,13 +79,13 @@ func (c *Client) Running(){
 
 	addr, err := net.ResolveTCPAddr(c.ipVersion, fmt.Sprintf("%s:%d", c.GetHost(), c.GetPort()))
 	if err != nil {
-		utils.Log.Error("resolve tcp addr err:%s", err.Error())
+		utils.Log.Warning("resolve tcp addr err:%s", err.Error())
 		return
 	}
 
 	connTcp, err := net.DialTCP(c.ipVersion,nil,addr)
 	if err != nil {
-		utils.Log.Error("app start exit err:%s",err.Error())
+		utils.Log.Warning("app start exit err:%s",err.Error())
 		conn := NewConnection(c, nil, 0, c.msgHandler)
 		c.CallOnConnStop(conn)
 		return

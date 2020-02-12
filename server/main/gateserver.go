@@ -15,6 +15,7 @@ import (
 	"github.com/thinkoner/openssl"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -153,7 +154,14 @@ func ShutDown(){
 }
 
 func main() {
-	utils.GlobalObject.Load("conf/gate.json")
+
+	if len(os.Args) > 1 {
+		cfgPath := os.Args[1]
+		utils.GlobalObject.Load(cfgPath)
+	}else{
+		utils.GlobalObject.Load("conf/gate.json")
+	}
+
 	db.InitDataBase()
 
 	go app.MasterClient(proto.ServerTypeGate)

@@ -13,9 +13,10 @@
 
 3.执行run.bat
 
-
 到此服务器启动成功，该默认方式会启动loginserver、gateserver、masterserver、worldserver、gameserver各一个服，
+
 但是loginserver、gateserver、worldserver、gameserver支持分布式部署
+可以通过修改run_by_conf.bat脚本中启动服务的配置，实现启动多个同一类型的服务
 
 # 对应的demo客户端 https://github.com/llr104/LiFrameDemo
 

@@ -8,12 +8,18 @@ import (
 	"LiFrame/utils"
 	"fmt"
 	"net/http"
+	"os"
 )
 
 
 func main() {
 
-	utils.GlobalObject.Load("conf/master.json")
+	if len(os.Args) > 1 {
+		cfgPath := os.Args[1]
+		utils.GlobalObject.Load(cfgPath)
+	}else{
+		utils.GlobalObject.Load("conf/master.json")
+	}
 	db.InitDataBase()
 
 	/*

@@ -16,6 +16,6 @@ func (b *BaseRouter) PostHandle(req liFace.IRequest)       {}
 func (b *BaseRouter) EveryThingHandle(req liFace.IRequest) {}
 
 func (b *BaseRouter) NameSpace() string{
-	utils.Log.Error("NameSpace not implement")
+	utils.Log.Warning("NameSpace not implement")
 	return "Base"
 }

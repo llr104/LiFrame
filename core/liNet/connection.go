@@ -106,13 +106,13 @@ func (c *Connection) StartReader() {
 		//读取客户端的Msg head
 		headData := make([]byte, dp.GetHeadLen())
 		if _, err := io.ReadFull(c.Conn, headData); err != nil {
-			utils.Log.Error("%s read msg head error %s", c.TcpNetWork.GetName(), err.Error())
+			utils.Log.Warning("%s read msg head error %s", c.TcpNetWork.GetName(), err.Error())
 			break
 		}
 		//普通socket拆包，得到nameLen 和 dataLen 放在msg中
 		msg, err := dp.Unpack(headData)
 		if err != nil {
-			utils.Log.Error("%s unpack error %s", c.TcpNetWork.GetName(), err.Error())
+			utils.Log.Warning("%s unpack error %s", c.TcpNetWork.GetName(), err.Error())
 			break
 		}
 
@@ -121,7 +121,7 @@ func (c *Connection) StartReader() {
 		if msg.GetBodyLen() + msg.GetNameLen()> 0 {
 			data = make([]byte, msg.GetBodyLen()+msg.GetNameLen())
 			if _, err := io.ReadFull(c.Conn, data); err != nil {
-				utils.Log.Error( "%s read msg Data error %s", c.TcpNetWork.GetName(), err)
+				utils.Log.Warning( "%s read msg Data error %s", c.TcpNetWork.GetName(), err)
 				break
 			}
 		}
@@ -215,14 +215,14 @@ func (c *Connection) RemoteAddr() net.Addr {
 //直接将Message数据发送数据给远程的TCP客户端
 func (c *Connection) SendMsg(msgName string, data []byte) error {
 	if c.isClosed == true {
-		utils.Log.Error("connection closed when send msg")
+		utils.Log.Warning("connection closed when send msg")
 		return errors.New("connection closed when send msg")
 	}
 	//将data封包，并且发送
 	dp := NewDataPack()
 	msg, err := dp.Pack(NewMsgPackage(msgName, data))
 	if err != nil {
-		utils.Log.Error("%s Pack error msg id = %s", c.TcpNetWork.GetName(), msgName)
+		utils.Log.Warning("%s Pack error msg id = %s", c.TcpNetWork.GetName(), msgName)
 		return errors.New("Pack error msg ")
 	}
 
@@ -240,7 +240,7 @@ func (c *Connection) SendBuffMsg(msgName string, data []byte) error {
 	dp := NewDataPack()
 	msg, err := dp.Pack(NewMsgPackage(msgName, data))
 	if err != nil {
-		utils.Log.Error("%s Pack error msg id = %s",c.TcpNetWork.GetName(),  msgName)
+		utils.Log.Warning("%s Pack error msg id = %s",c.TcpNetWork.GetName(),  msgName)
 		return errors.New("Pack error msg ")
 	}
 

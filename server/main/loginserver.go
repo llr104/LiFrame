@@ -7,12 +7,18 @@ import (
 	"LiFrame/server/db"
 	"LiFrame/server/login"
 	"LiFrame/utils"
+	"os"
 )
 
 
 func main() {
+	if len(os.Args) > 1 {
+		cfgPath := os.Args[1]
+		utils.GlobalObject.Load(cfgPath)
+	}else{
+		utils.GlobalObject.Load("conf/login.json")
+	}
 
-	utils.GlobalObject.Load("conf/login.json")
 	db.InitDataBase()
 
 	s := liNet.NewServer()

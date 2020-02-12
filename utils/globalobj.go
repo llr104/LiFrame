@@ -4,6 +4,7 @@ import (
 	"LiFrame/core/logs"
 	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
 	"io/ioutil"
 )
 
@@ -32,8 +33,9 @@ var Log *logs.LiLogger
 func (g *GlobalObj) Load(configFile string) {
 
 	if confFileExists, _ := PathExists(configFile); confFileExists != true {
-		Log.Error("Config File %s is not exist!!", configFile)
-		return
+		text := fmt.Sprintf("Config File %s is not exist!!", configFile)
+		Log.Error(text)
+		panic(errors.New(text))
 	}
 
 	data, err := ioutil.ReadFile(configFile)
