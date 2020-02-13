@@ -69,7 +69,6 @@ const (
 	AdapterMail      = "smtp"
 	AdapterConn      = "conn"
 	AdapterEs        = "es"
-	AdapterJianLiao  = "jianliao"
 	AdapterSlack     = "slack"
 	AdapterAliLS     = "alils"
 )
