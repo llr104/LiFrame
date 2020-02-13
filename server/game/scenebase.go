@@ -1,8 +1,8 @@
 package game
 
 import (
-	"LiFrame/dbobject"
 	"encoding/json"
+	"github.com/llr104/LiFrame/dbobject"
 	"math/rand"
 	"sync"
 	"time"

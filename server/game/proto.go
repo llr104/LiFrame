@@ -1,7 +1,7 @@
 package game
 
 import (
-	"LiFrame/proto"
+	"github.com/llr104/LiFrame/proto"
 )
 
 const protoHeartBeatReq = "heartBeatReq"

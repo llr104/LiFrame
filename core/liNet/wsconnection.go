@@ -1,8 +1,8 @@
 package liNet
 
 import (
-	"LiFrame/core/liFace"
-	"LiFrame/utils"
+	"github.com/llr104/LiFrame/core/liFace"
+	"github.com/llr104/LiFrame/utils"
 	"bytes"
 	"compress/gzip"
 	"encoding/hex"
@@ -16,7 +16,7 @@ import (
 	"sync"
 )
 
-var GateMessageKey = []byte("liFrameVeryGood!")
+var GateMessageKey = []byte("github.com/llr104/LiFrameVeryGood!")
 
 // 客户端读写消息
 type WsMessage struct {

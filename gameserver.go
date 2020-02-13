@@ -1,12 +1,12 @@
 package main
 
 import (
-	"LiFrame/core/liNet"
-	"LiFrame/proto"
-	"LiFrame/server/app"
-	"LiFrame/server/db"
-	"LiFrame/server/game"
-	"LiFrame/utils"
+	"github.com/llr104/LiFrame/core/liNet"
+	"github.com/llr104/LiFrame/proto"
+	"github.com/llr104/LiFrame/server/app"
+	"github.com/llr104/LiFrame/server/db"
+	"github.com/llr104/LiFrame/server/game"
+	"github.com/llr104/LiFrame/utils"
 	"os"
 )
 

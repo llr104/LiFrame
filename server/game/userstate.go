@@ -1,6 +1,6 @@
 package game
 
-import "LiFrame/core/liFace"
+import "github.com/llr104/LiFrame/core/liFace"
 
 type GUserState int
 const (

@@ -1,6 +1,6 @@
 package dbobject
 
-import "LiFrame/core/orm"
+import "github.com/llr104/LiFrame/core/orm"
 
 const (
 	UserStateNormal = iota

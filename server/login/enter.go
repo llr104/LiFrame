@@ -1,13 +1,13 @@
 package login
 
 import (
-	"LiFrame/core/liFace"
-	"LiFrame/core/liNet"
-	"LiFrame/dbobject"
-	"LiFrame/proto"
-	"LiFrame/server/app"
-	"LiFrame/utils"
 	"encoding/json"
+	"github.com/llr104/LiFrame/core/liFace"
+	"github.com/llr104/LiFrame/core/liNet"
+	"github.com/llr104/LiFrame/dbobject"
+	"github.com/llr104/LiFrame/proto"
+	"github.com/llr104/LiFrame/server/app"
+	"github.com/llr104/LiFrame/utils"
 	"time"
 )
 

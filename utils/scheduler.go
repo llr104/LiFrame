@@ -1,5 +1,5 @@
 package utils
-import "LiFrame/core/liTimer"
+import "github.com/llr104/LiFrame/core/liTimer"
 
 var Scheduler *liTimer.TimerScheduler
 var IntervalForever int

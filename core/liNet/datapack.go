@@ -1,8 +1,8 @@
 package liNet
 
 import (
-	"LiFrame/core/liFace"
-	"LiFrame/utils"
+	"github.com/llr104/LiFrame/core/liFace"
+	"github.com/llr104/LiFrame/utils"
 	"bytes"
 	"encoding/binary"
 	"errors"

@@ -1,10 +1,10 @@
 package app
 
 import (
-	"LiFrame/proto"
-	"LiFrame/utils"
 	"errors"
 	"fmt"
+	"github.com/llr104/LiFrame/proto"
+	"github.com/llr104/LiFrame/utils"
 	"sync"
 )
 

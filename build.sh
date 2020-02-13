@@ -1,6 +1,6 @@
 #!/bin/sh
-go build server/main/loginserver.go
-go build server/main/gateserver.go
-go build server/main/masterserver.go
-go build server/main/worldserver.go
-go build server/main/gameserver.go
+go build loginserver.go
+go build gateserver.go
+go build masterserver.go
+go build worldserver.go
+go build gameserver.go

@@ -1,8 +1,8 @@
 package game
 
 import (
-	"LiFrame/utils"
 	"fmt"
+	"github.com/llr104/LiFrame/utils"
 	"math/rand"
 	"time"
 )

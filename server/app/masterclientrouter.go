@@ -2,11 +2,11 @@
 package app
 
 import (
-	"LiFrame/core/liFace"
-	"LiFrame/core/liNet"
-	"LiFrame/proto"
-	"LiFrame/utils"
 	"encoding/json"
+	"github.com/llr104/LiFrame/core/liFace"
+	"github.com/llr104/LiFrame/core/liNet"
+	"github.com/llr104/LiFrame/proto"
+	"github.com/llr104/LiFrame/utils"
 	"os"
 	"time"
 )

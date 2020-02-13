@@ -1,9 +1,9 @@
 package game
 
 import (
-	"LiFrame/core/liFace"
-	"LiFrame/proto"
 	"encoding/json"
+	"github.com/llr104/LiFrame/core/liFace"
+	"github.com/llr104/LiFrame/proto"
 )
 
 var game mainLogic

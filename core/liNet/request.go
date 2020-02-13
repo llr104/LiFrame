@@ -1,6 +1,6 @@
 package liNet
 
-import "LiFrame/core/liFace"
+import "github.com/llr104/LiFrame/core/liFace"
 
 type Request struct {
 	conn liFace.IConnection //已经和客户端建立好的 链接

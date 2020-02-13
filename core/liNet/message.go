@@ -1,7 +1,7 @@
 package liNet
 
 import (
-	"LiFrame/utils"
+	"github.com/llr104/LiFrame/utils"
 )
 
 type Message struct {

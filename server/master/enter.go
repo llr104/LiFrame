@@ -1,12 +1,12 @@
 package master
 
 import (
-	"LiFrame/core/liFace"
-	"LiFrame/core/liNet"
-	"LiFrame/proto"
-	"LiFrame/utils"
 	"encoding/json"
 	"fmt"
+	"github.com/llr104/LiFrame/core/liFace"
+	"github.com/llr104/LiFrame/core/liNet"
+	"github.com/llr104/LiFrame/proto"
+	"github.com/llr104/LiFrame/utils"
 	"sync"
 	"time"
 )

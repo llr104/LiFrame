@@ -1,10 +1,10 @@
 package main
 
 import (
-	"LiFrame/core/orm"
-	"LiFrame/dbobject"
-	"LiFrame/utils"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/llr104/LiFrame/core/orm"
+	"github.com/llr104/LiFrame/dbobject"
+	"github.com/llr104/LiFrame/utils"
 )
 
 func main() {

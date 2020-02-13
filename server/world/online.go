@@ -1,11 +1,11 @@
 package world
 
 import (
-	"LiFrame/core/liNet"
-	"LiFrame/proto"
-	client2 "LiFrame/server/app"
-	"LiFrame/utils"
 	"encoding/json"
+	"github.com/llr104/LiFrame/core/liNet"
+	"github.com/llr104/LiFrame/proto"
+	"github.com/llr104/LiFrame/server/app"
+	"github.com/llr104/LiFrame/utils"
 	"time"
 )
 
@@ -41,7 +41,7 @@ func checkOnline(v ...interface{}) {
 					sessReq.ConnId = 0
 					sessReq.OpType = proto.SessionOpKeepLive
 
-					appId, _ := client2.SessionMgr.CheckSessionFrom(session)
+					appId, _ := app.SessionMgr.CheckSessionFrom(session)
 					client, ok := W2Login.GetLoginClient(appId)
 					if ok {
 						data, _ := json.Marshal(sessReq)

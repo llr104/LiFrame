@@ -1,7 +1,7 @@
 package login
 
 import (
-	"LiFrame/utils"
+	"github.com/llr104/LiFrame/utils"
 	"time"
 )
 

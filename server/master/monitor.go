@@ -1,11 +1,11 @@
 package master
 
 import (
-	"LiFrame/core/liFace"
-	"LiFrame/proto"
-	"LiFrame/server/app"
-	"LiFrame/utils"
 	"encoding/json"
+	"github.com/llr104/LiFrame/core/liFace"
+	"github.com/llr104/LiFrame/proto"
+	"github.com/llr104/LiFrame/server/app"
+	"github.com/llr104/LiFrame/utils"
 	"net/http"
 	"os"
 	"time"

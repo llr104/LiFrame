@@ -1,3 +1,3 @@
-go build server\main\createtables.go
+go build createtables.go
 createtables orm syncdb db
 pause

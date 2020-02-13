@@ -1,9 +1,9 @@
 package liNet
 
 import (
-	"LiFrame/core/liFace"
-	"LiFrame/proto"
-	"LiFrame/utils"
+	"github.com/llr104/LiFrame/core/liFace"
+	"github.com/llr104/LiFrame/proto"
+	"github.com/llr104/LiFrame/utils"
 	"fmt"
 	"net"
 )

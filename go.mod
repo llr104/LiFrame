@@ -1,4 +1,4 @@
-module LiFrame
+module github.com/llr104/LiFrame
 
 go 1.13
 
