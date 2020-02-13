@@ -7,7 +7,7 @@
 2.执行create_db.bat
 
 # 构建运行
-1.执行build.bat
+1.执行build.bat(构建过程中会依赖到某些GitHub项目，如本地没有会出错，请go install安装好依赖 后再重新执行build操作)
 
 2.修改conf下各个服务器的数据库配置
 
@@ -20,6 +20,16 @@
 
 # 对应的demo客户端 https://github.com/llr104/LiFrameDemo
 
-# linux环境下部署方式和windows雷同
+# linux环境下部署方式
+1.修改server\main\createtables.go 文件的数据库连接配置
+
+2.执行create_db.sh
+
+# 构建运行
+1.执行build.sh(构建过程中会依赖到某些GitHub项目，如本地没有会出错，请go install安装好依赖 后再重新执行build操作)
+
+2.修改conf下各个服务器的数据库配置
+
+3.执行run.sh
 
 # 如果你有对项目有建议或疑惑，QQ947491240欢迎拍砖
