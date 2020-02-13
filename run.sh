@@ -1,3 +1,4 @@
+#!/bin/sh
 nohup ./loginserver &
 nohup ./gateserver &
 nohup ./masterserver &

@@ -1,3 +1,4 @@
+#!/bin/sh
 go build server/main/loginserver.go
 go build server/main/gateserver.go
 go build server/main/masterserver.go
