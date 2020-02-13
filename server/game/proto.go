@@ -1,7 +1,7 @@
 package game
 
 import (
-	"LiFrame_fish/proto"
+	"LiFrame/proto"
 )
 
 const protoHeartBeatReq = "heartBeatReq"
