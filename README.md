@@ -4,7 +4,7 @@
 
 # windows环境下部署方式
 # 数据库表创建
-1.修改server\main\createtables.go 文件的数据库连接配置
+1.修改server\createtables.go 文件的数据库连接配置
 
 2.执行create_db.bat
 
@@ -23,7 +23,7 @@
 
 
 # linux环境下部署方式
-1.修改server\main\createtables.go 文件的数据库连接配置
+1.修改server\createtables.go 文件的数据库连接配置
 
 2.执行create_db.sh
 
