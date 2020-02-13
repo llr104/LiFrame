@@ -1,5 +1,8 @@
 # LiFrame服务器架构，基于go开发 --武汉疫情期间宅在家中无所事事的成果
 
+# 通过go命令获取项目
+go get github.com/llr104/LiFrame
+
 # windows环境下部署方式
 # 数据库表创建
 1.修改server\main\createtables.go 文件的数据库连接配置
