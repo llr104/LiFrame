@@ -16,6 +16,7 @@ package orm
 
 import (
 	"fmt"
+	"github.com/llr104/LiFrame/utils"
 	"os"
 	"reflect"
 	"strings"
@@ -298,6 +299,8 @@ func bootStrap() {
 end:
 	if err != nil {
 		fmt.Println(err)
+		name := os.Args[0]
+		utils.Log.Error("%s error exit because: %s", name, err.Error())
 		os.Exit(2)
 	}
 }

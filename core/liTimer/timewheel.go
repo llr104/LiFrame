@@ -63,7 +63,7 @@ func NewTimeWheel(name string, interval int64, scales int, maxCap int) *TimeWhee
 		tw.timerQueue[i] = make(map[uint32]*Timer, maxCap)
 	}
 
-	fmt.Println("Init timerWheel name = ", tw.name, " is Done!")
+	//fmt.Println("Init timerWheel name = ", tw.name, " is Done!")
 	return tw
 }
 
@@ -152,7 +152,7 @@ func (tw *TimeWheel) RemoveTimer(tid uint32) {
 */
 func (tw *TimeWheel) AddTimeWheel(next *TimeWheel) {
 	tw.nextTimeWheel = next
-	fmt.Println("Add timerWheel[", tw.name,"]'s next [", next.name,"] is succ!")
+	//fmt.Println("Add timerWheel[", tw.name,"]'s next [", next.name,"] is succ!")
 }
 
 /*
@@ -190,7 +190,7 @@ func (tw *TimeWheel) run() {
 //非阻塞的方式让时间轮转起来
 func (tw *TimeWheel) Run() {
 	go tw.run()
-	fmt.Println("timerWheel name = ", tw.name, " is running...")
+	//fmt.Println("timerWheel name = ", tw.name, " is running...")
 }
 
 //获取定时器在一段时间间隔内的Timer
