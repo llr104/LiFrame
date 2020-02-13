@@ -7,7 +7,7 @@
 2.执行create_db.bat
 
 # 构建运行
-1.执行build.bat(构建过程中会依赖到某些GitHub项目，如本地没有会出错，请go install安装好依赖 后再重新执行build操作)
+1.执行build.bat(构建过程中会依赖到某些GitHub项目，如本地没有会出错，请go get安装好依赖 后再重新执行build操作)
 
 2.修改conf下各个服务器的数据库配置
 
@@ -26,7 +26,7 @@
 2.执行create_db.sh
 
 # 构建运行
-1.执行build.sh(构建过程中会依赖到某些GitHub项目，如本地没有会出错，请go install安装好依赖 后再重新执行build操作)
+1.执行build.sh(构建过程中会依赖到某些GitHub项目，如本地没有会出错，请go get安装好依赖 后再重新执行build操作)
 
 2.修改conf下各个服务器的数据库配置
 
