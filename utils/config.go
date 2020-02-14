@@ -26,7 +26,7 @@ type Config struct {
 	TcpPort   		int             //当前服务器主机监听端口号
 	ServerName      string          //当前服务器名称
 	ServerId		string			//服务器id
-	LogFile       	string 			//日志文件名称   默认""  --如果没有设置日志文件，打印信息将打印至stderr
+	LogFile       	string 			//日志文件名称
 
 	Master    		ClientConfig
 	DataBase        DBConfig
