@@ -1,9 +1,9 @@
 package liNet
 
 import (
+	"errors"
 	"github.com/llr104/LiFrame/core/liFace"
 	"github.com/llr104/LiFrame/utils"
-	"errors"
 	"sync"
 )
 

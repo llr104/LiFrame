@@ -1,9 +1,9 @@
 package liNet
 
 import (
+	"container/list"
 	"github.com/llr104/LiFrame/core/liFace"
 	"github.com/llr104/LiFrame/utils"
-	"container/list"
 	"reflect"
 	"strings"
 )

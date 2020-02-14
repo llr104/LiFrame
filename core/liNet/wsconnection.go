@@ -1,8 +1,6 @@
 package liNet
 
 import (
-	"github.com/llr104/LiFrame/core/liFace"
-	"github.com/llr104/LiFrame/utils"
 	"bytes"
 	"compress/gzip"
 	"encoding/hex"
@@ -10,6 +8,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gorilla/websocket"
+	"github.com/llr104/LiFrame/core/liFace"
+	"github.com/llr104/LiFrame/utils"
 	"github.com/thinkoner/openssl"
 	"strconv"
 	"strings"
