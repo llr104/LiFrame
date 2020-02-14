@@ -34,9 +34,11 @@ const CommonWorldUserInfoReq = "CommonWorld.UserInfoReq"
 const CommonWorldUserInfoAck = "CommonWorld.UserInfoAck"
 const CommonWorldUserLogoutReq = "CommonWorld.UserLogoutReq"
 
+const GateHandshake = "handshake"
 const GateLoginServerReq = "gate.LoginServerReq"
 const GateLoginServerAck = "gate.LoginServerAck"
 const GateExitProxy = "gate.ExitProxy"
+
 type BaseAck struct {
 	Code   int
 }

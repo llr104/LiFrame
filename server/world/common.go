@@ -2,6 +2,7 @@ package world
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/llr104/LiFrame/core/liFace"
 	"github.com/llr104/LiFrame/core/liNet"
 	"github.com/llr104/LiFrame/dbobject"
@@ -26,6 +27,8 @@ func (s *Common) PreHandle(req liFace.IRequest) bool{
 		return true
 	}else{
 
+		name := req.GetMsgName()
+		fmt.Println(name)
 		//session检验不通过，跳过后面的逻辑
 		ackInfo := proto.JoinWorldAck{}
 		ackInfo.Code = proto.Code_Session_Error

@@ -79,9 +79,7 @@ func (s *EnterMaster) liveCheck() {
 func (s* EnterMaster) ServerInfoReport(req liFace.IRequest){
 
 	remote := req.GetConnection().GetTCPConnection().RemoteAddr().String()
-	utils.Log.Info("ServerInfoReport %s req: %s", remote, req.GetMsgName())
 	info := proto.ServerInfoReport{}
-
 	sArr := strings.Split(remote, ":")
 	if len(sArr) != 2{
 		return
@@ -89,6 +87,8 @@ func (s* EnterMaster) ServerInfoReport(req liFace.IRequest){
 
 	ip := sArr[0]
 	err := json.Unmarshal(req.GetData(), &info)
+	utils.Log.Info("ServerInfoReport %v ", info)
+
 	if err != nil{
 		utils.Log.Info("ServerInfoReport req error:",err.Error())
 	}else{
@@ -110,11 +110,10 @@ func (s* EnterMaster) ServerInfoReport(req liFace.IRequest){
 		}
 	}
 
-	utils.Log.Info("ServerInfoReport req: %v", info)
 }
 
 func (s* EnterMaster) Ping(req liFace.IRequest){
-	utils.Log.Info("Ping req: %s", req.GetMsgName())
+	utils.Log.Info("Ping")
 	info := proto.PingPong{}
 	info.CurTime = time.Now().Unix()
 	data, _ := json.Marshal(info)
@@ -122,7 +121,8 @@ func (s* EnterMaster) Ping(req liFace.IRequest){
 }
 
 func (s* EnterMaster) ServerListReq(req liFace.IRequest){
-	utils.Log.Info("ServerListReq req begin: %s", req.GetMsgName())
+
+	utils.Log.Info("ServerListReq req end: %s", req.GetConnection().GetTCPConnection().RemoteAddr())
 	info := proto.ServerListReq{}
 	json.Unmarshal(req.GetData(), &info)
 
@@ -131,5 +131,5 @@ func (s* EnterMaster) ServerListReq(req liFace.IRequest){
 	ack.ServerMap = s.serverMap
 	data, _ := json.Marshal(ack)
 	req.GetConnection().SendMsg(proto.MasterClientServerListAck, data)
-	utils.Log.Info("ServerListReq req end: %v", info)
+
 }

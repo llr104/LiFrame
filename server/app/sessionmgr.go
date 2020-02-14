@@ -51,8 +51,6 @@ func  (s* SessionManager) CheckSessionFrom(session string) (string, error){
 	}
 
 	dSrc, _ := openssl.AesECBDecrypt(bytes, key, openssl.PKCS7_PADDING)
-	//fmt.Println("dSrc:",dSrc,err)
-
 	arr := strings.Split(string(dSrc), "_")
 	if len(arr) != 3{
 		return "", errors.New("session not found from server")

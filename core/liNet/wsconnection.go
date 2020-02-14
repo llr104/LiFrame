@@ -8,11 +8,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gorilla/websocket"
-	"github.com/llr104/LiFrame/core/liFace"
 	"github.com/llr104/LiFrame/utils"
 	"github.com/thinkoner/openssl"
-	"strconv"
-	"strings"
 	"sync"
 )
 
@@ -30,8 +27,7 @@ type WsConnection struct {
 	outChan 	chan *WsMessage 			// 写队列
 	mutex 		sync.Mutex					// 避免重复关闭管道
 	isClosed 	bool
-	id       	uint64                // id
-	proxyMap    map[string] *Client //代理客户端
+	id       	uint64                		// id
 	onMessage	func(wsConn *WsConnection, req *WsMessage)
 	onClose     func(wsConn* WsConnection)
 	//链接属性
@@ -46,11 +42,14 @@ func NewWsConnection(wsSocket *websocket.Conn, cid uint64) *WsConnection {
 		outChan: make(chan *WsMessage, 1000),
 		isClosed:false,
 		id:cid,
-		proxyMap:make(map[string] *Client),
 		property:make(map[string]interface{}),
 	}
 
 	return wsConn
+}
+
+func (wsConn *WsConnection) GetId() uint64 {
+	return wsConn.id
 }
 
 func (wsConn *WsConnection) Running() {
@@ -169,61 +168,10 @@ func (wsConn *WsConnection) wsClose() {
 			wsConn.onClose(wsConn)
 		}
 		wsConn.isClosed = true
-		for _, c := range wsConn.proxyMap{
-			c.Stop()
-		}
 	}
 
 }
 
-func (wsConn *WsConnection) CloseProxy(msgProxy string) {
-	wsConn.mutex.Lock()
-	defer wsConn.mutex.Unlock()
-	proxy, ok := wsConn.proxyMap[msgProxy]
-	if ok {
-		delete(wsConn.proxyMap, msgProxy)
-		proxy.GetConn().Stop()
-	}
-}
-
-func (wsConn *WsConnection) ProxyClient(msgProxy string, router liFace.IRouter) (*Client, bool ){
-
-	wsConn.mutex.Lock()
-	defer wsConn.mutex.Unlock()
-
-	isNeedCreate := false
-	proxy, ok := wsConn.proxyMap[msgProxy]
-	if !ok {
-		isNeedCreate = true
-	}else{
-		if proxy.GetConn() == nil || proxy.GetConn().IsClose() {
-			isNeedCreate = true
-		}
-	}
-
-	if isNeedCreate {
-		//创建proxy
-		arr := strings.Split(msgProxy,":")
-		if len(arr) != 2 {
-			return nil, false
-		}
-		name := fmt.Sprintf("name_%s",msgProxy)
-		id := fmt.Sprintf("%s_%d", msgProxy, wsConn.id)
-		port, _ := strconv.Atoi(arr[1])
-		c := NewClient(name, id, arr[0], port)
-		c.AddRouter(router)
-
-		c.Start()
-		c.Running()
-		if c.GetConn() != nil && c.GetConn().IsClose() == false{
-			wsConn.proxyMap[msgProxy] = c
-		}
-
-	}
-
-	proxyClient, b := wsConn.proxyMap[msgProxy]
-	return proxyClient, b
-}
 
 //设置链接属性
 func (c *WsConnection) SetProperty(key string, value interface{}) {
