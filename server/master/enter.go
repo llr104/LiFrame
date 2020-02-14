@@ -7,6 +7,7 @@ import (
 	"github.com/llr104/LiFrame/core/liNet"
 	"github.com/llr104/LiFrame/proto"
 	"github.com/llr104/LiFrame/utils"
+	"strings"
 	"sync"
 	"time"
 )
@@ -77,14 +78,23 @@ func (s *EnterMaster) liveCheck() {
 
 func (s* EnterMaster) ServerInfoReport(req liFace.IRequest){
 
-	utils.Log.Info("ServerInfoReport req: %s", req.GetMsgName())
+	remote := req.GetConnection().GetTCPConnection().RemoteAddr().String()
+	utils.Log.Info("ServerInfoReport %s req: %s", remote, req.GetMsgName())
 	info := proto.ServerInfoReport{}
+
+	sArr := strings.Split(remote, ":")
+	if len(sArr) != 2{
+		return
+	}
+
+	ip := sArr[0]
 	err := json.Unmarshal(req.GetData(), &info)
 	if err != nil{
 		utils.Log.Info("ServerInfoReport req error:",err.Error())
 	}else{
 		info.State = proto.ServerStateNormal
 		info.LastTime = time.Now().Unix()
+		info.IP = ip
 
 		s.lock.Lock()
 		defer s.lock.Unlock()

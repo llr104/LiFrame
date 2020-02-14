@@ -1,7 +1,7 @@
 {
     "ServerName":"worldServer",
     "ServerId":"worldServer01",
-    "Host":"127.0.0.1",
+    "Host":"0.0.0.0",
     "TcpPort":8003,
     "LogFile":"./logout/world.log",
     "DataBase": {

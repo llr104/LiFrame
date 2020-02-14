@@ -1,7 +1,7 @@
 {
   "ServerName":"GateServer",
   "ServerId":"GateServer01",
-  "Host":"127.0.0.1",
+  "Host":"0.0.0.0",
   "TcpPort":8000,
   "LogFile":"./logout/gate.log",
   "Master":{"RemoteHost": "127.0.0.1", "RemoteTcpPort": 8001, "ClientName": "WorldClientName1", "ClientId": "WorldClientId1"}

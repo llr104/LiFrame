@@ -1,7 +1,7 @@
 {
   "ServerName":"1服(demo)",
   "ServerId":"gameServer01",
-  "Host":"127.0.0.1",
+  "Host":"0.0.0.0",
   "TcpPort":8004,
   "LogFile":"./logout/game.log",
   "DataBase": {

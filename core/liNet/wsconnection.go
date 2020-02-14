@@ -16,7 +16,7 @@ import (
 	"sync"
 )
 
-var GateMessageKey = []byte("github.com/llr104/LiFrameVeryGood!")
+var GateMessageKey = []byte("liFrameVeryGood!")
 
 // 客户端读写消息
 type WsMessage struct {

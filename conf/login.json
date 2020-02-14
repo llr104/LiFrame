@@ -1,7 +1,7 @@
 {
   "ServerName":"loginServer",
   "ServerId":"loginServer01",
-  "Host":"127.0.0.1",
+  "Host":"0.0.0.0",
   "TcpPort":8005,
   "LogFile":"./logout/login.log",
   "DataBase": {

@@ -1,8 +1,8 @@
 {
   "ServerName":"MasterServer",
   "ServerId":"MasterServer01",
-  "Host":"127.0.0.1",
+  "Host":"0.0.0.0",
   "TcpPort":8001,
   "LogFile":"./logout/master.log",
-  "Http":{"IP": "127.0.0.1", "Port": 8002}
+  "Http":{"IP": "0.0.0.0", "Port": 8002}
 }
