@@ -26,16 +26,20 @@ func ShutdownHandler(resp http.ResponseWriter, req *http.Request) {
 	if len(req.Form["isAll"]) > 0{
 		utils.Log.Info("Shutdown all")
 		ser := app.GetServer()
-		n := ser.(liFace.INetWork)
-		mgr := n.GetConnMgr()
-		mgr.BroadcastMsg(proto.MasterClientShutDown, nil)
 		resp.Write([]byte("ok"))
 
-		utils.Scheduler.NewTimerAfter(5*time.Second, shutdown, []interface{}{})
-		os.Exit(0)
+		utils.Scheduler.NewTimerInterval(1*time.Second, 5, shutdownTimer, []interface{}{ser})
+		utils.Scheduler.NewTimerAfter(6*time.Second, shutdown, []interface{}{})
+
 	}else{
 		resp.Write([]byte("error"))
 	}
+}
+
+func shutdownTimer(v ...interface{}) {
+	ser := v[0].(liFace.INetWork)
+	mgr := ser.GetConnMgr()
+	mgr.BroadcastMsg(proto.MasterClientShutDown, nil)
 }
 
 func shutdown(v ...interface{}) {
