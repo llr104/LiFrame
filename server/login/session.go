@@ -34,15 +34,15 @@ type loginSessionMgr struct {
 	liveTimeMap 	map[uint32] int64      //key-value:userId-time
 }
 
-func (s*loginSessionMgr) MakeSession(serverId string, id uint32, conn liFace.IConnection) string {
+func (s*loginSessionMgr) NewSession(serverId string, id uint32, conn liFace.IConnection) string {
 
-	session, ok := s.liveSession(id)
+	oldSession, ok := s.liveSession(id)
 	if ok == false {
-		session = app.SessionMgr.CreateSession(serverId, id)
-	}else{
-		utils.Log.Info("重新登录，重用还没过期的session")
+		utils.Log.Info("%s:被顶号了", oldSession)
+		app.SessionMgr.SessionExit(oldSession)
 	}
 
+	session := app.SessionMgr.CreateSession(serverId, id)
 	app.SessionMgr.SessionEnter(session, conn)
 
 	s.loginLock.Lock()

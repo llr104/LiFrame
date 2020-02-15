@@ -232,7 +232,7 @@ func (s *EnterLogin) login(user *dbobject.User, conn liFace.IConnection) string{
 
 	ser := app.GetServer()
 	n := ser.(liFace.INetWork)
-	session := SessLoginMgr.MakeSession(n.GetId(), user.Id, conn)
+	session := SessLoginMgr.NewSession(n.GetId(), user.Id, conn)
 	conn.SetProperty("userId", user.Id)
 	return session
 }

@@ -8,20 +8,21 @@ import (
 	"github.com/llr104/LiFrame/utils"
 )
 
-var GRouter *GateRouter
+var Router *router
 
 func init() {
-	GRouter = &GateRouter{}
+	Router = &router{}
 }
-type GateRouter struct {
+
+type router struct {
 	liNet.BaseRouter
 }
 
-func (s *GateRouter) NameSpace() string {
+func (s *router) NameSpace() string {
 	return "*.*"
 }
 
-func (s *GateRouter) EveryThingHandle(req liFace.IRequest) {
+func (s *router) EveryThingHandle(req liFace.IRequest) {
 	conn, err := req.GetConnection().GetProperty("gateConn")
 	if err != nil{
 		utils.Log.Warn("EveryThingHandle not found gateConn")
@@ -33,8 +34,16 @@ func (s *GateRouter) EveryThingHandle(req liFace.IRequest) {
 		err := json.Unmarshal(req.GetData(),&loginAck)
 		if err == nil && loginAck.Code == proto.Code_Success{
 			gateConn.SetProperty("isAuth", true)
+			gateConn.SetProperty("session",loginAck.Session)
+			gateConn.SetProperty("userId", loginAck.Id)
+
+			//处理踢号
+			MyGate.userEnter(gateConn)
 		}else{
+			MyGate.userExit(gateConn)
 			gateConn.SetProperty("isAuth", false)
+			gateConn.RemoveProperty("session")
+			gateConn.RemoveProperty("userId")
 		}
 	}
 
