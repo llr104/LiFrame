@@ -34,13 +34,16 @@ type offline struct {
 }
 
 type gate struct {
-	onlineProxyMap 		map[string]map[string] *liNet.Client
+	onlineProxyMap 		map[string] map[string] *liNet.Client
 	offlineMap          map[string] offline
-	lock 		sync.RWMutex
+	wsMap               map[string] *liNet.WsConnection
+	lock 				sync.RWMutex
 }
 
 func init() {
-	myGate = gate{onlineProxyMap:make(map[string]map[string] *liNet.Client), offlineMap:make(map[string] offline)}
+	myGate = gate{onlineProxyMap:make(map[string]map[string] *liNet.Client),
+		offlineMap:make(map[string] offline), wsMap:make(map[string] *liNet.WsConnection)}
+
 	utils.Scheduler.NewTimerInterval(10*time.Second, utils.IntervalForever, checkOffLine, []interface{}{})
 }
 
@@ -80,14 +83,14 @@ func (g* gate) proxyClient(wsConn* liNet.WsConnection, msgProxyId string, router
 		//创建proxy
 		delete(proxyMap, msgProxyId)
 
-		proxyKey := fmt.Sprintf("%s_%s", handshakeId, msgProxyId)
+		clientId := fmt.Sprintf("id_%d_%s", wsConn.GetId(), msgProxy)
 		arr := strings.Split(msgProxy,":")
 		if len(arr) != 2 {
 			return nil, false
 		}
 		name := fmt.Sprintf("name_%s", msgProxy)
 		port, _ := strconv.Atoi(arr[1])
-		c := liNet.NewClient(name, proxyKey, arr[0], port)
+		c := liNet.NewClient(name, clientId, arr[0], port)
 		c.AddRouter(router)
 
 		c.Start()
@@ -117,18 +120,33 @@ func (g* gate) closeProxy(wsConn* liNet.WsConnection, msgProxyId string) {
 	}
 }
 
-func (g* gate) reconnect(wsConn* liNet.WsConnection){
+func (g* gate) reconnect(wsConn* liNet.WsConnection, handshakeId string) string{
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
-	if id, err := wsConn.GetProperty("handshakeId"); err == nil{
-		handshakeId := id.(string)
-		if m, ok := g.offlineMap[handshakeId]; ok{
-			utils.Log.Info("断线回来，代理归属到新的连接")
-			g.onlineProxyMap[handshakeId] = m.offlineProxyMap
-			delete(g.offlineMap, handshakeId)
+	newId := newHandshakeId(wsConn.GetId())
+	if m, ok := g.offlineMap[handshakeId]; ok{
+		utils.Log.Info("断线回来，代理归属到新的连接")
+		g.onlineProxyMap[newId] = m.offlineProxyMap
+		delete(g.offlineMap, handshakeId)
+	}else{
+		utils.Log.Info("断线回来，代理已经不存在了")
+	}
+	wsConn.SetProperty("handshakeId", newId)
+	return newId
+}
+
+func (g* gate) connectEnter(wsConn* liNet.WsConnection, handshakeId string){
+	g.lock.Lock()
+	defer g.lock.Unlock()
+
+	if ws, ok := g.wsMap[handshakeId]; ok{
+		if wsConn != ws{
+			ws.Close()
 		}
 	}
+
+	g.wsMap[handshakeId] = wsConn
 }
 
 func (g* gate) connectExit(wsConn* liNet.WsConnection){
@@ -147,6 +165,8 @@ func (g* gate) connectExit(wsConn* liNet.WsConnection){
 		g.offlineMap[handshakeId] = off
 		delete(g.onlineProxyMap, handshakeId)
 	}
+
+	delete(g.wsMap, handshakeId)
 }
 
 func (g* gate) check(){
@@ -254,12 +274,13 @@ func handleWsMessage(wsConn *liNet.WsConnection, req *liNet.WsMessage) {
 				utils.Log.Info("不是断线重连")
 				handshakeId := newHandshakeId(wsConn.GetId())
 				wsConn.SetProperty("handshakeId", handshakeId)
+				myGate.connectEnter(wsConn, handshakeId)
+
 				wsConn.WriteMessage("", proto.GateHandshake, []byte(handshakeId))
 			}else{
 				utils.Log.Info("是断线重连")
-				wsConn.SetProperty("handshakeId", body)
-				myGate.reconnect(wsConn)
-				wsConn.WriteMessage("", proto.GateHandshake, []byte(body))
+				handshakeId := myGate.reconnect(wsConn, body)
+				wsConn.WriteMessage("", proto.GateHandshake, []byte(handshakeId))
 			}
 			return
 		}

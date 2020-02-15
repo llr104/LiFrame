@@ -77,7 +77,7 @@ func (wsConn *WsConnection) wsReadLoop() {
 
 	}
 
-	wsConn.wsClose()
+	wsConn.Close()
 }
 
 func (wsConn *WsConnection)SetOnMessage(hookFunc func (*WsConnection, *WsMessage))  {
@@ -97,7 +97,7 @@ func (wsConn *WsConnection) wsWriteLoop() {
 				// 写给websocket
 				if err := wsConn.wsSocket.WriteMessage(msg.MsgType, msg.Data); err != nil {
 					utils.Log.Warn("wsWriteLoop error %s", err.Error())
-					wsConn.wsClose()
+					wsConn.Close()
 					return
 				}
 			}
@@ -159,7 +159,7 @@ func (wsConn *WsConnection) writeText(text string)  {
 }
 
 
-func (wsConn *WsConnection) wsClose() {
+func (wsConn *WsConnection) Close() {
 	wsConn.wsSocket.Close()
 	wsConn.mutex.Lock()
 	defer wsConn.mutex.Unlock()
