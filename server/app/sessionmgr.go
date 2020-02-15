@@ -98,10 +98,12 @@ func  (s*sessionMgr) CheckSessionValid(session string, userId uint32) bool{
 func (s *sessionMgr) SessionEnter(session string, conn liFace.IConnection)  {
 	conn.SetProperty("session", session)
 
+	//stop会触发SessionExitByConn，所以加锁要注意
 	s.lock.Lock()
-	defer s.lock.Unlock()
+	oldConn, ok := s.connMap[session]
+	s.lock.Unlock()
 
-	if oldConn, ok := s.connMap[session]; ok{
+	if ok {
 		if oldConn != conn{
 			if oldConn.IsClose() == false {
 				//关闭前可以发消息通知 todo
@@ -111,7 +113,10 @@ func (s *sessionMgr) SessionEnter(session string, conn liFace.IConnection)  {
 		}
 	}
 
+	s.lock.Lock()
 	s.connMap[session] = conn
+	s.lock.Unlock()
+
 }
 
 func (s *sessionMgr) SessionExitByConn(conn liFace.IConnection)  {
@@ -129,18 +134,21 @@ func (s *sessionMgr) SessionExitByConn(conn liFace.IConnection)  {
 
 func (s *sessionMgr) SessionExit(session string)  {
 	s.lock.Lock()
-	defer s.lock.Unlock()
+	conn ,ok := s.connMap[session]
+	s.lock.Unlock()
 
-	if conn ,ok := s.connMap[session]; ok{
-
+	//stop会触发SessionExitByConn，所以加锁要注意
+	if ok {
 		if conn.IsClose() == false {
 			//关闭前可以发消息通知 todo
 			conn.Stop()
 			utils.Log.Info("session:%s的连接断开了", session)
 		}
-
-		delete(s.connMap, session)
 	}
+
+	s.lock.Lock()
+	delete(s.connMap, session)
+	s.lock.Unlock()
 
 }
 
