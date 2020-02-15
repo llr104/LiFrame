@@ -27,17 +27,16 @@ func (s *MasterClientRouter) Pong(req liFace.IRequest) {
 }
 
 func (s *MasterClientRouter) ServerListAck(req liFace.IRequest) {
-	utils.Log.Info("ServerListAck begin: %s", req.GetMsgName())
 
 	ackInfo := proto.ServerListAck{}
 	err := json.Unmarshal(req.GetData(), &ackInfo)
+	utils.Log.Info("ServerListAck: %v", ackInfo)
 	if err != nil{
 		utils.Log.Info("ServerListAck error:%s",err.Error())
 	}else{
 		ServerMgr.Update(ackInfo.ServerMap)
 	}
 
-	utils.Log.Info("ServerListAck end: %v", ackInfo)
 }
 
 func (s *MasterClientRouter) ShutDown(req liFace.IRequest) {

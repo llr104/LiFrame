@@ -22,7 +22,7 @@ type ServerManager struct {
 func (s *ServerManager) Update(serverMap map[string] proto.ServerInfo) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	utils.Log.Info("Update map: %v",serverMap)
+	//utils.Log.Info("Update map: %v",serverMap)
 	s.serverMap = serverMap
 }
 

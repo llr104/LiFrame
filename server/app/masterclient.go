@@ -58,7 +58,6 @@ func mClientConnStop(conn liFace.IConnection){
 		mServerListTimerId = 0
 	}
 
-	utils.Log.Info("mClientConnStop end")
 }
 
 

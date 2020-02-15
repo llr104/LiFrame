@@ -43,11 +43,11 @@ func (s *EnterWorld) NameSpace() string {
 }
 
 func (s *EnterWorld) JoinWorldReq(req liFace.IRequest) {
-	utils.Log.Info("JoinWorldReq begin: %s", req.GetMsgName())
 
 	reqInfo := proto.JoinWorldReq{}
 	ackInfo := proto.JoinWorldAck{}
 	err := json.Unmarshal(req.GetData(), &reqInfo)
+	utils.Log.Info("JoinWorldReq: %v", reqInfo)
 	if err != nil{
 		utils.Log.Info("JoinWorldReq req error:",err.Error())
 		ackInfo.Code = proto.Code_Illegal
@@ -88,15 +88,15 @@ func (s *EnterWorld) JoinWorldReq(req liFace.IRequest) {
 		}
 	}
 
-	utils.Log.Info("JoinWorldReq end: %v", reqInfo)
+
 }
 
 
 func (s *EnterWorld) CheckSessionAck(req liFace.IRequest) {
-	utils.Log.Info("CheckSessionAck begin: %s", req.GetMsgName())
 
 	reqInfo := proto.CheckSessionAck{}
 	err := json.Unmarshal(req.GetData(), &reqInfo)
+	utils.Log.Info("CheckSessionAck: %v", reqInfo)
 	if err != nil{
 		utils.Log.Info("CheckSessionAck req error:",err.Error())
 		ackInfo := proto.JoinWorldAck{}
@@ -134,5 +134,4 @@ func (s *EnterWorld) CheckSessionAck(req liFace.IRequest) {
 		}
 	}
 
-	utils.Log.Info("CheckSessionAck end: %v", reqInfo)
 }

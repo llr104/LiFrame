@@ -122,7 +122,7 @@ func (s* EnterMaster) Ping(req liFace.IRequest){
 
 func (s* EnterMaster) ServerListReq(req liFace.IRequest){
 
-	utils.Log.Info("ServerListReq req end: %s", req.GetConnection().GetTCPConnection().RemoteAddr())
+	utils.Log.Info("ServerListReq req : %s", req.GetConnection().GetTCPConnection().RemoteAddr())
 	info := proto.ServerListReq{}
 	json.Unmarshal(req.GetData(), &info)
 

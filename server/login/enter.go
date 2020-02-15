@@ -54,7 +54,6 @@ func (s* EnterLogin) Ping(req liFace.IRequest){
 func (s *EnterLogin) LoginReq(req liFace.IRequest) {
 	beginTime := time.Now().Nanosecond()
 
-	utils.Log.Info("LoginReq begin: %s", req.GetMsgName())
 	reqInfo := proto.LoginReq{}
 	ackInfo := proto.LoginAck{}
 
@@ -99,7 +98,7 @@ func (s *EnterLogin) LoginReq(req liFace.IRequest) {
 	u := uint64(diff) / uint64(time.Millisecond)
 
 
-	utils.Log.Info("LoginReq end: %v,time:%d", reqInfo, u)
+	utils.Log.Info("LoginReq: %v,time:%d", reqInfo, u)
 }
 
 /*
@@ -107,13 +106,10 @@ func (s *EnterLogin) LoginReq(req liFace.IRequest) {
 */
 func (s *EnterLogin) RegisterReq(req liFace.IRequest) {
 
-	beginTime := time.Now().Nanosecond()
-
-	utils.Log.Info("RegisterReq begin: %s", req.GetMsgName())
 	reqInfo := proto.RegisterReq{}
 	ackInfo := proto.RegisterAck{}
 	err := json.Unmarshal(req.GetData(), &reqInfo)
-
+	utils.Log.Info("RegisterReq end: %v", reqInfo)
 	if err != nil {
 		ackInfo.Code = proto.Code_Illegal
 		utils.Log.Info("RegisterReq error:", err.Error())
@@ -143,22 +139,17 @@ func (s *EnterLogin) RegisterReq(req liFace.IRequest) {
 	data, _ := json.Marshal(ackInfo)
 	req.GetConnection().SendMsg(proto.EnterLoginRegisterAck, data)
 
-	endTime := time.Now().Nanosecond()
-	diff := endTime-beginTime
-	u := uint64(diff) / uint64(time.Millisecond)
-
-	utils.Log.Info("RegisterReq end: %v,%d", reqInfo,u)
 }
 
 /*
 校验session
 */
 func (s *EnterLogin) CheckSessionReq(req liFace.IRequest) {
-	utils.Log.Info("CheckSessionReq begin")
+
 	reqInfo := proto.CheckSessionReq{}
 	ackInfo := proto.CheckSessionAck{}
 	err := json.Unmarshal(req.GetData(), &reqInfo)
-
+	utils.Log.Info("CheckSessionReq: %v", reqInfo)
 	if err != nil {
 		ackInfo.Code = proto.Code_Illegal
 		utils.Log.Info("CheckSessionReq error:", err.Error())
@@ -176,17 +167,17 @@ func (s *EnterLogin) CheckSessionReq(req liFace.IRequest) {
 
 	data, _ := json.Marshal(ackInfo)
 	req.GetConnection().SendMsg(proto.EnterWorldCheckSessionAck, data)
-	utils.Log.Info("CheckSessionReq end: %v", reqInfo)
+
 }
 
 /*
 根据负载分配world服务器
 */
 func (s *EnterLogin) DistributeWorldReq(req liFace.IRequest) {
-	utils.Log.Info("DistributeServerReq begin: %s", req.GetMsgName())
+
 	reqInfo := proto.DistributeServerReq{}
 	ackInfo := proto.DistributeServerAck{}
-
+	utils.Log.Info("DistributeWorldAck: %v", reqInfo)
 	if err := json.Unmarshal(req.GetData(), &reqInfo); err != nil {
 		ackInfo.Code = proto.Code_Illegal
 		utils.Log.Info("DistributeWorldReq error:%s", err.Error())
@@ -203,14 +194,14 @@ func (s *EnterLogin) DistributeWorldReq(req liFace.IRequest) {
 
 	data, _ := json.Marshal(ackInfo)
 	req.GetConnection().SendMsg(proto.EnterLoginDistributeWorldAck, data)
-	utils.Log.Info("DistributeWorldAck end: %v", reqInfo)
+
 }
 
 /*
 更新session操作
 */
 func (s *EnterLogin) SessionUpdateReq(req liFace.IRequest) {
-	utils.Log.Info("SessionUpdateReq begin: %s", req.GetMsgName())
+
 	reqInfo := proto.SessionUpdateReq{}
 	ackInfo := proto.SessionUpdateAck{}
 
@@ -218,7 +209,7 @@ func (s *EnterLogin) SessionUpdateReq(req liFace.IRequest) {
 	ackInfo.UserId = reqInfo.UserId
 	ackInfo.ConnId = reqInfo.ConnId
 	ackInfo.OpType = reqInfo.OpType
-
+	utils.Log.Info("SessionUpdateReq: %v", reqInfo)
 	if err := json.Unmarshal(req.GetData(), &reqInfo); err != nil {
 		ackInfo.Code = proto.Code_Illegal
 		utils.Log.Info("SessionUpdateReq error:%s", err.Error())
@@ -233,7 +224,7 @@ func (s *EnterLogin) SessionUpdateReq(req liFace.IRequest) {
 
 	data, _ := json.Marshal(ackInfo)
 	req.GetConnection().SendMsg(proto.EnterLoginSessionUpdateAck, data)
-	utils.Log.Info("SessionUpdateReq end: %v", reqInfo)
+
 }
 
 

@@ -358,7 +358,7 @@ func main() {
 		cfgPath := os.Args[1]
 		utils.GlobalObject.Load(cfgPath)
 	}else{
-		utils.GlobalObject.Load("conf/gateServer.json")
+		utils.GlobalObject.Load("conf/gate.json")
 	}
 
 	db.InitDataBase()

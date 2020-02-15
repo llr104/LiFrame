@@ -79,13 +79,13 @@ func (s *Common) UserInfoReq(req liFace.IRequest) {
 }
 
 func (s *Common) UserLogoutReq(req liFace.IRequest) {
-	utils.Log.Info("UserLogoutReq begin: %s", req.GetMsgName())
+
 	reqInfo := proto.UserLogoutReq{}
 	ackInfo := proto.UserLogoutAck{}
 
-
 	ackInfo.Code = proto.Code_Success
 	data, _ := json.Marshal(ackInfo)
+	utils.Log.Info("UserLogoutReq end: %v", reqInfo)
 	req.GetConnection().SendMsg(proto.CommonWorldUserLogoutAck, data)
 
 
@@ -122,11 +122,10 @@ func (s *Common) UserLogoutReq(req liFace.IRequest) {
 	OnlineInstance.Exit(c)
 
 	req.GetConnection().Stop()
-	utils.Log.Info("UserLogoutReq end: %v", reqInfo)
+
 }
 
 func (s *Common) GameServersReq(req liFace.IRequest) {
-	utils.Log.Info("GameServersReq begin: %s", req.GetMsgName())
 	reqInfo := proto.GameServersReq{}
 	ackInfo := proto.GameServersAck{}
 
@@ -135,5 +134,5 @@ func (s *Common) GameServersReq(req liFace.IRequest) {
 	ackInfo.Code = proto.Code_Success
 	data, _ := json.Marshal(ackInfo)
 	req.GetConnection().SendMsg(proto.CommonWorldGameServersAck, data)
-	utils.Log.Info("GameServersReq end: %v", reqInfo)
+	utils.Log.Info("GameServersReq: %v", reqInfo)
 }
