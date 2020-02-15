@@ -45,7 +45,10 @@ func checkOnline(v ...interface{}) {
 					client, ok := W2Login.GetLoginClient(appId)
 					if ok {
 						data, _ := json.Marshal(sessReq)
-						client.GetConn().SendMsg(proto.EnterLoginSessionUpdateReq, data)
+						conn := client.GetConn()
+						if conn != nil{
+							conn.SendMsg(proto.EnterLoginSessionUpdateReq, data)
+						}
 						v.SetProperty("lastKeepLive", curTime)
 					}
 				}

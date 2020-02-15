@@ -80,11 +80,11 @@ func (wsConn *WsConnection) wsReadLoop() {
 	wsConn.Close()
 }
 
-func (wsConn *WsConnection)SetOnMessage(hookFunc func (*WsConnection, *WsMessage))  {
+func (wsConn *WsConnection) SetOnMessage(hookFunc func (*WsConnection, *WsMessage))  {
 	wsConn.onMessage = hookFunc
 }
 
-func (wsConn *WsConnection)SetOnClose(hookFunc func (*WsConnection))  {
+func (wsConn *WsConnection) SetOnClose(hookFunc func (*WsConnection))  {
 	wsConn.onClose = hookFunc
 }
 

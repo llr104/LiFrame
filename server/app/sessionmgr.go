@@ -4,26 +4,30 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/llr104/LiFrame/core/liFace"
 	"github.com/llr104/LiFrame/utils"
 	"github.com/thinkoner/openssl"
 	"strings"
+	"sync"
 	"time"
 )
 
-var SessionMgr SessionManager
+var SessionMgr sessionMgr
 
 func init() {
-	SessionMgr = SessionManager{sessionKey:"sessionKey123456"}
+	SessionMgr = sessionMgr{sessionKey: "sessionKey123456", connMap:make(map[string] liFace.IConnection)}
 }
 
-type SessionManager struct {
-	sessionKey string //密钥的长度可以是16/24/32个字符（128/192/256位）
+type sessionMgr struct {
+	sessionKey string
+	connMap    map[string] liFace.IConnection
+	lock 	   sync.RWMutex
 }
 
 /*
 根据用户id生成一个session
 */
-func (s* SessionManager) CreateSession(appId string, userId uint32) string {
+func (s*sessionMgr) CreateSession(appId string, userId uint32) string {
 	unix := time.Now().UnixNano()
 
 	src := fmt.Sprintf("%s_%d_%d", appId, unix, userId)
@@ -42,7 +46,7 @@ func (s* SessionManager) CreateSession(appId string, userId uint32) string {
 	return session
 }
 
-func  (s* SessionManager) CheckSessionFrom(session string) (string, error){
+func  (s*sessionMgr) CheckSessionFrom(session string) (string, error){
 
 	key := []byte(s.sessionKey)
 	bytes, err := base64.StdEncoding.DecodeString(session)
@@ -61,7 +65,7 @@ func  (s* SessionManager) CheckSessionFrom(session string) (string, error){
 }
 
 
-func  (s* SessionManager) CheckSessionValid(session string, userId uint32) bool{
+func  (s*sessionMgr) CheckSessionValid(session string, userId uint32) bool{
 	
 	key := []byte(s.sessionKey)
 	bytes, err := base64.StdEncoding.DecodeString(session)
@@ -87,6 +91,55 @@ func  (s* SessionManager) CheckSessionValid(session string, userId uint32) bool{
 		}else{
 			return false
 		}
+	}
+
+}
+
+func (s *sessionMgr) SessionEnter(session string, conn liFace.IConnection)  {
+	conn.SetProperty("session", session)
+
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	if oldConn, ok := s.connMap[session]; ok{
+		if oldConn != conn{
+			if oldConn.IsClose() == false {
+				//关闭前可以发消息通知 todo
+				utils.Log.Info("session:%s被新的连接顶替了", session)
+				oldConn.Stop()
+			}
+		}
+	}
+
+	s.connMap[session] = conn
+}
+
+func (s *sessionMgr) SessionExitByConn(conn liFace.IConnection)  {
+
+	if v, err := conn.GetProperty("session"); err == nil{
+
+		session := v.(string)
+		utils.Log.Info("session:%s的连接断开了", session)
+
+		s.lock.Lock()
+		defer s.lock.Unlock()
+		delete(s.connMap, session)
+	}
+}
+
+func (s *sessionMgr) SessionExit(session string)  {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	if conn ,ok := s.connMap[session]; ok{
+
+		if conn.IsClose() == false {
+			//关闭前可以发消息通知 todo
+			conn.Stop()
+			utils.Log.Info("session:%s的连接断开了", session)
+		}
+
+		delete(s.connMap, session)
 	}
 
 }

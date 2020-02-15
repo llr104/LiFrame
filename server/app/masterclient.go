@@ -119,13 +119,15 @@ func mReportTimer(v ...interface{})  {
 func mServerListTimer(v ...interface{})  {
 
 	conn := MClient.GetConn()
-	info := proto.ServerListReq{}
-	info.CurTime = time.Now().Unix()
-	
-	data ,err := json.Marshal(info)
-	if err == nil{
-		conn.SendMsg(proto.EnterMasterServerListReq, data)
-	}else{
-		utils.Log.Info("mServerListTimer error:%s", err.Error())
+	if conn != nil{
+		info := proto.ServerListReq{}
+		info.CurTime = time.Now().Unix()
+
+		data ,err := json.Marshal(info)
+		if err == nil{
+			conn.SendMsg(proto.EnterMasterServerListReq, data)
+		}else{
+			utils.Log.Info("mServerListTimer error:%s", err.Error())
+		}
 	}
 }

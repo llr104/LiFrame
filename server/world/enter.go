@@ -24,7 +24,10 @@ func ClientConnStart(conn liFace.IConnection) {
 
 func ClientConnStop(conn liFace.IConnection) {
 	app.MClientData.Dec()
+	app.SessionMgr.SessionExitByConn(conn)
+
 	utils.Log.Info("ClientConnStop:%s", conn.RemoteAddr().String())
+
 }
 
 func ShutDown(){
@@ -60,7 +63,15 @@ func (s *EnterWorld) JoinWorldReq(req liFace.IRequest) {
 				sessionReq.UserId = reqInfo.UserId
 				sessionReq.ConnId = req.GetConnection().GetConnID()
 				data, _ := json.Marshal(sessionReq)
-				c.GetConn().SendMsg(proto.EnterLoginCheckSessionReq, data)
+
+				conn := c.GetConn()
+				if conn != nil{
+					conn.SendMsg(proto.EnterLoginCheckSessionReq, data)
+				}else{
+					ackInfo.Code = proto.Code_Session_Error
+					data, _ := json.Marshal(ackInfo)
+					req.GetConnection().SendMsg(proto.EnterWorldJoinWorldAck, data)
+				}
 			}else{
 				utils.Log.Info("session serverId: %s not found app connect server", serverId)
 
@@ -94,6 +105,7 @@ func (s *EnterWorld) CheckSessionAck(req liFace.IRequest) {
 		ackInfo.Session = reqInfo.Session
 		data, _ := json.Marshal(ackInfo)
 		req.GetConnection().SendMsg(proto.EnterWorldJoinWorldAck, data)
+
 	}else{
 
 		ser := app.GetServer()
@@ -104,7 +116,8 @@ func (s *EnterWorld) CheckSessionAck(req liFace.IRequest) {
 		}else{
 			//绑定session 绑定userId
 			if reqInfo.Code == proto.Code_Success {
-				conn.SetProperty("session", reqInfo.Session)
+
+				app.SessionMgr.SessionEnter(reqInfo.Session, conn)
 				conn.SetProperty("userId", reqInfo.UserId)
 				conn.SetProperty("lastKeepLive", time.Now().Unix())
 

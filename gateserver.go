@@ -13,6 +13,7 @@ import (
 	"github.com/llr104/LiFrame/proto"
 	"github.com/llr104/LiFrame/server/app"
 	"github.com/llr104/LiFrame/server/db"
+	"github.com/llr104/LiFrame/server/gate"
 	"github.com/llr104/LiFrame/utils"
 	"github.com/thinkoner/openssl"
 	"io"
@@ -25,7 +26,7 @@ import (
 	"time"
 )
 
-var myGate gate
+var myGate gateServer
 var cid uint64 = 0
 
 type offline struct {
@@ -33,7 +34,7 @@ type offline struct {
 	offlineTime         int64
 }
 
-type gate struct {
+type gateServer struct {
 	onlineProxyMap 		map[string] map[string] *liNet.Client
 	offlineMap          map[string] offline
 	wsMap               map[string] *liNet.WsConnection
@@ -41,13 +42,13 @@ type gate struct {
 }
 
 func init() {
-	myGate = gate{onlineProxyMap:make(map[string]map[string] *liNet.Client),
+	myGate = gateServer{onlineProxyMap: make(map[string]map[string] *liNet.Client),
 		offlineMap:make(map[string] offline), wsMap:make(map[string] *liNet.WsConnection)}
 
 	utils.Scheduler.NewTimerInterval(10*time.Second, utils.IntervalForever, checkOffLine, []interface{}{})
 }
 
-func (g* gate) proxyClient(wsConn* liNet.WsConnection, msgProxyId string, router liFace.IRouter) (*liNet.Client, bool ){
+func (g*gateServer) proxyClient(wsConn* liNet.WsConnection, msgProxyId string, router liFace.IRouter) (*liNet.Client, bool ){
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
@@ -104,7 +105,7 @@ func (g* gate) proxyClient(wsConn* liNet.WsConnection, msgProxyId string, router
 	return proxyClient, b
 }
 
-func (g* gate) closeProxy(wsConn* liNet.WsConnection, msgProxyId string) {
+func (g*gateServer) closeProxy(wsConn* liNet.WsConnection, msgProxyId string) {
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
@@ -120,7 +121,7 @@ func (g* gate) closeProxy(wsConn* liNet.WsConnection, msgProxyId string) {
 	}
 }
 
-func (g* gate) reconnect(wsConn* liNet.WsConnection, handshakeId string) string{
+func (g*gateServer) reconnect(wsConn* liNet.WsConnection, handshakeId string) string{
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
@@ -136,7 +137,7 @@ func (g* gate) reconnect(wsConn* liNet.WsConnection, handshakeId string) string{
 	return newId
 }
 
-func (g* gate) connectEnter(wsConn* liNet.WsConnection, handshakeId string){
+func (g*gateServer) connectEnter(wsConn* liNet.WsConnection, handshakeId string){
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
@@ -149,7 +150,7 @@ func (g* gate) connectEnter(wsConn* liNet.WsConnection, handshakeId string){
 	g.wsMap[handshakeId] = wsConn
 }
 
-func (g* gate) connectExit(wsConn* liNet.WsConnection){
+func (g*gateServer) connectExit(wsConn* liNet.WsConnection){
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
@@ -169,7 +170,7 @@ func (g* gate) connectExit(wsConn* liNet.WsConnection){
 	delete(g.wsMap, handshakeId)
 }
 
-func (g* gate) check(){
+func (g*gateServer) check(){
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
@@ -295,7 +296,7 @@ func handleWsMessage(wsConn *liNet.WsConnection, req *liNet.WsMessage) {
 			ackInfo := proto.DistributeServerAck{}
 			if serverInfo, err:= app.ServerMgr.Distribute(proto.ServerTypeLogin); err != nil {
 				ackInfo.Code = proto.Code_Not_Server
-				utils.Log.Info("gate.LoginServerReq error:%s", err.Error())
+				utils.Log.Info("gateServer.LoginServerReq error:%s", err.Error())
 			}else{
 				ackInfo.Code = proto.Code_Success
 				ackInfo.ServerInfo = serverInfo
@@ -324,7 +325,7 @@ func routerToTarget(wsConn* liNet.WsConnection, msgName string, msgProxyId strin
 
 	if isAuth {
 		isLive := false
-		proxyClient, ok := myGate.proxyClient(wsConn, msgProxyId, app.GRouter)
+		proxyClient, ok := myGate.proxyClient(wsConn, msgProxyId, gate.GRouter)
 		if ok {
 			sendData  := []byte(body)
 			if proxyClient.GetConn() != nil && proxyClient.GetConn().IsClose() == false{
@@ -357,7 +358,7 @@ func main() {
 		cfgPath := os.Args[1]
 		utils.GlobalObject.Load(cfgPath)
 	}else{
-		utils.GlobalObject.Load("conf/gate.json")
+		utils.GlobalObject.Load("conf/gateServer.json")
 	}
 
 	db.InitDataBase()

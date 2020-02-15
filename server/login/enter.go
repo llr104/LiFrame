@@ -24,6 +24,7 @@ func ClientConnStart(conn liFace.IConnection) {
 
 func ClientConnStop(conn liFace.IConnection) {
 	app.MClientData.Dec()
+	SessLoginMgr.SessionExitByConn(conn)
 	utils.Log.Info("ClientConnStop:%s", conn.RemoteAddr().String())
 }
 
@@ -153,7 +154,7 @@ func (s *EnterLogin) RegisterReq(req liFace.IRequest) {
 校验session
 */
 func (s *EnterLogin) CheckSessionReq(req liFace.IRequest) {
-	utils.Log.Info("CheckSessionReq begin: %s", req.GetMsgName())
+	utils.Log.Info("CheckSessionReq begin")
 	reqInfo := proto.CheckSessionReq{}
 	ackInfo := proto.CheckSessionAck{}
 	err := json.Unmarshal(req.GetData(), &reqInfo)
@@ -162,7 +163,7 @@ func (s *EnterLogin) CheckSessionReq(req liFace.IRequest) {
 		ackInfo.Code = proto.Code_Illegal
 		utils.Log.Info("CheckSessionReq error:", err.Error())
 	} else {
-		ok := LoginSessMgr.SessionIsLive(reqInfo.UserId, reqInfo.Session)
+		ok := SessLoginMgr.SessionIsLive(reqInfo.UserId, reqInfo.Session)
 		if ok {
 			ackInfo.Code = proto.Code_Success
 		}else{
@@ -175,7 +176,7 @@ func (s *EnterLogin) CheckSessionReq(req liFace.IRequest) {
 
 	data, _ := json.Marshal(ackInfo)
 	req.GetConnection().SendMsg(proto.EnterWorldCheckSessionAck, data)
-	utils.Log.Info("RegisterReq end: %v", reqInfo)
+	utils.Log.Info("CheckSessionReq end: %v", reqInfo)
 }
 
 /*
@@ -225,7 +226,7 @@ func (s *EnterLogin) SessionUpdateReq(req liFace.IRequest) {
 		if reqInfo.OpType == proto.SessionOpDelete {
 			s.logout(reqInfo.UserId, reqInfo.Session)
 		}else if reqInfo.OpType == proto.SessionOpKeepLive {
-			LoginSessMgr.SessionKeepLive(reqInfo.UserId, reqInfo.Session)
+			SessLoginMgr.SessionKeepLive(reqInfo.UserId, reqInfo.Session)
 		}
 		ackInfo.Code = proto.Code_Success
 	}
@@ -240,17 +241,13 @@ func (s *EnterLogin) login(user *dbobject.User, conn liFace.IConnection) string{
 
 	ser := app.GetServer()
 	n := ser.(liFace.INetWork)
-
-	session := app.SessionMgr.CreateSession(n.GetId(), user.Id)
-	LoginSessMgr.AddSession(user.Id, session)
-	conn.SetProperty("session",session)
+	session := SessLoginMgr.MakeSession(n.GetId(), user.Id, conn)
 	conn.SetProperty("userId", user.Id)
 	return session
 }
 
 
 func (s *EnterLogin) logout(userId uint32, session string) {
-
-	LoginSessMgr.RemoveSession(userId, session)
+	SessLoginMgr.RemoveSession(userId, session)
 	utils.Log.Info("logout userId:%d", userId)
 }

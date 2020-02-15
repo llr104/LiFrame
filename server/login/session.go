@@ -1,14 +1,17 @@
 package login
 
 import (
+	"github.com/llr104/LiFrame/core/liFace"
+	"github.com/llr104/LiFrame/server/app"
 	"github.com/llr104/LiFrame/utils"
+	"sync"
 	"time"
 )
 
-var LoginSessMgr LoginSessionMgr
+var SessLoginMgr loginSessionMgr
 
 func init() {
-	LoginSessMgr = LoginSessionMgr{
+	SessLoginMgr = loginSessionMgr{
 		sessionMap:make(map[uint32] string),
 		liveTimeMap:make(map[uint32] int64),
 	}
@@ -18,40 +21,71 @@ func init() {
 
 func checkSessionLive(v ...interface{}) {
 	curTime := time.Now().Unix()
-	for k,v := range LoginSessMgr.liveTimeMap{
+	for k,v := range SessLoginMgr.liveTimeMap{
 		if curTime> v{
-			LoginSessMgr.RemoveSessionForce(k)
+			SessLoginMgr.RemoveSessionForce(k)
 		}
 	}
 }
 
-type LoginSessionMgr struct {
+type loginSessionMgr struct {
+	loginLock 	   	sync.RWMutex
 	sessionMap 		map[uint32] string      //key-value:userId-session
 	liveTimeMap 	map[uint32] int64      //key-value:userId-time
 }
 
-func (s*LoginSessionMgr) AddSession(id uint32,session string)  {
+func (s*loginSessionMgr) MakeSession(serverId string, id uint32, conn liFace.IConnection) string {
+
+	session, ok := s.liveSession(id)
+	if ok == false {
+		session = app.SessionMgr.CreateSession(serverId, id)
+	}else{
+		utils.Log.Info("重新登录，重用还没过期的session")
+	}
+
+	app.SessionMgr.SessionEnter(session, conn)
+
+	s.loginLock.Lock()
+	defer s.loginLock.Unlock()
+
 	s.sessionMap[id] = session
 	//有效期5分钟
 	s.liveTimeMap[id] = time.Now().Unix() + 5*60
+
+	return session
 }
 
-func (s*LoginSessionMgr) RemoveSessionForce(userId uint32) {
+func (s*loginSessionMgr) RemoveSessionForce(userId uint32) {
+	s.loginLock.Lock()
+	defer s.loginLock.Unlock()
+
+	if sess, ok := s.sessionMap[userId]; ok{
+		app.SessionMgr.SessionExit(sess)
+	}
+
 	delete(s.sessionMap, userId)
 	delete(s.liveTimeMap, userId)
 }
 
-func (s*LoginSessionMgr) RemoveSession(userId uint32, session string) {
+func (s*loginSessionMgr) RemoveSession(userId uint32, session string) {
+	s.loginLock.Lock()
+	defer s.loginLock.Unlock()
+
 	sess, ok := s.sessionMap[userId]
 	if ok {
 		if session == sess {
 			delete(s.sessionMap, userId)
 			delete(s.liveTimeMap, userId)
+			app.SessionMgr.SessionExit(session)
 		}
 	}
 }
 
-func (s*LoginSessionMgr) SessionIsLive(userId uint32, session string) bool {
+
+func (s*loginSessionMgr) SessionIsLive(userId uint32, session string) bool {
+	s.loginLock.Lock()
+	defer s.loginLock.Unlock()
+
 	sess, ok := s.sessionMap[userId]
 	if ok {
 		if session == sess {
@@ -64,7 +98,24 @@ func (s*LoginSessionMgr) SessionIsLive(userId uint32, session string) bool {
 	return false
 }
 
-func (s*LoginSessionMgr) SessionKeepLive(userId uint32, session string) {
+func (s *loginSessionMgr) liveSession(userId uint32) (string, bool){
+	s.loginLock.Lock()
+	defer s.loginLock.Unlock()
+
+	sess, ok := s.sessionMap[userId]
+	if ok {
+		live := s.liveTimeMap[userId]
+		if live > time.Now().Unix(){
+			return sess, true
+		}
+	}
+	return "", false
+}
+
+func (s*loginSessionMgr) SessionKeepLive(userId uint32, session string) {
+	s.loginLock.Lock()
+	defer s.loginLock.Unlock()
+
 	sess, ok := s.sessionMap[userId]
 	if ok {
 		if session == sess {
@@ -73,7 +124,15 @@ func (s*LoginSessionMgr) SessionKeepLive(userId uint32, session string) {
 	}
 }
 
-func (s *LoginSessionMgr) OnlineCnt() int {
+func (s*loginSessionMgr) SessionExitByConn(conn liFace.IConnection){
+	app.SessionMgr.SessionExitByConn(conn)
+}
+
+
+func (s *loginSessionMgr) OnlineCnt() int {
+	s.loginLock.Lock()
+	defer s.loginLock.Unlock()
+
 	return len(s.sessionMap)
 }
 
