@@ -113,6 +113,33 @@ func (g*gate) CloseProxy(wsConn* liNet.WsConnection, msgProxyId string) {
 	}
 }
 
+func (g*gate) closeAllProxy(wsConn* liNet.WsConnection) {
+
+	id, err := wsConn.GetProperty("handshakeId")
+	if err == nil{
+		handshakeId := id.(string)
+
+		g.lock.Lock()
+		proxyMap, ok1 := g.onlineProxyMap[handshakeId]
+		off, ok2 := g.offlineMap[handshakeId]
+		delete(g.onlineProxyMap, handshakeId)
+		delete(g.offlineMap, handshakeId)
+		g.lock.Unlock()
+
+		if ok1 {
+			for _,v := range proxyMap {
+				v.Stop()
+			}
+		}
+
+		if ok2 {
+			for _, v := range off.offlineProxyMap{
+				v.Stop()
+			}
+		}
+	}
+}
+
 func (g*gate) Reconnect(wsConn* liNet.WsConnection, handshakeId string) string{
 	g.lock.Lock()
 	defer g.lock.Unlock()
@@ -138,7 +165,6 @@ func (g*gate) ConnectEnter(wsConn* liNet.WsConnection, handshakeId string){
 			ws.Close()
 		}
 	}
-
 	g.wsHandshakeMap[handshakeId] = wsConn
 }
 
@@ -176,6 +202,7 @@ func (g *gate) userEnter(wsConn* liNet.WsConnection) {
 			utils.Log.Info("账号在其他地方登录")
 			//发送消息 todo
 
+			g.closeAllProxy(oldConn)
 			oldConn.Close()
 		}
 
