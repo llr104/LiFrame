@@ -28,32 +28,29 @@ func (s *router) EveryThingHandle(req liFace.IRequest) {
 		utils.Log.Warn("EveryThingHandle not found gateConn")
 	}
 
+	msgName := req.GetMsgName()
 	gateConn := conn.(*liNet.WsConnection)
-	if req.GetMsgName() == proto.EnterLoginLoginAck{
+	if msgName == proto.EnterLoginLoginAck{
 		loginAck := proto.LoginAck{}
 		err := json.Unmarshal(req.GetData(),&loginAck)
 		if err == nil && loginAck.Code == proto.Code_Success{
-			gateConn.SetProperty("isAuth", true)
 			gateConn.SetProperty("session",loginAck.Session)
 			gateConn.SetProperty("userId", loginAck.Id)
-
 			//处理踢号
 			MyGate.userEnter(gateConn)
 		}else{
 			MyGate.userExit(gateConn)
-			gateConn.SetProperty("isAuth", false)
 			gateConn.RemoveProperty("session")
 			gateConn.RemoveProperty("userId")
 		}
 	}
 
-	name := req.GetMsgName()
 	proxy, e :=  req.GetConnection().GetProperty("proxy")
 	if e != nil{
-		gateConn.WriteMessage("", name, req.GetData())
+		gateConn.WriteMessage("", msgName, req.GetData())
 	}else{
 		proxyName := proxy.(string)
-		gateConn.WriteMessage(proxyName, name, req.GetData())
+		gateConn.WriteMessage(proxyName, msgName, req.GetData())
 	}
 
 }

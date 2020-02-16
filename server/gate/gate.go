@@ -25,7 +25,6 @@ type offline struct {
 type gate struct {
 	onlineProxyMap map[string] map[string] *liNet.Client //key:handshakeId key:proxyId
 	offlineMap     map[string] offline
-	wsHandshakeMap map[string] *liNet.WsConnection //key:handshakeId
 	wsUserHMap 	   map[uint32] *liNet.WsConnection //key:userId
 	lock           sync.RWMutex
 }
@@ -34,7 +33,6 @@ func init() {
 
 	MyGate = gate{onlineProxyMap: make(map[string]map[string] *liNet.Client),
 		offlineMap:make(map[string] offline),
-		wsHandshakeMap:make(map[string] *liNet.WsConnection),
 		wsUserHMap:make( map[uint32] *liNet.WsConnection)}
 
 	utils.Scheduler.NewTimerInterval(10*time.Second, utils.IntervalForever, checkOffLine, []interface{}{})
@@ -144,28 +142,22 @@ func (g*gate) Reconnect(wsConn* liNet.WsConnection, handshakeId string) string{
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
-	newId := g.NewHandshakeId(wsConn.GetId())
+	newHandshakeId := g.NewHandshakeId(wsConn.GetId())
 	if m, ok := g.offlineMap[handshakeId]; ok{
 		utils.Log.Info("断线回来，代理归属到新的连接")
-		g.onlineProxyMap[newId] = m.offlineProxyMap
+		g.onlineProxyMap[newHandshakeId] = m.offlineProxyMap
 		delete(g.offlineMap, handshakeId)
 	}else{
 		utils.Log.Info("断线回来，代理已经不存在了")
 	}
-	wsConn.SetProperty("handshakeId", newId)
-	return newId
+	wsConn.SetProperty("handshakeId", newHandshakeId)
+	return newHandshakeId
 }
 
-func (g*gate) ConnectEnter(wsConn* liNet.WsConnection, handshakeId string){
-	g.lock.Lock()
-	defer g.lock.Unlock()
-
-	if ws, ok := g.wsHandshakeMap[handshakeId]; ok{
-		if wsConn != ws{
-			ws.Close()
-		}
-	}
-	g.wsHandshakeMap[handshakeId] = wsConn
+func (g*gate) ConnectEnter(wsConn* liNet.WsConnection) string {
+	handshakeId := g.NewHandshakeId(wsConn.GetId())
+	wsConn.SetProperty("handshakeId", handshakeId)
+	return  handshakeId
 }
 
 func (g*gate) ConnectExit(wsConn* liNet.WsConnection){
@@ -183,8 +175,6 @@ func (g*gate) ConnectExit(wsConn* liNet.WsConnection){
 		g.offlineMap[handshakeId] = off
 		delete(g.onlineProxyMap, handshakeId)
 	}
-
-	delete(g.wsHandshakeMap, handshakeId)
 	g.lock.Unlock()
 
 	g.userExit(wsConn)

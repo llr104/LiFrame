@@ -88,10 +88,8 @@ func handleWsMessage(wsConn *liNet.WsConnection, req *liNet.WsMessage) {
 		if msgName == proto.GateHandshake{
 			if body == ""{
 				utils.Log.Info("不是断线重连")
-				handshakeId := gate.MyGate.NewHandshakeId(wsConn.GetId())
-				wsConn.SetProperty("handshakeId", handshakeId)
-				gate.MyGate.ConnectEnter(wsConn, handshakeId)
 
+				handshakeId := gate.MyGate.ConnectEnter(wsConn)
 				wsConn.WriteMessage("", proto.GateHandshake, []byte(handshakeId))
 			}else{
 				utils.Log.Info("是断线重连")
@@ -132,8 +130,8 @@ func routerToTarget(wsConn* liNet.WsConnection, msgName string, msgProxyId strin
 	if proto.EnterLoginLoginReq == msgName || proto.EnterLoginRegisterReq == msgName{
 		isAuth = true
 	}else{
-		r, err := wsConn.GetProperty("isAuth")
-		if err == nil && r == true{
+		_, err := wsConn.GetProperty("session")
+		if err == nil {
 			isAuth = true
 		}
 	}
