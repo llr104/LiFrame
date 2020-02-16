@@ -2,7 +2,6 @@ package game
 
 import "github.com/llr104/LiFrame/core/liFace"
 
-type GUserState int
 const (
 	GUserStateOnline = iota
 	GUserStateOffLine

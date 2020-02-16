@@ -24,8 +24,8 @@ const (
 )
 
 const (
-	SessionOnline = iota
-	SessionOffline
+	UserOnline = iota
+	UserOffline
 )
 
 /*
@@ -91,11 +91,15 @@ type SessionUpdateAck struct{
 	OpType  int8
 }
 
-type SessionOnlineOrOffLine struct {
-	Session string
+type UserOnlineOrOffLineReq struct {
 	Type    int
+	UserId  uint32
 }
 
+type UserOnlineOrOffLineAck struct {
+	Type    int
+	UserId  uint32
+}
 /*
 进入游戏
 */

@@ -111,12 +111,16 @@ func (s*sts) ServerInfoReport(req liFace.IRequest){
 
 }
 
-func (s*sts) Ping(req liFace.IRequest){
-	//utils.Log.Info("Ping")
+func (s* sts) Ping(req liFace.IRequest){
+	utils.Log.Info("Ping")
 	info := proto.PingPong{}
 	info.CurTime = time.Now().Unix()
 	data, _ := json.Marshal(info)
 	req.GetConnection().SendMsg(proto.SystemPong, data)
+}
+
+func (s* sts) Pong(req liFace.IRequest){
+	utils.Log.Info("Pong")
 }
 
 func (s*sts) ServerListReq(req liFace.IRequest){

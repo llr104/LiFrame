@@ -150,16 +150,16 @@ func (g*gate) Reconnect(wsConn* liNet.WsConnection, handshakeId string) string{
 		delete(g.offlineMap, handshakeId)
 
 		//通知其所在的代理，用户在线了
-		if p, err := wsConn.GetProperty("session"); err == nil {
-			session := p.(string)
+		if p, err := wsConn.GetProperty("userId"); err == nil {
+			userId := p.(uint32)
 			for _, v := range m.offlineProxyMap {
 				c := v.GetConn()
 				if c != nil{
-					pack := proto.SessionOnlineOrOffLine{}
-					pack.Session = session
-					pack.Type = proto.SessionOnline
+					pack := proto.UserOnlineOrOffLineReq{}
+					pack.UserId = userId
+					pack.Type = proto.UserOnline
 					data, _ := json.Marshal(pack)
-					c.SendMsg(proto.SystemSessionOnlineOrOffLine, data)
+					c.SendMsg(proto.SystemUserOnOrOffReq, data)
 				}
 			}
 		}
@@ -192,16 +192,16 @@ func (g*gate) ConnectExit(wsConn* liNet.WsConnection){
 		delete(g.onlineProxyMap, handshakeId)
 
 		//通知其所在的代理，用户断线了
-		if p, err := wsConn.GetProperty("session"); err == nil {
-			session := p.(string)
+		if p, err := wsConn.GetProperty("userId"); err == nil {
+			userId := p.(uint32)
 			for _, v := range proxyMap {
 				c := v.GetConn()
 				if c != nil{
-					pack := proto.SessionOnlineOrOffLine{}
-					pack.Session = session
-					pack.Type = proto.SessionOffline
+					pack := proto.UserOnlineOrOffLineReq{}
+					pack.UserId = userId
+					pack.Type = proto.UserOffline
 					data, _ := json.Marshal(pack)
-					c.SendMsg(proto.SystemSessionOnlineOrOffLine, data)
+					c.SendMsg(proto.SystemUserOnOrOffReq, data)
 				}
 			}
 		}

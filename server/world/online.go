@@ -9,10 +9,10 @@ import (
 	"time"
 )
 
-var OnlineInstance Online
+var OnlineInstance online
 
 func init() {
-	OnlineInstance = Online{connectMap: make(map[uint32] *liNet.Connection),}
+	OnlineInstance = online{connectMap: make(map[uint32] *liNet.Connection),}
 	utils.Scheduler.NewTimerInterval(30*time.Second, utils.IntervalForever, checkOnline, []interface{}{})
 }
 
@@ -60,11 +60,11 @@ func checkOnline(v ...interface{}) {
 	}
 }
 
-type Online struct {
+type online struct {
 	connectMap 		map[uint32] *liNet.Connection //key:userId
 }
 
-func (s *Online) Join(conn*liNet.Connection) {
+func (s *online) Join(conn*liNet.Connection) {
 	u, err := conn.GetProperty("userId")
 	if err == nil{
 		userId := u.(uint32)
@@ -72,7 +72,7 @@ func (s *Online) Join(conn*liNet.Connection) {
 	}
 }
 
-func (s *Online) Exit(conn*liNet.Connection)  {
+func (s *online) Exit(conn*liNet.Connection)  {
 	u, err := conn.GetProperty("userId")
 	if err == nil{
 		userId := u.(uint32)

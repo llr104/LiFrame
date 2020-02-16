@@ -8,20 +8,20 @@ import (
 	"time"
 )
 
-type ToLogin struct {
+type toLogin struct {
 	clientMap map[string] *liNet.Client //serverId,liNet.Client
 }
 
-var W2Login ToLogin
+var W2Login toLogin
 var clientTimer uint32
 
 
 func init() {
-	W2Login = ToLogin{clientMap: make(map[string] *liNet.Client),}
+	W2Login = toLogin{clientMap: make(map[string] *liNet.Client),}
 	clientTimer, _ = utils.Scheduler.NewTimerInterval(5*time.Second, utils.IntervalForever, checkLoginClient, []interface{}{})
 }
 
-func (s*ToLogin)GetLoginClient(appId string) (*liNet.Client, bool) {
+func (s*toLogin)GetLoginClient(appId string) (*liNet.Client, bool) {
 	o, ok := W2Login.clientMap[appId]
 	return o,ok
 }

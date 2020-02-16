@@ -6,57 +6,27 @@ import (
 	"github.com/llr104/LiFrame/core/liFace"
 	"github.com/llr104/LiFrame/core/liNet"
 	"github.com/llr104/LiFrame/proto"
-	"github.com/llr104/LiFrame/server/app"
 	"github.com/llr104/LiFrame/utils"
 	"time"
 )
 
 
-var Enter EnterGame
+var Enter enterGame
 
 func init() {
-	Enter = EnterGame{}
+	Enter = enterGame{}
 }
 
-func ClientConnStart(conn liFace.IConnection) {
-	app.MClientData.Inc()
-	utils.Log.Info("ClientConnStart:%s", conn.RemoteAddr().String())
-}
 
-func ClientConnStop(conn liFace.IConnection) {
-	app.MClientData.Dec()
-
-	//修改离线用户
-	user, err := conn.GetProperty("userId")
-	if err == nil {
-		Id := user.(uint32)
-		ok, state := GUserMgr.UserIsIn(Id)
-		if ok {
-			GUserMgr.UserChangeState(Id, GUserStateOffLine, state.SceneId, nil)
-			r := game.userOffLine(Id)
-			if r {
-				GUserMgr.UserChangeState(Id, GUserStateLeave, -1,nil)
-			}
-		}
-	}
-
-	utils.Log.Info("ClientConnStop:%s", conn.RemoteAddr().String())
-}
-
-func ShutDown(){
-	utils.Log.Info("ShutDown")
-	game.shutDown()
-}
-
-type EnterGame struct {
+type enterGame struct {
 	liNet.BaseRouter
 }
 
-func (s *EnterGame) NameSpace() string {
+func (s *enterGame) NameSpace() string {
 	return "*.*"
 }
 
-func (s *EnterGame) EveryThingHandle(req liFace.IRequest) {
+func (s *enterGame) EveryThingHandle(req liFace.IRequest) {
 
 	//进入请求，授权
 	if req.GetMsgName() == proto.GameEnterGameReq{

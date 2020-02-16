@@ -2,38 +2,38 @@ package app
 
 import "sync"
 
-var MClientData MasterClientData
+var MClientData masterClientData
 
 func init() {
-	MClientData = MasterClientData{}
+	MClientData = masterClientData{}
 }
 
-type MasterClientData struct {
+type masterClientData struct {
 	lock 			sync.RWMutex
 	onlineCnt		uint32		//server的在线数
 }
 
 
-func (s* MasterClientData) GetOnlineCnt() uint32 {
+func (s *masterClientData) GetOnlineCnt() uint32 {
 	s.lock.RLock()
 	defer s.lock.RUnlock()
 	return s.onlineCnt
 }
 
-func (s* MasterClientData) Inc() {
+func (s *masterClientData) Inc() {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 	s.onlineCnt++
 }
 
-func (s* MasterClientData) Dec() {
+func (s *masterClientData) Dec() {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 	s.onlineCnt--
 }
 
 
-func (s* MasterClientData) SetOnlineCnt(onlineCnt uint32){
+func (s *masterClientData) SetOnlineCnt(onlineCnt uint32){
 	s.lock.Lock()
 	defer s.lock.Unlock()
 	s.onlineCnt = onlineCnt

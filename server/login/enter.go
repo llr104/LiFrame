@@ -11,10 +11,10 @@ import (
 	"time"
 )
 
-var Enter EnterLogin
+var Enter enterLogin
 
 func init() {
-	Enter = EnterLogin{}
+	Enter = enterLogin{}
 }
 
 func ClientConnStart(conn liFace.IConnection) {
@@ -32,18 +32,18 @@ func ShutDown(){
 	utils.Log.Info("ShutDown")
 }
 
-type EnterLogin struct {
+type enterLogin struct {
 	liNet.BaseRouter
 }
 
-func (s *EnterLogin) NameSpace() string {
+func (s *enterLogin) NameSpace() string {
 	return "EnterLogin"
 }
 
 /*
 登录
 */
-func (s *EnterLogin) LoginReq(req liFace.IRequest) {
+func (s *enterLogin) LoginReq(req liFace.IRequest) {
 	beginTime := time.Now().Nanosecond()
 
 	reqInfo := proto.LoginReq{}
@@ -96,7 +96,7 @@ func (s *EnterLogin) LoginReq(req liFace.IRequest) {
 /*
 注册
 */
-func (s *EnterLogin) RegisterReq(req liFace.IRequest) {
+func (s *enterLogin) RegisterReq(req liFace.IRequest) {
 
 	reqInfo := proto.RegisterReq{}
 	ackInfo := proto.RegisterAck{}
@@ -137,7 +137,7 @@ func (s *EnterLogin) RegisterReq(req liFace.IRequest) {
 /*
 根据负载分配world服务器
 */
-func (s *EnterLogin) DistributeWorldReq(req liFace.IRequest) {
+func (s *enterLogin) DistributeWorldReq(req liFace.IRequest) {
 
 	reqInfo := proto.DistributeServerReq{}
 	ackInfo := proto.DistributeServerAck{}
@@ -162,7 +162,7 @@ func (s *EnterLogin) DistributeWorldReq(req liFace.IRequest) {
 }
 
 
-func (s *EnterLogin) login(user *dbobject.User, conn liFace.IConnection) string{
+func (s *enterLogin) login(user *dbobject.User, conn liFace.IConnection) string{
 
 	ser := app.GetServer()
 	n := ser.(liFace.INetWork)
@@ -172,7 +172,7 @@ func (s *EnterLogin) login(user *dbobject.User, conn liFace.IConnection) string{
 }
 
 
-func (s *EnterLogin) logout(userId uint32, session string) {
+func (s *enterLogin) logout(userId uint32, session string) {
 	SessLoginMgr.RemoveSession(userId, session)
 	utils.Log.Info("logout userId:%d", userId)
 }

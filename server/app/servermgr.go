@@ -8,31 +8,31 @@ import (
 	"sync"
 )
 
-var ServerMgr ServerManager
+var ServerMgr serverMgr
 
 func init()  {
-	ServerMgr = ServerManager{}
+	ServerMgr = serverMgr{}
 }
 
-type ServerManager struct {
+type serverMgr struct {
 	serverMap map[string] proto.ServerInfo
 	mutex sync.RWMutex
 }
 
-func (s *ServerManager) Update(serverMap map[string] proto.ServerInfo) {
+func (s *serverMgr) Update(serverMap map[string] proto.ServerInfo) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	//utils.Log.Info("Update map: %v",serverMap)
 	s.serverMap = serverMap
 }
 
-func (s *ServerManager) GetServerMap() map[string] proto.ServerInfo {
+func (s *serverMgr) GetServerMap() map[string] proto.ServerInfo {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	return s.serverMap
 }
 
-func (s *ServerManager) GetGameScenesMap() map[string] proto.GameServersInfo {
+func (s *serverMgr) GetGameScenesMap() map[string] proto.GameServersInfo {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	m := make(map[string] proto.GameServersInfo)
@@ -49,7 +49,7 @@ func (s *ServerManager) GetGameScenesMap() map[string] proto.GameServersInfo {
 	return m
 }
 
-func (s *ServerManager) HasServerById(id string) bool{
+func (s *serverMgr) HasServerById(id string) bool{
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	for _, server := range s.serverMap {
@@ -63,7 +63,7 @@ func (s *ServerManager) HasServerById(id string) bool{
 /*
 分配负载最低的服务
 */
-func (s *ServerManager) Distribute(stype proto.ServerType) (proto.ServerInfo, error){
+func (s *serverMgr) Distribute(stype proto.ServerType) (proto.ServerInfo, error){
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -81,7 +81,7 @@ func (s *ServerManager) Distribute(stype proto.ServerType) (proto.ServerInfo, er
 	return retServer, err
 }
 
-func (s *ServerManager) GetProxy(proxyName string) (string, error){
+func (s *serverMgr) GetProxy(proxyName string) (string, error){
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 

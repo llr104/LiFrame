@@ -23,6 +23,7 @@ func main() {
 	db.InitDataBase()
 
 	s := liNet.NewServer()
+	s.AddRouter(&game.STS)
 	s.AddRouter(&game.Enter)
 
 	s.SetOnConnStart(game.ClientConnStart)

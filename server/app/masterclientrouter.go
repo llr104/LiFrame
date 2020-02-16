@@ -23,7 +23,7 @@ func (s *MasterClientRouter) NameSpace() string {
 }
 
 func (s *MasterClientRouter) Pong(req liFace.IRequest) {
-	utils.Log.Info("Pong:%s", req.GetMsgName())
+	utils.Log.Info("Pong")
 }
 
 func (s *MasterClientRouter) ServerListAck(req liFace.IRequest) {
