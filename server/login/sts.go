@@ -5,9 +5,25 @@ import (
 	"github.com/llr104/LiFrame/core/liFace"
 	"github.com/llr104/LiFrame/core/liNet"
 	"github.com/llr104/LiFrame/proto"
+	"github.com/llr104/LiFrame/server/app"
 	"github.com/llr104/LiFrame/utils"
 	"time"
 )
+
+func ClientConnStart(conn liFace.IConnection) {
+	app.MClientData.Inc()
+	utils.Log.Info("ClientConnStart:%s", conn.RemoteAddr().String())
+}
+
+func ClientConnStop(conn liFace.IConnection) {
+	app.MClientData.Dec()
+	SessLoginMgr.SessionExitByConn(conn)
+	utils.Log.Info("ClientConnStop:%s", conn.RemoteAddr().String())
+}
+
+func ShutDown(){
+	utils.Log.Info("ShutDown")
+}
 
 var STS sts
 

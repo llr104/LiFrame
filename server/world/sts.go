@@ -10,6 +10,22 @@ import (
 	"time"
 )
 
+func ClientConnStart(conn liFace.IConnection) {
+	app.MClientData.Inc()
+	utils.Log.Info("ClientConnStart:%s", conn.RemoteAddr().String())
+}
+
+func ClientConnStop(conn liFace.IConnection) {
+	app.MClientData.Dec()
+	app.SessionMgr.SessionExitByConn(conn)
+
+	utils.Log.Info("ClientConnStop:%s", conn.RemoteAddr().String())
+}
+
+func ShutDown(){
+	utils.Log.Info("ShutDown")
+}
+
 var STS sts
 
 func init() {
