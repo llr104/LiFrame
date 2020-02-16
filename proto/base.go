@@ -2,8 +2,10 @@ package proto
 
 const ProxyError  = "proxyError"
 const AuthError  = "authError"
-const GameEnterGameReq  = "enterGameReq"
-const GameEnterGameAck  = "enterGameAck"
+const GateHandshake = "handshake"
+const GateLoginServerReq = "gate.LoginServerReq"
+const GateLoginServerAck = "gate.LoginServerAck"
+const GateExitProxy = "gate.ExitProxy"
 
 const SystemShutDown = "System.ShutDown"
 const SystemPing = "System.Ping"
@@ -33,10 +35,8 @@ const EnterLoginLoginReq = "EnterLogin.LoginReq"
 const EnterLoginRegisterReq = "EnterLogin.RegisterReq"
 const EnterLoginDistributeServerReq = "EnterLogin.DistributeServerReq"
 
-const GateHandshake = "handshake"
-const GateLoginServerReq = "gate.LoginServerReq"
-const GateLoginServerAck = "gate.LoginServerAck"
-const GateExitProxy = "gate.ExitProxy"
+const GameEnterGameReq  = "enterGameReq"
+const GameEnterGameAck  = "enterGameAck"
 
 type BaseAck struct {
 	Code   int
