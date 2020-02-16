@@ -12,6 +12,7 @@ const (
 	ServerTypeGate
 	ServerTypeGame
 )
+
 const (
 	ServerStateNormal= iota
 	ServerStateDead
@@ -20,6 +21,11 @@ const (
 const (
 	SessionOpDelete = iota
 	SessionOpKeepLive
+)
+
+const (
+	SessionOnline = iota
+	SessionOffline
 )
 
 /*
@@ -83,6 +89,11 @@ type SessionUpdateAck struct{
 	ConnId	uint32
 	Session string
 	OpType  int8
+}
+
+type SessionOnlineOrOffLine struct {
+	Session string
+	Type    int
 }
 
 /*

@@ -16,7 +16,7 @@ func HomeHandler(resp http.ResponseWriter, req *http.Request) {
 }
 
 func StateHandler(resp http.ResponseWriter, req *http.Request) {
-	m := Enter.getServerMap()
+	m := STS.getServerMap()
 	data, _ := json.Marshal(m)
 	resp.Write(data)
 }
@@ -39,7 +39,7 @@ func ShutdownHandler(resp http.ResponseWriter, req *http.Request) {
 func shutdownTimer(v ...interface{}) {
 	ser := v[0].(liFace.INetWork)
 	mgr := ser.GetConnMgr()
-	mgr.BroadcastMsg(proto.MasterClientShutDown, nil)
+	mgr.BroadcastMsg(proto.SystemShutDown, nil)
 }
 
 func shutdown(v ...interface{}) {

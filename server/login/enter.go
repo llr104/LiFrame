@@ -43,14 +43,6 @@ func (s *EnterLogin) NameSpace() string {
 /*
 登录
 */
-func (s* EnterLogin) Ping(req liFace.IRequest){
-	utils.Log.Info("Ping req: %s", req.GetMsgName())
-	info := proto.PingPong{}
-	info.CurTime = time.Now().Unix()
-	data, _ := json.Marshal(info)
-	req.GetConnection().SendMsg(proto.LoginClientPong, data)
-}
-
 func (s *EnterLogin) LoginReq(req liFace.IRequest) {
 	beginTime := time.Now().Nanosecond()
 
@@ -141,34 +133,6 @@ func (s *EnterLogin) RegisterReq(req liFace.IRequest) {
 
 }
 
-/*
-校验session
-*/
-func (s *EnterLogin) CheckSessionReq(req liFace.IRequest) {
-
-	reqInfo := proto.CheckSessionReq{}
-	ackInfo := proto.CheckSessionAck{}
-	err := json.Unmarshal(req.GetData(), &reqInfo)
-	utils.Log.Info("CheckSessionReq: %v", reqInfo)
-	if err != nil {
-		ackInfo.Code = proto.Code_Illegal
-		utils.Log.Info("CheckSessionReq error:", err.Error())
-	} else {
-		ok := SessLoginMgr.SessionIsLive(reqInfo.UserId, reqInfo.Session)
-		if ok {
-			ackInfo.Code = proto.Code_Success
-		}else{
-			ackInfo.Code = proto.Code_Session_Error
-		}
-	}
-	ackInfo.Session = reqInfo.Session
-	ackInfo.UserId = reqInfo.UserId
-	ackInfo.ConnId = reqInfo.ConnId
-
-	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(proto.EnterWorldCheckSessionAck, data)
-
-}
 
 /*
 根据负载分配world服务器
@@ -194,36 +158,6 @@ func (s *EnterLogin) DistributeWorldReq(req liFace.IRequest) {
 
 	data, _ := json.Marshal(ackInfo)
 	req.GetConnection().SendMsg(proto.EnterLoginDistributeWorldAck, data)
-
-}
-
-/*
-更新session操作
-*/
-func (s *EnterLogin) SessionUpdateReq(req liFace.IRequest) {
-
-	reqInfo := proto.SessionUpdateReq{}
-	ackInfo := proto.SessionUpdateAck{}
-
-	ackInfo.Session = reqInfo.Session
-	ackInfo.UserId = reqInfo.UserId
-	ackInfo.ConnId = reqInfo.ConnId
-	ackInfo.OpType = reqInfo.OpType
-	utils.Log.Info("SessionUpdateReq: %v", reqInfo)
-	if err := json.Unmarshal(req.GetData(), &reqInfo); err != nil {
-		ackInfo.Code = proto.Code_Illegal
-		utils.Log.Info("SessionUpdateReq error:%s", err.Error())
-	} else {
-		if reqInfo.OpType == proto.SessionOpDelete {
-			s.logout(reqInfo.UserId, reqInfo.Session)
-		}else if reqInfo.OpType == proto.SessionOpKeepLive {
-			SessLoginMgr.SessionKeepLive(reqInfo.UserId, reqInfo.Session)
-		}
-		ackInfo.Code = proto.Code_Success
-	}
-
-	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(proto.EnterLoginSessionUpdateAck, data)
 
 }
 

@@ -35,7 +35,7 @@ func main() {
 	go http.ListenAndServe(addr, nil)
 
 	s := liNet.NewServer()
-	s.AddRouter(&master.Enter)
+	s.AddRouter(&master.STS)
 	s.SetOnConnStop(master.ClientConnStop)
 	s.SetOnConnStart(master.ClientConnStart)
 	app.SetShutDownFunc(master.ShutDown)

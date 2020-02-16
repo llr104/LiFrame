@@ -24,17 +24,17 @@ func ShutDown(){
 	utils.Log.Info("ShutDown")
 }
 
-type EnterMaster struct {
+type sts struct {
 	liNet.BaseRouter
 	nextProxyId int
 	serverMap   map[string] proto.ServerInfo
 	lock 		sync.Mutex
 }
 
+var STS sts
 
-var Enter EnterMaster
 func init() {
-	Enter = EnterMaster{
+	STS = sts{
 		nextProxyId: 0,
 		serverMap:make(map[string]proto.ServerInfo),
 	}
@@ -44,22 +44,21 @@ func init() {
 
 
 func checkClientLive(v ...interface{}){
-	Enter.liveCheck()
+	STS.liveCheck()
 }
 
 
-func (s *EnterMaster) NameSpace() string{
-	return "EnterMaster"
+func (s *sts) NameSpace() string{
+	return "System"
 }
 
-func (s *EnterMaster) getServerMap() map[string]proto.ServerInfo{
+func (s *sts) getServerMap() map[string]proto.ServerInfo{
 	s.lock.Lock()
 	defer s.lock.Unlock()
 	return s.serverMap
 }
 
-func (s *EnterMaster) liveCheck() {
-
+func (s *sts) liveCheck() {
 
 	s.lock.Lock()
 	defer s.lock.Unlock()
@@ -76,7 +75,7 @@ func (s *EnterMaster) liveCheck() {
 }
 
 
-func (s* EnterMaster) ServerInfoReport(req liFace.IRequest){
+func (s*sts) ServerInfoReport(req liFace.IRequest){
 
 	remote := req.GetConnection().GetTCPConnection().RemoteAddr().String()
 	info := proto.ServerInfoReport{}
@@ -112,15 +111,15 @@ func (s* EnterMaster) ServerInfoReport(req liFace.IRequest){
 
 }
 
-func (s* EnterMaster) Ping(req liFace.IRequest){
-	utils.Log.Info("Ping")
+func (s*sts) Ping(req liFace.IRequest){
+	//utils.Log.Info("Ping")
 	info := proto.PingPong{}
 	info.CurTime = time.Now().Unix()
 	data, _ := json.Marshal(info)
-	req.GetConnection().SendMsg(proto.MasterClientPong, data)
+	req.GetConnection().SendMsg(proto.SystemPong, data)
 }
 
-func (s* EnterMaster) ServerListReq(req liFace.IRequest){
+func (s*sts) ServerListReq(req liFace.IRequest){
 
 	utils.Log.Info("ServerListReq req : %s", req.GetConnection().GetTCPConnection().RemoteAddr())
 	info := proto.ServerListReq{}
@@ -130,6 +129,6 @@ func (s* EnterMaster) ServerListReq(req liFace.IRequest){
 	ack := proto.ServerListAck{}
 	ack.ServerMap = s.serverMap
 	data, _ := json.Marshal(ack)
-	req.GetConnection().SendMsg(proto.MasterClientServerListAck, data)
+	req.GetConnection().SendMsg(proto.SystemServerListAck, data)
 
 }

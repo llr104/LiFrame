@@ -2,6 +2,7 @@ package gate
 
 import (
 	"crypto/md5"
+	"encoding/json"
 	"fmt"
 	"github.com/llr104/LiFrame/core/liFace"
 	"github.com/llr104/LiFrame/core/liNet"
@@ -147,6 +148,21 @@ func (g*gate) Reconnect(wsConn* liNet.WsConnection, handshakeId string) string{
 		utils.Log.Info("断线回来，代理归属到新的连接")
 		g.onlineProxyMap[newHandshakeId] = m.offlineProxyMap
 		delete(g.offlineMap, handshakeId)
+
+		//通知其所在的代理，用户在线了
+		if p, err := wsConn.GetProperty("session"); err == nil {
+			session := p.(string)
+			for _, v := range m.offlineProxyMap {
+				c := v.GetConn()
+				if c != nil{
+					pack := proto.SessionOnlineOrOffLine{}
+					pack.Session = session
+					pack.Type = proto.SessionOnline
+					data, _ := json.Marshal(pack)
+					c.SendMsg(proto.SystemSessionOnlineOrOffLine, data)
+				}
+			}
+		}
 	}else{
 		utils.Log.Info("断线回来，代理已经不存在了")
 	}
@@ -174,6 +190,21 @@ func (g*gate) ConnectExit(wsConn* liNet.WsConnection){
 		off.offlineTime = time.Now().Unix()
 		g.offlineMap[handshakeId] = off
 		delete(g.onlineProxyMap, handshakeId)
+
+		//通知其所在的代理，用户断线了
+		if p, err := wsConn.GetProperty("session"); err == nil {
+			session := p.(string)
+			for _, v := range proxyMap {
+				c := v.GetConn()
+				if c != nil{
+					pack := proto.SessionOnlineOrOffLine{}
+					pack.Session = session
+					pack.Type = proto.SessionOffline
+					data, _ := json.Marshal(pack)
+					c.SendMsg(proto.SystemSessionOnlineOrOffLine, data)
+				}
+			}
+		}
 	}
 	g.lock.Unlock()
 

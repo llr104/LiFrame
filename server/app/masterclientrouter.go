@@ -19,7 +19,7 @@ type MasterClientRouter struct {
 }
 
 func (s *MasterClientRouter) NameSpace() string {
-	return "MasterClient"
+	return "System"
 }
 
 func (s *MasterClientRouter) Pong(req liFace.IRequest) {

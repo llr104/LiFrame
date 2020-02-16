@@ -36,14 +36,14 @@ func checkLoginClient(v ...interface{}) {
 					o.Stop()
 					c, err := app.LoginClient(val.Name, val.Id, val.IP, val.Port, val.Type)
 					if err == nil{
-						c.AddRouter(&EnterWorld{})
+						c.AddRouter(&sts{})
 						W2Login.clientMap[val.Id] = c
 					}
 				}
 			}else{
 				c, err := app.LoginClient(val.Name, val.Id, val.IP, val.Port, val.Type)
 				if err == nil{
-					c.AddRouter(&EnterWorld{})
+					c.AddRouter(&sts{})
 					W2Login.clientMap[val.Id] = c
 				}
 			}

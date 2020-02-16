@@ -23,8 +23,8 @@ func main() {
 	db.InitDataBase()
 
 	s := liNet.NewServer()
+	s.AddRouter(&world.STS)
 	s.AddRouter(&world.Enter)
-	s.AddRouter(&world.CommonWorld)
 
 	s.SetOnConnStart(world.ClientConnStart)
 	s.SetOnConnStop(world.ClientConnStop)

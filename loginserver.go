@@ -22,6 +22,7 @@ func main() {
 	db.InitDataBase()
 
 	s := liNet.NewServer()
+	s.AddRouter(&login.STS)
 	s.AddRouter(&login.Enter)
 
 	s.SetOnConnStop(login.ClientConnStop)
