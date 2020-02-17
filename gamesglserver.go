@@ -18,7 +18,7 @@ func main() {
 		cfgPath := os.Args[1]
 		utils.GlobalObject.Load(cfgPath)
 	}else{
-		utils.GlobalObject.Load("conf/game.json")
+		utils.GlobalObject.Load("conf/gamesgl.json")
 	}
 
 	db.InitDataBase()

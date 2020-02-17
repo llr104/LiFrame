@@ -53,7 +53,7 @@ func (s *enterGame) EveryThingHandle(req liFace.IRequest) {
 		userId, err := req.GetConnection().GetProperty("userId")
 		if err == nil {
 			d := userId.(uint32)
-			game.userLogout(d)
+			game.UserLogout(d)
 		}
 
 		req.GetConnection().RemoveProperty("userId")

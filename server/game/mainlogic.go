@@ -4,12 +4,16 @@ import (
 	"encoding/json"
 	"github.com/llr104/LiFrame/core/liFace"
 	"github.com/llr104/LiFrame/proto"
+	"github.com/llr104/LiFrame/server/gameutils"
+	"github.com/llr104/LiFrame/utils"
 )
 
 var game mainLogic
 
 func init() {
 	game = mainLogic{make(map[int]iScene), false}
+	gameutils.STS.SetGame(&game)
+
 	s1 := NewScene1()
 	s1.SetId(0)
 	s1.SetName("场景1")
@@ -47,7 +51,7 @@ func (s *mainLogic) enterScene(userId uint32, sceneId int, conn liFace.IConnecti
 		return false
 	}
 
-	isIn, state := GUserMgr.UserIsIn(userId)
+	isIn, state := gameutils.GUserMgr.UserIsIn(userId)
 	if isIn{
 		if state.SceneId != sceneId{
 			t := s.scenes[state.SceneId]
@@ -58,7 +62,7 @@ func (s *mainLogic) enterScene(userId uint32, sceneId int, conn liFace.IConnecti
 	if ok {
 		ea.Code = proto.Code_Success
 		ea.SceneName = scene.Name()
-		GUserMgr.UserChangeState(userId, GUserStateOnline, sceneId, conn)
+		gameutils.GUserMgr.UserChangeState(userId, gameutils.GUserStateOnline, sceneId, conn)
 	}else{
 		ea.Code = proto.Code_EnterSceneError
 	}
@@ -81,13 +85,13 @@ func (s *mainLogic) exitScene(userId uint32, sceneId int, conn liFace.IConnectio
 		return
 	}
 
-	isIn, state := GUserMgr.UserIsIn(userId)
+	isIn, state := gameutils.GUserMgr.UserIsIn(userId)
 	if isIn{
 		if state.SceneId != sceneId{
 			ea.Code = proto.Code_ExitSceneError
 		}else{
 			scene.ExitScene(userId)
-			GUserMgr.UserChangeState(userId, GUserStateLeave, -1, conn)
+			gameutils.GUserMgr.UserChangeState(userId, gameutils.GUserStateLeave, -1, conn)
 			ea.Code = proto.Code_Success
 		}
 	}else{
@@ -123,7 +127,7 @@ func (s *mainLogic) gameMessage(userId uint32, msgName string, data []byte, conn
 		json.Unmarshal(data, &e)
 		s.exitScene(userId, e.SceneId, conn)
 	}else{
-		if ok, state := GUserMgr.UserIsIn(userId); ok {
+		if ok, state := gameutils.GUserMgr.UserIsIn(userId); ok {
 			if t, isOk := s.scenes[state.SceneId]; isOk{
 				t.GameMessage(userId, msgName, data)
 			}
@@ -131,31 +135,29 @@ func (s *mainLogic) gameMessage(userId uint32, msgName string, data []byte, conn
 	}
 }
 
+
+
 /*
 返回true:用户离开了游戏，返回false:用户断线，保留用户的游戏状态
 */
-func (s *mainLogic) userOffLine(userId uint32) bool{
-
-	if ok, state := GUserMgr.UserIsIn(userId); ok {
+func (s *mainLogic) UserOffLine(userId uint32) bool{
+	if ok, state := gameutils.GUserMgr.UserIsIn(userId); ok {
 		if t, isOk := s.scenes[state.SceneId]; isOk{
 			return t.UserOffLine(userId)
 		}
 	}
-
 	return true
 }
 
-func (s *mainLogic) userLogout(userId uint32) bool{
-	return s.userOffLine(userId)
+func (s *mainLogic) UserOnLine(userId uint32){
+	utils.Log.Info("UserOnLine: %d", userId)
+}
+
+func (s *mainLogic) UserLogout(userId uint32) bool{
+	return s.UserOffLine(userId)
 }
 
 
-func (s *mainLogic) shutDown(){
-	if s.isShutDown{
-		return
-	}
-
-	//关闭前处理
-
-	s.isShutDown = true
+func (s *mainLogic) ShutDown(){
+	utils.Log.Info("ShutDown")
 }

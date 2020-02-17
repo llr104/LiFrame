@@ -1,0 +1,16 @@
+{
+  "ServerName":"三国策略游戏",
+  "ServerId":"sgl0001",
+  "Host":"0.0.0.0",
+  "TcpPort":8005,
+  "LogFile":"./logout/sgl.log",
+  "DataBase": {
+    "User":"root",
+    "Password":"123456abc",
+    "Name":"li_db",
+    "Port":3306,
+    "IP": "127.0.0.1"
+  },
+  "Master":{"RemoteHost": "127.0.0.1", "RemoteTcpPort": 8001, "ClientName": "WorldClientName1", "ClientId": "WorldClientId1"}
+}
+

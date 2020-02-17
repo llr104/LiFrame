@@ -1,4 +1,4 @@
-package game
+package gameutils
 
 import (
 	"encoding/json"
@@ -28,7 +28,14 @@ func ClientConnStop(conn liFace.IConnection) {
 
 func ShutDown(){
 	utils.Log.Info("ShutDown")
-	game.shutDown()
+	if STS.isShutDown{
+		return
+	}
+	//关闭前处理
+	STS.isShutDown = true
+	if STS.game != nil{
+		STS.game.ShutDown()
+	}
 }
 
 var STS sts
@@ -39,10 +46,16 @@ func init() {
 
 type sts struct {
 	liNet.BaseRouter
+	game IGame
+	isShutDown bool
 }
 
 func (s *sts) NameSpace() string {
 	return "System"
+}
+
+func  (s *sts) SetGame(game IGame)  {
+	s.game = game
 }
 
 func (s* sts) UserOnOrOffReq(req liFace.IRequest) {
@@ -64,20 +77,25 @@ func (s* sts) UserOnOrOffReq(req liFace.IRequest) {
 	}else{
 		s.userOnline(reqInfo.UserId)
 	}
-
 }
 
 func (s* sts) userOffline(userId uint32) {
 	ok, state := GUserMgr.UserIsIn(userId)
 	if ok {
 		GUserMgr.UserChangeState(userId, GUserStateOffLine, state.SceneId, nil)
-		r := game.userOffLine(userId)
-		if r {
+		if s.game != nil{
+			r := s.game.UserOffLine(userId)
+			if r {
+				GUserMgr.UserChangeState(userId, GUserStateLeave, -1,nil)
+			}
+		}else{
 			GUserMgr.UserChangeState(userId, GUserStateLeave, -1,nil)
 		}
 	}
 }
 
 func (s* sts) userOnline(userId uint32){
-
+	if s.game != nil{
+		s.game.UserOnLine(userId)
+	}
 }
