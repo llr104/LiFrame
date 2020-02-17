@@ -1,6 +1,6 @@
 package proto
 
-import "github.com/llr104/LiFrame/dbobject"
+import "github.com/llr104/LiFrame/server/db/dbobject"
 
 type UserInfoReq struct {
 	UserId		uint32
