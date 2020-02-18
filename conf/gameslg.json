@@ -2,7 +2,7 @@
   "ServerName":"三国策略游戏",
   "ServerId":"sgl0001",
   "Host":"0.0.0.0",
-  "TcpPort":8005,
+  "TcpPort":8006,
   "LogFile":"./logout/sgl.log",
   "DataBase": {
     "User":"root",

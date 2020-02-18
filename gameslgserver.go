@@ -5,7 +5,8 @@ import (
 	"github.com/llr104/LiFrame/proto"
 	"github.com/llr104/LiFrame/server/app"
 	"github.com/llr104/LiFrame/server/db"
-	"github.com/llr104/LiFrame/server/game"
+	"github.com/llr104/LiFrame/server/db/slgdb"
+	"github.com/llr104/LiFrame/server/gameslg"
 	"github.com/llr104/LiFrame/server/gameutils"
 	"github.com/llr104/LiFrame/utils"
 	"os"
@@ -18,14 +19,17 @@ func main() {
 		cfgPath := os.Args[1]
 		utils.GlobalObject.Load(cfgPath)
 	}else{
-		utils.GlobalObject.Load("conf/gamesgl.json")
+		utils.GlobalObject.Load("conf/gameslg.json")
 	}
 
+	slgdb.Init()
 	db.InitDataBase()
+
 
 	s := liNet.NewServer()
 	s.AddRouter(&gameutils.STS)
-	s.AddRouter(&game.Enter)
+	s.AddRouter(&gameslg.Enter)
+	s.AddRouter(&gameslg.CreateRole)
 
 	s.SetOnConnStart(gameutils.ClientConnStart)
 	s.SetOnConnStop(gameutils.ClientConnStop)
