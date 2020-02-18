@@ -67,9 +67,9 @@ func (s *createRole) NewRoleReq(req liFace.IRequest) {
 				ackInfo.Code = proto.Code_SLG_Success
 				utils.Log.Info("new role:%d", id)
 			}else {
+				ackInfo.Code = proto.Code_DB_Error
 				utils.Log.Info("new role error: %s", err.Error())
 			}
-
 		}
 	}
 

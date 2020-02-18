@@ -9,16 +9,16 @@ const (
 )
 
 type Role struct {
-	RoleId      int      `orm:"column(id);pk;auto"`
-	Name        string   `orm:"column(name);unique;size(16)"`
-	Nation      int8
-	Gold        uint32
-	Silver      uint32
-	Iron        uint32
-	Stone       uint32
-	Wood        uint32
-	Food        uint32
-	UserId      uint32
+	RoleId      int      `orm:"column(id);pk;auto" json:"roleId"`
+	Name        string   `orm:"column(name);unique;size(16)" json:"name"`
+	Nation      int8     `json:"nation"`
+	Gold        uint32   `json:"gold"`
+	Silver      uint32   `json:"silver"`
+	Iron        uint32   `json:"iron"`
+	Stone       uint32   `json:"stone"`
+	Wood        uint32   `json:"wood"`
+	Food        uint32   `json:"food"`
+	UserId      uint32   `json:"userId"`
 
 }
 
@@ -27,6 +27,10 @@ func (s *Role) TableName() string {
 }
 
 func NewDefaultRole() Role{
+
+	/*
+	初始数据先写死，后面会改成配置，先做功能先
+	*/
 	r := Role{}
 	r.Gold = 100000
 	r.Food = 100000
