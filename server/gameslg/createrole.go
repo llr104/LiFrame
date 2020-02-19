@@ -65,6 +65,33 @@ func (s *createRole) NewRoleReq(req liFace.IRequest) {
 			if id, err := slgdb.InsertRoleToDB(&r); err == nil {
 				ackInfo.Role = r
 				ackInfo.Code = proto.Code_SLG_Success
+
+				//创建好角色直接开放所有的建筑
+				{
+					arr := slgdb.NewRoleAllDwellings(uint32(id))
+					slgdb.InsertDwellingsToDB(arr)
+				}
+
+				{
+					arr := slgdb.NewRoleAllBarracks(uint32(id))
+					slgdb.InsertBarracksToDB(arr)
+				}
+
+				{
+					arr := slgdb.NewRoleAllBLumbers(uint32(id))
+					slgdb.InsertLumbersToDB(arr)
+				}
+
+				{
+					arr := slgdb.NewRoleAllBFarmlands(uint32(id))
+					slgdb.InsertFarmlandsToDB(arr)
+				}
+
+				{
+					arr := slgdb.NewRoleAllMines(uint32(id))
+					slgdb.InsertMinesToDB(arr)
+				}
+
 				utils.Log.Info("new role:%d", id)
 			}else {
 				ackInfo.Code = proto.Code_DB_Error

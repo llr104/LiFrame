@@ -1,5 +1,10 @@
 package slgdb
 
+import (
+	"fmt"
+	"github.com/llr104/LiFrame/core/orm"
+)
+
 type Dwelling struct {
 	Id      	int      `json:"id"`
 	Name        string   `json:"name"`
@@ -14,3 +19,25 @@ func (s *Dwelling) TableName() string {
 }
 
 
+
+/*
+新建角色民居类型建筑
+*/
+func NewRoleAllDwellings(roleId uint32) [] Dwelling{
+	arr := make([] Dwelling, 16)
+	for i:=0; i<16; i++ {
+		d := Dwelling{}
+		d.Name = fmt.Sprintf("民居%d", i)
+		d.Type = 0
+		d.Level = 1
+		d.RoleId = roleId
+		d.Yield = 1000
+		arr[i] = d
+	}
+	return arr
+}
+
+func InsertDwellingsToDB(arr []Dwelling) []Dwelling{
+	orm.NewOrm().InsertMulti(len(arr), arr)
+	return arr
+}

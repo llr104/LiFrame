@@ -14,6 +14,7 @@ type Role struct {
 	Nation      int8     `json:"nation"`
 	Gold        uint32   `json:"gold"`
 	Silver      uint32   `json:"silver"`
+	Food        uint32   `json:"food"`
 	Mine        uint32   `json:"mine"`
 	Wood        uint32   `json:"wood"`
 	UserId      uint32   `json:"userId"`
@@ -32,6 +33,8 @@ func NewDefaultRole() Role{
 	r.Gold = 100000
 	r.Silver = 100000
 	r.Mine = 100000
+	r.Wood = 100000
+	r.Food = 100000
 
 	return r
 }
