@@ -30,6 +30,7 @@ func main() {
 	s.AddRouter(&gameutils.STS)
 	s.AddRouter(&gameslg.Enter)
 	s.AddRouter(&gameslg.CreateRole)
+	s.AddRouter(&gameslg.MainCity)
 
 	s.SetOnConnStart(gameutils.ClientConnStart)
 	s.SetOnConnStop(gameutils.ClientConnStop)

@@ -5,7 +5,7 @@ import (
 	"github.com/llr104/LiFrame/core/liFace"
 	"github.com/llr104/LiFrame/core/liNet"
 	"github.com/llr104/LiFrame/server/db/slgdb"
-	"github.com/llr104/LiFrame/server/gameslg/proto"
+	"github.com/llr104/LiFrame/server/gameslg/slgproto"
 	"github.com/llr104/LiFrame/utils"
 )
 
@@ -23,34 +23,35 @@ func (s *createRole) NameSpace() string {
 }
 
 func (s *createRole) QryRoleReq(req liFace.IRequest)  {
-	ackInfo := proto.QryRoleAck{}
+	ackInfo := slgproto.QryRoleAck{}
 	p, err := req.GetConnection().GetProperty("userId")
 	if err != nil{
-		ackInfo.Code = proto.Code_Not_Auth
+		ackInfo.Code = slgproto.Code_Not_Auth
 	}else{
 		userId := p.(uint32)
 		r := slgdb.NewDefaultRole()
 		r.UserId = userId
 		if err := slgdb.FindRoleByUserId(&r); err == nil{
 			ackInfo.Role = r
-			ackInfo.Code = proto.Code_SLG_Success
+			ackInfo.Code = slgproto.Code_SLG_Success
+			req.GetConnection().SetProperty("roleId", r.RoleId)
 		}else{
-			ackInfo.Code = proto.Code_Role_NoFound
+			ackInfo.Code = slgproto.Code_Role_NoFound
 		}
 	}
 
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(proto.BirthQryRoleAck, data)
+	req.GetConnection().SendMsg(slgproto.BirthQryRoleAck, data)
 }
 
 func (s *createRole) NewRoleReq(req liFace.IRequest) {
-	reqInfo := proto.NewRoleReq{}
-	ackInfo := proto.NewRoleAck{}
+	reqInfo := slgproto.NewRoleReq{}
+	ackInfo := slgproto.NewRoleAck{}
 	json.Unmarshal(req.GetData(), &reqInfo)
 	p, err := req.GetConnection().GetProperty("userId")
 
 	if err != nil{
-		ackInfo.Code = proto.Code_Not_Auth
+		ackInfo.Code = slgproto.Code_Not_Auth
 	}else{
 		//创建角色
 		userId := p.(uint32)
@@ -59,13 +60,13 @@ func (s *createRole) NewRoleReq(req liFace.IRequest) {
 		r.UserId = userId
 		r.Nation = reqInfo.Nation
 		if err := slgdb.FindRoleByName(&r); err == nil{
-			ackInfo.Code = proto.Code_Role_Exit
+			ackInfo.Code = slgproto.Code_Role_Exit
 		}else{
 
 			if id, err := slgdb.InsertRoleToDB(&r); err == nil {
 				ackInfo.Role = r
-				ackInfo.Code = proto.Code_SLG_Success
-
+				ackInfo.Code = slgproto.Code_SLG_Success
+				req.GetConnection().SetProperty("roleId", r.RoleId)
 				//创建好角色直接开放所有的建筑
 				{
 					arr := slgdb.NewRoleAllDwellings(uint32(id))
@@ -94,12 +95,12 @@ func (s *createRole) NewRoleReq(req liFace.IRequest) {
 
 				utils.Log.Info("new role:%d", id)
 			}else {
-				ackInfo.Code = proto.Code_DB_Error
+				ackInfo.Code = slgproto.Code_DB_Error
 				utils.Log.Info("new role error: %s", err.Error())
 			}
 		}
 	}
 
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(proto.BirthNewRoleAck, data)
+	req.GetConnection().SendMsg(slgproto.BirthNewRoleAck, data)
 }

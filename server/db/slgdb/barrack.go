@@ -35,9 +35,16 @@ func NewRoleAllBarracks(roleId uint32) [] Barrack{
 	return arr
 }
 
+
 func InsertBarracksToDB(arr []Barrack) []Barrack{
 	orm.NewOrm().InsertMulti(len(arr), arr)
 	return arr
 }
 
+func ReadBarracks(roleId uint32)  []Barrack{
+	var barracks []Barrack
+	qry := orm.NewOrm().QueryTable(&Barrack{}).Filter("role_id", roleId)
+	qry.All(&barracks)
+	return barracks
+}
 

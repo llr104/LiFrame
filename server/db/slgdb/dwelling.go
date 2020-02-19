@@ -41,3 +41,10 @@ func InsertDwellingsToDB(arr []Dwelling) []Dwelling{
 	orm.NewOrm().InsertMulti(len(arr), arr)
 	return arr
 }
+
+func ReadDwellings(roleId uint32)  []Dwelling{
+	var dwellings []Dwelling
+	qry := orm.NewOrm().QueryTable(&Dwelling{}).Filter("role_id", roleId)
+	qry.All(&dwellings)
+	return dwellings
+}

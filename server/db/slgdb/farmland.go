@@ -40,3 +40,9 @@ func InsertFarmlandsToDB(arr []Farmland) []Farmland{
 	return arr
 }
 
+func ReadFarmlands(roleId uint32)  []Farmland{
+	var farmlands []Farmland
+	qry := orm.NewOrm().QueryTable(&Farmland{}).Filter("role_id", roleId)
+	qry.All(&farmlands)
+	return farmlands
+}

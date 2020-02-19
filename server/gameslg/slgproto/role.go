@@ -1,4 +1,4 @@
-package proto
+package slgproto
 
 import (
 	"github.com/llr104/LiFrame/proto"

@@ -39,3 +39,11 @@ func InsertMinesToDB(arr []Mine) []Mine{
 	orm.NewOrm().InsertMulti(len(arr), arr)
 	return arr
 }
+
+
+func ReadMines(roleId uint32)  []Mine{
+	var mines []Mine
+	qry := orm.NewOrm().QueryTable(&Mine{}).Filter("role_id", roleId)
+	qry.All(&mines)
+	return mines
+}

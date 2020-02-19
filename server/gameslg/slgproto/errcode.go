@@ -1,4 +1,4 @@
-package proto
+package slgproto
 
 const (
 	Code_SLG_Success = 0
