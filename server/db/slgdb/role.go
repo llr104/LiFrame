@@ -15,8 +15,8 @@ type Role struct {
 	Gold        uint32   `json:"gold"`
 	Silver      uint32   `json:"silver"`
 	Mine        uint32   `json:"mine"`
+	Wood        uint32   `json:"wood"`
 	UserId      uint32   `json:"userId"`
-
 }
 
 func (s *Role) TableName() string {
