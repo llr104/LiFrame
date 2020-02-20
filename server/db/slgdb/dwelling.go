@@ -23,8 +23,8 @@ func (s *Dwelling) TableName() string {
 /*
 新建角色民居类型建筑
 */
-func NewRoleAllDwellings(roleId uint32) [] Dwelling{
-	arr := make([] Dwelling, 16)
+func NewRoleAllDwellings(roleId uint32) [] *Dwelling{
+	arr := make([] *Dwelling, 16)
 	for i:=0; i<16; i++ {
 		d := Dwelling{}
 		d.Name = fmt.Sprintf("民居%d", i+1)
@@ -32,13 +32,13 @@ func NewRoleAllDwellings(roleId uint32) [] Dwelling{
 		d.Level = 1
 		d.RoleId = roleId
 		d.Yield = 1000
-		arr[i] = d
+		arr[i] = &d
 	}
 	return arr
 }
 
-func InsertDwellingsToDB(arr []Dwelling) []Dwelling{
-	orm.NewOrm().InsertMulti(len(arr), arr)
+func InsertDwellingsToDB(arr []*Dwelling) []*Dwelling{
+	orm.NewOrm().InsertMulti(1, arr)
 	return arr
 }
 

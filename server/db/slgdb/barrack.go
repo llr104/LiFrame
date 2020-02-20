@@ -21,8 +21,8 @@ func (s *Barrack) TableName() string {
 /*
 新建角色兵营类型建筑
 */
-func NewRoleAllBarracks(roleId uint32) [] Barrack{
-	arr := make([] Barrack, 16)
+func NewRoleAllBarracks(roleId uint32) [] *Barrack{
+	arr := make([] *Barrack, 16)
 	for i:=0; i<16; i++ {
 		d := Barrack{}
 		d.Name = fmt.Sprintf("兵营%d", i+1)
@@ -30,14 +30,14 @@ func NewRoleAllBarracks(roleId uint32) [] Barrack{
 		d.Level = 1
 		d.RoleId = roleId
 		d.Yield = 1000
-		arr[i] = d
+		arr[i] = &d
 	}
 	return arr
 }
 
 
-func InsertBarracksToDB(arr []Barrack) []Barrack{
-	orm.NewOrm().InsertMulti(len(arr), arr)
+func InsertBarracksToDB(arr []*Barrack) []*Barrack{
+	orm.NewOrm().InsertMulti(1, arr)
 	return arr
 }
 

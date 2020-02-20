@@ -21,8 +21,8 @@ func (s *Lumber) TableName() string {
 /*
 新建角色木材类型建筑
 */
-func NewRoleAllBLumbers(roleId uint32) [] Lumber{
-	arr := make([] Lumber, 16)
+func NewRoleAllBLumbers(roleId uint32) [] *Lumber{
+	arr := make([] *Lumber, 16)
 	for i:=0; i<16; i++ {
 		d := Lumber{}
 		d.Name = fmt.Sprintf("木材%d", i+1)
@@ -30,13 +30,13 @@ func NewRoleAllBLumbers(roleId uint32) [] Lumber{
 		d.Level = 1
 		d.RoleId = roleId
 		d.Yield = 1000
-		arr[i] = d
+		arr[i] = &d
 	}
 	return arr
 }
 
-func InsertLumbersToDB(arr []Lumber) []Lumber{
-	orm.NewOrm().InsertMulti(len(arr), arr)
+func InsertLumbersToDB(arr []*Lumber) []*Lumber{
+	orm.NewOrm().InsertMulti(1, arr)
 	return arr
 }
 

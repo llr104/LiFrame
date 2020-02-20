@@ -32,7 +32,7 @@ func (s *createRole) QryRoleReq(req liFace.IRequest)  {
 		r := slgdb.NewDefaultRole()
 		r.UserId = userId
 		if err := slgdb.FindRoleByUserId(&r); err == nil{
-			playerMgr.newPlayer(&r)
+			playerMgr.createPlayer(&r)
 			ackInfo.Role = r
 			ackInfo.Code = slgproto.Code_SLG_Success
 			req.GetConnection().SetProperty("roleId", r.RoleId)
@@ -69,32 +69,22 @@ func (s *createRole) NewRoleReq(req liFace.IRequest) {
 				ackInfo.Code = slgproto.Code_SLG_Success
 				req.GetConnection().SetProperty("roleId", r.RoleId)
 				//创建好角色直接开放所有的建筑
-				{
-					arr := slgdb.NewRoleAllDwellings(uint32(id))
-					slgdb.InsertDwellingsToDB(arr)
-				}
+				arr1 := slgdb.NewRoleAllDwellings(uint32(id))
+				slgdb.InsertDwellingsToDB(arr1)
 
-				{
-					arr := slgdb.NewRoleAllBarracks(uint32(id))
-					slgdb.InsertBarracksToDB(arr)
-				}
+				arr2 := slgdb.NewRoleAllBarracks(uint32(id))
+				slgdb.InsertBarracksToDB(arr2)
 
-				{
-					arr := slgdb.NewRoleAllBLumbers(uint32(id))
-					slgdb.InsertLumbersToDB(arr)
-				}
+				arr3 := slgdb.NewRoleAllBLumbers(uint32(id))
+				slgdb.InsertLumbersToDB(arr3)
 
-				{
-					arr := slgdb.NewRoleAllBFarmlands(uint32(id))
-					slgdb.InsertFarmlandsToDB(arr)
-				}
+				arr4 := slgdb.NewRoleAllBFarmlands(uint32(id))
+				slgdb.InsertFarmlandsToDB(arr4)
 
-				{
-					arr := slgdb.NewRoleAllMines(uint32(id))
-					slgdb.InsertMinesToDB(arr)
-				}
+				arr5 := slgdb.NewRoleAllMines(uint32(id))
+				slgdb.InsertMinesToDB(arr5)
 
-				playerMgr.newPlayer(&r)
+				playerMgr.addPlayer(&r, arr2, arr1, arr4, arr3, arr5)
 
 				utils.Log.Info("new role:%d", id)
 			}else {

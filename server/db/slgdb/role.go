@@ -1,6 +1,9 @@
 package slgdb
 
-import "github.com/llr104/LiFrame/core/orm"
+import (
+	"github.com/llr104/LiFrame/core/orm"
+	"time"
+)
 
 const (
 	NationWei = iota
@@ -18,6 +21,7 @@ type Role struct {
 	Mine        uint32   `json:"mine"`
 	Wood        uint32   `json:"wood"`
 	UserId      uint32   `json:"userId"`
+	OffLineTime int64     `json:"-"`
 }
 
 func (s *Role) TableName() string {
@@ -49,4 +53,9 @@ func FindRoleByUserId(s *Role) error{
 
 func InsertRoleToDB(s *Role) (int64, error){
 	return orm.NewOrm().Insert(s)
+}
+
+func UpdateRoleOffline(s *Role)  {
+	s.OffLineTime = time.Now().Unix()
+	orm.NewOrm().Insert(s)
 }
