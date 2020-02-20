@@ -41,11 +41,12 @@ func (s *mainCity) QryBuildingQeq(req liFace.IRequest) {
 
 	p, _ := req.GetConnection().GetProperty("roleId")
 	roleId := p.(uint32)
-	buildings := buildingMgr.getBuilding(roleId, reqInfo.BuildType)
+	buildings := playerMgr.getBuilding(roleId, reqInfo.BuildType)
 	if buildings != nil{
 		data, _ := json.Marshal(buildings)
 		ackInfo.BuildType = reqInfo.BuildType
 		ackInfo.Buildings = string(data)
+		ackInfo.Yield = playerMgr.getYield(roleId, reqInfo.BuildType)
 	}
 	data, _ := json.Marshal(ackInfo)
 	req.GetConnection().SendMsg(slgproto.MainCityQryBuildingAck, data)
@@ -58,7 +59,7 @@ func (s *mainCity) UpBuildingQeq(req liFace.IRequest) {
 
 	p, _ := req.GetConnection().GetProperty("roleId")
 	roleId := p.(uint32)
-	b, ok := buildingMgr.upBuilding(roleId, reqInfo.BuildId, reqInfo.BuildType)
+	b, ok := playerMgr.upBuilding(roleId, reqInfo.BuildId, reqInfo.BuildType)
 	if ok {
 		ackInfo.Code = slgproto.Code_SLG_Success
 		ackInfo.BuildType = reqInfo.BuildType

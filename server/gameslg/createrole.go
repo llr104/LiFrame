@@ -32,6 +32,7 @@ func (s *createRole) QryRoleReq(req liFace.IRequest)  {
 		r := slgdb.NewDefaultRole()
 		r.UserId = userId
 		if err := slgdb.FindRoleByUserId(&r); err == nil{
+			playerMgr.newPlayer(&r)
 			ackInfo.Role = r
 			ackInfo.Code = slgproto.Code_SLG_Success
 			req.GetConnection().SetProperty("roleId", r.RoleId)
@@ -92,6 +93,8 @@ func (s *createRole) NewRoleReq(req liFace.IRequest) {
 					arr := slgdb.NewRoleAllMines(uint32(id))
 					slgdb.InsertMinesToDB(arr)
 				}
+
+				playerMgr.newPlayer(&r)
 
 				utils.Log.Info("new role:%d", id)
 			}else {

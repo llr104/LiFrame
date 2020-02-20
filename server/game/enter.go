@@ -7,6 +7,7 @@ import (
 	"github.com/llr104/LiFrame/core/liNet"
 	"github.com/llr104/LiFrame/proto"
 	"github.com/llr104/LiFrame/utils"
+	"github.com/llr104/LiFrame/server/gameutils"
 	"time"
 )
 
@@ -27,6 +28,10 @@ func (s *enterGame) NameSpace() string {
 }
 
 func (s *enterGame) EveryThingHandle(req liFace.IRequest) {
+
+	if gameutils.STS.IsShutDown() {
+		return
+	}
 
 	//进入请求，授权
 	if req.GetMsgName() == proto.GameEnterGameReq{

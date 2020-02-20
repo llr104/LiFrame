@@ -58,6 +58,10 @@ func  (s *sts) SetGame(game IGame)  {
 	s.game = game
 }
 
+func (s *sts) IsShutDown() bool {
+	return s.isShutDown
+}
+
 func (s* sts) UserOnOrOffReq(req liFace.IRequest) {
 
 	reqInfo := proto.UserOnlineOrOffLineReq{}

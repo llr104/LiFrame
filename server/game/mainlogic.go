@@ -11,7 +11,7 @@ import (
 var game mainLogic
 
 func init() {
-	game = mainLogic{make(map[int]iScene), false}
+	game = mainLogic{make(map[int]iScene)}
 	gameutils.STS.SetGame(&game)
 
 	s1 := NewScene1()
@@ -27,13 +27,10 @@ func init() {
 
 type mainLogic struct {
 	scenes     map[int]iScene
-	isShutDown bool
+
 }
 
 func (s *mainLogic) enterGame(req proto.EnterGameReq) bool{
-	if s.isShutDown {
-		return false
-	}
 
 	return true
 }
@@ -103,9 +100,6 @@ func (s *mainLogic) exitScene(userId uint32, sceneId int, conn liFace.IConnectio
 }
 
 func (s *mainLogic) gameMessage(userId uint32, msgName string, data []byte, conn liFace.IConnection){
-	if s.isShutDown {
-		return
-	}
 
 	if msgName == protoSceneListReq{
 		a := sceneListAck{}

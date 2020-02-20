@@ -20,6 +20,7 @@ type QryBuildingAck struct {
 	proto.BaseAck
 	BuildType    int8	 `json:"type"`
 	Buildings    string  `json:"buildings"`
+	Yield        uint32  `json:"yield"`
 }
 
 type UpBuildingQeq struct {
