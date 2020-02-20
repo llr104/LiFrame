@@ -36,7 +36,7 @@ func (s *createRole) QryRoleReq(req liFace.IRequest)  {
 			ackInfo.Code = slgproto.Code_SLG_Success
 			req.GetConnection().SetProperty("roleId", r.RoleId)
 		}else{
-			ackInfo.Code = slgproto.Code_Role_NoFound
+			ackInfo.Code = slgproto.Code_Role_Not_Found
 		}
 	}
 

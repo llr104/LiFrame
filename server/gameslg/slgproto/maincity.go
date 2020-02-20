@@ -21,3 +21,14 @@ type QryBuildingAck struct {
 	BuildType    int8	 `json:"type"`
 	Buildings    string  `json:"buildings"`
 }
+
+type UpBuildingQeq struct {
+	BuildType    int8	 `json:"type"`
+	BuildId      int     `json:"Id"`
+}
+
+type UpBuildingAck struct {
+	proto.BaseAck
+	BuildType    int8	 `json:"type"`
+	Build        string  `json:"build"`
+}

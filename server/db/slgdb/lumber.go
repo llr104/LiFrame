@@ -6,7 +6,7 @@ import (
 )
 
 type Lumber struct {
-	Id      	int      `json:"id"`
+	Id      	int      `json:"Id"`
 	Name        string   `json:"name"`
 	RoleId      uint32   `json:"roleId"`
 	Level       int8     `json:"level"`
@@ -25,7 +25,7 @@ func NewRoleAllBLumbers(roleId uint32) [] Lumber{
 	arr := make([] Lumber, 16)
 	for i:=0; i<16; i++ {
 		d := Lumber{}
-		d.Name = fmt.Sprintf("木材%d", i)
+		d.Name = fmt.Sprintf("木材%d", i+1)
 		d.Type = 0
 		d.Level = 1
 		d.RoleId = roleId
@@ -41,9 +41,13 @@ func InsertLumbersToDB(arr []Lumber) []Lumber{
 }
 
 
-func ReadLumbers(roleId uint32)  []Lumber{
-	var lumbers []Lumber
+func ReadLumbers(roleId uint32) []*Lumber{
+	var lumbers []*Lumber
 	qry := orm.NewOrm().QueryTable(&Lumber{}).Filter("role_id", roleId)
 	qry.All(&lumbers)
 	return lumbers
+}
+
+func UpdateLumber(b *Lumber) {
+	orm.NewOrm().Update(b)
 }

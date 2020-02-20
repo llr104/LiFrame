@@ -50,3 +50,24 @@ func (s *mainCity) QryBuildingQeq(req liFace.IRequest) {
 	data, _ := json.Marshal(ackInfo)
 	req.GetConnection().SendMsg(slgproto.MainCityQryBuildingAck, data)
 }
+
+func (s *mainCity) UpBuildingQeq(req liFace.IRequest) {
+	reqInfo := slgproto.UpBuildingQeq{}
+	ackInfo := slgproto.UpBuildingAck{}
+	json.Unmarshal(req.GetData(), &reqInfo)
+
+	p, _ := req.GetConnection().GetProperty("roleId")
+	roleId := p.(uint32)
+	b, ok := buildingMgr.upBuilding(roleId, reqInfo.BuildId, reqInfo.BuildType)
+	if ok {
+		ackInfo.Code = slgproto.Code_SLG_Success
+		ackInfo.BuildType = reqInfo.BuildType
+		data, _ := json.Marshal(b)
+		ackInfo.Build = string(data)
+	}else{
+		ackInfo.Code = slgproto.Code_Building_Up_Error
+	}
+	data, _ := json.Marshal(ackInfo)
+	req.GetConnection().SendMsg(slgproto.MainCityUpBuildingAck, data)
+}
+

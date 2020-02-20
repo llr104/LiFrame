@@ -6,7 +6,7 @@ import (
 )
 
 type Mine struct {
-	Id      	int      `json:"id"`
+	Id      	int      `json:"Id"`
 	Name        string   `json:"name"`
 	RoleId      uint32   `json:"roleId"`
 	Level       int8     `json:"level"`
@@ -25,7 +25,7 @@ func NewRoleAllMines(roleId uint32) [] Mine{
 	arr := make([] Mine, 16)
 	for i:=0; i<16; i++ {
 		d := Mine{}
-		d.Name = fmt.Sprintf("矿场%d", i)
+		d.Name = fmt.Sprintf("矿场%d", i+1)
 		d.Type = 0
 		d.Level = 1
 		d.RoleId = roleId
@@ -41,9 +41,13 @@ func InsertMinesToDB(arr []Mine) []Mine{
 }
 
 
-func ReadMines(roleId uint32)  []Mine{
-	var mines []Mine
+func ReadMines(roleId uint32) []*Mine{
+	var mines []*Mine
 	qry := orm.NewOrm().QueryTable(&Mine{}).Filter("role_id", roleId)
 	qry.All(&mines)
 	return mines
+}
+
+func UpdateMine(b *Mine) {
+	orm.NewOrm().Update(b)
 }

@@ -6,7 +6,7 @@ import (
 )
 
 type Farmland struct {
-	Id      	int      `json:"id"`
+	Id      	int      `json:"Id"`
 	Name        string   `json:"name"`
 	RoleId      uint32   `json:"roleId"`
 	Level       int8     `json:"level"`
@@ -25,7 +25,7 @@ func NewRoleAllBFarmlands(roleId uint32) [] Farmland{
 	arr := make([] Farmland, 16)
 	for i:=0; i<16; i++ {
 		d := Farmland{}
-		d.Name = fmt.Sprintf("农场%d", i)
+		d.Name = fmt.Sprintf("农场%d", i+1)
 		d.Type = 0
 		d.Level = 1
 		d.RoleId = roleId
@@ -40,9 +40,13 @@ func InsertFarmlandsToDB(arr []Farmland) []Farmland{
 	return arr
 }
 
-func ReadFarmlands(roleId uint32)  []Farmland{
-	var farmlands []Farmland
+func ReadFarmlands(roleId uint32) []*Farmland{
+	var farmlands []*Farmland
 	qry := orm.NewOrm().QueryTable(&Farmland{}).Filter("role_id", roleId)
 	qry.All(&farmlands)
 	return farmlands
+}
+
+func UpdateFarmland(b *Farmland) {
+	orm.NewOrm().Update(b)
 }
