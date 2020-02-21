@@ -2,6 +2,7 @@ package slgproto
 
 import (
 	"github.com/llr104/LiFrame/proto"
+	"github.com/llr104/LiFrame/server/db/slgdb"
 )
 
 const (
@@ -34,3 +35,13 @@ type UpBuildingAck struct {
 	Build        string  `json:"build"`
 	Yield        uint32  `json:"yield"`
 }
+
+type QryGeneralReq struct {
+
+}
+
+type QryGeneralAck struct {
+	proto.BaseAck
+	Generals[] *slgdb.General	 `json:"generals"`
+}
+

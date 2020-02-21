@@ -74,3 +74,21 @@ func (s *mainCity) UpBuildingQeq(req liFace.IRequest) {
 }
 
 
+func (s *mainCity) QryGeneralReq(req liFace.IRequest) {
+	reqInfo := slgproto.QryGeneralReq{}
+	ackInfo := slgproto.QryGeneralAck{}
+	json.Unmarshal(req.GetData(), &reqInfo)
+
+	p, _ := req.GetConnection().GetProperty("roleId")
+	roleId := p.(uint32)
+	b, ok := playerMgr.getGenerals(roleId)
+	if ok {
+		ackInfo.Code = slgproto.Code_SLG_Success
+		ackInfo.Generals = b
+	}else{
+		ackInfo.Code = slgproto.Code_General_Error
+	}
+	data, _ := json.Marshal(ackInfo)
+	req.GetConnection().SendMsg(slgproto.MainCityQryGeneralAck, data)
+}
+

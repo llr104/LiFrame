@@ -7,4 +7,5 @@ const (
 	Code_Role_Exit
 	Code_Role_Not_Found
 	Code_Building_Up_Error
+	Code_General_Error
 	)

@@ -49,6 +49,7 @@ func (s *playerManager) createPlayer(role* slgdb.Role) *playerData{
 	return r
 }
 
+
 func (s *playerManager) addPlayer(role* slgdb.Role, barracks[]*slgdb.Barrack, dwellingks []*slgdb.Dwelling,
 	farmlands []*slgdb.Farmland, lumbers []*slgdb.Lumber, minefields []*slgdb.Mine) {
 	s.mutex.Lock()
@@ -69,6 +70,17 @@ func (s *playerManager) ReleasePlayer(userId uint32) {
 	if ok{
 		slgdb.UpdateRoleOffline(player.role)
 		delete(s.playerMaps, r.RoleId)
+	}
+}
+
+func (s *playerManager) getRole(roleId uint32) *slgdb.Role{
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	p, ok := s.playerMaps[roleId]
+	if ok {
+		return p.role
+	}else{
+		return nil
 	}
 }
 
@@ -106,13 +118,16 @@ func (s *playerManager) getYield(roleId uint32,  buildingType int8) uint32 {
 	}
 }
 
-func (s *playerManager) getRole(roleId uint32) *slgdb.Role{
+func (s *playerManager) getGenerals(roleId uint32) ([] *slgdb.General, bool) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	p, ok := s.playerMaps[roleId]
 	if ok {
-		return p.role
-	}else{
-		return nil
+		return p.getGenerals(), true
+	}else {
+		return nil, false
 	}
 }
+
+
+

@@ -22,6 +22,7 @@ type playerData struct {
 	farmlands		[]*slgdb.Farmland
 	lumbers 		[]*slgdb.Lumber
 	minefields 		[]*slgdb.Mine
+	generalMap 		map[uint32] *slgdb.General
 
 	barrackYield		uint32
 	dwellingkYield 		uint32
@@ -32,6 +33,8 @@ type playerData struct {
 }
 
 func (s *playerData) init() {
+
+	s.generalMap = make(map[uint32] *slgdb.General)
 	b := s.role.OffLineTime
 	if b != 0{
 		e := time.Now().Unix()
@@ -221,6 +224,34 @@ func (s *playerData) getYield(buildingType int8) uint32 {
 		}
 		return 0
 	}
+}
+
+func (s* playerData) getGenerals() [] *slgdb.General{
+	if len(s.generalMap) == 0{
+		generals := slgdb.ReadGenerals(s.role.RoleId)
+		if len(generals) == 0{
+			//如果没有武将，默认给几个吧
+			for i:=0; i<3; i++ {
+				g := slgdb.RandomNewGeneral(s.role.RoleId)
+				s.generalMap[g.Id] = g
+			}
+		}else{
+			for _, g := range generals{
+				s.generalMap[g.Id] = g
+			}
+		}
+	}
+
+	//转成数组给客户端吧
+	n := len(s.generalMap)
+	arr := make([]*slgdb.General, n)
+	i := 0
+	for _, g := range s.generalMap{
+		arr[i] = g
+		i++
+	}
+
+	return arr
 }
 
 func (s* playerData) stepYield() {
