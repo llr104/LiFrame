@@ -202,13 +202,13 @@ func (s *playerData) getYield(buildingType int8) uint32 {
 			return s.farmlandYield
 
 		}else if buildingType == slgproto.Building_Lumberyard {
-			if s.dwellingkYield == 0{
+			if s.lumberYield == 0{
 				b := r.([]*slgdb.Lumber)
 				for _,v := range b{
-					s.dwellingkYield += v.Yield
+					s.lumberYield += v.Yield
 				}
 			}
-			return s.dwellingkYield
+			return s.lumberYield
 
 		}else if buildingType == slgproto.Building_Minefield {
 			if s.minefieldYield == 0{

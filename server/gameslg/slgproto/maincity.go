@@ -32,4 +32,5 @@ type UpBuildingAck struct {
 	proto.BaseAck
 	BuildType    int8	 `json:"type"`
 	Build        string  `json:"build"`
+	Yield        uint32  `json:"yield"`
 }

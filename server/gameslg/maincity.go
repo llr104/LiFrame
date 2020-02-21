@@ -63,6 +63,7 @@ func (s *mainCity) UpBuildingQeq(req liFace.IRequest) {
 	if ok {
 		ackInfo.Code = slgproto.Code_SLG_Success
 		ackInfo.BuildType = reqInfo.BuildType
+		ackInfo.Yield = playerMgr.getYield(roleId, reqInfo.BuildType)
 		data, _ := json.Marshal(b)
 		ackInfo.Build = string(data)
 	}else{
