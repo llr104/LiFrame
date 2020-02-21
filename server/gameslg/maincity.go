@@ -37,7 +37,7 @@ func (s *mainCity) QryBuildingQeq(req liFace.IRequest) {
 	reqInfo := slgproto.QryBuildingQeq{}
 	ackInfo := slgproto.QryBuildingAck{}
 	json.Unmarshal(req.GetData(), &reqInfo)
-	ackInfo.Code = slgproto.Code_SLG_Success
+	ackInfo.Code = slgproto.CodeSlgSuccess
 
 	p, _ := req.GetConnection().GetProperty("roleId")
 	roleId := p.(uint32)
@@ -61,13 +61,13 @@ func (s *mainCity) UpBuildingQeq(req liFace.IRequest) {
 	roleId := p.(uint32)
 	b, ok := playerMgr.upBuilding(roleId, reqInfo.BuildId, reqInfo.BuildType)
 	if ok {
-		ackInfo.Code = slgproto.Code_SLG_Success
+		ackInfo.Code = slgproto.CodeSlgSuccess
 		ackInfo.BuildType = reqInfo.BuildType
 		ackInfo.Yield = playerMgr.getYield(roleId, reqInfo.BuildType)
 		data, _ := json.Marshal(b)
 		ackInfo.Build = string(data)
 	}else{
-		ackInfo.Code = slgproto.Code_Building_Up_Error
+		ackInfo.Code = slgproto.CodeBuildingUpError
 	}
 	data, _ := json.Marshal(ackInfo)
 	req.GetConnection().SendMsg(slgproto.MainCityUpBuildingAck, data)
@@ -83,10 +83,10 @@ func (s *mainCity) QryGeneralReq(req liFace.IRequest) {
 	roleId := p.(uint32)
 	b, ok := playerMgr.getGenerals(roleId)
 	if ok {
-		ackInfo.Code = slgproto.Code_SLG_Success
+		ackInfo.Code = slgproto.CodeSlgSuccess
 		ackInfo.Generals = b
 	}else{
-		ackInfo.Code = slgproto.Code_General_Error
+		ackInfo.Code = slgproto.CodeGeneralError
 	}
 	data, _ := json.Marshal(ackInfo)
 	req.GetConnection().SendMsg(slgproto.MainCityQryGeneralAck, data)

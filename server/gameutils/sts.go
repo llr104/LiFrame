@@ -11,19 +11,10 @@ import (
 
 func ClientConnStart(conn liFace.IConnection) {
 	app.MClientData.Inc()
-	utils.Log.Info("ClientConnStart:%s", conn.RemoteAddr().String())
 }
 
 func ClientConnStop(conn liFace.IConnection) {
 	app.MClientData.Dec()
-
-	//修改离线用户
-	if p, err := conn.GetProperty("userId");err == nil{
-		userId := p.(uint32)
-		STS.userOffline(userId)
-	}
-
-	utils.Log.Info("ClientConnStop:%s", conn.RemoteAddr().String())
 }
 
 func ShutDown(){

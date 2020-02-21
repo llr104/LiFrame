@@ -29,9 +29,9 @@ func (s *createRole) QryRoleReq(req liFace.IRequest)  {
 		roleId := p.(uint32)
 		role := playerMgr.getRole(roleId)
 		if role == nil{
-			ackInfo.Code = slgproto.Code_Role_Not_Found
+			ackInfo.Code = slgproto.CodeRoleNotFound
 		}else{
-			ackInfo.Code = slgproto.Code_SLG_Success
+			ackInfo.Code = slgproto.CodeSlgSuccess
 			ackInfo.Role = *role
 		}
 		data, _ := json.Marshal(ackInfo)
@@ -40,7 +40,7 @@ func (s *createRole) QryRoleReq(req liFace.IRequest)  {
 	}else{
 
 		if p, err := req.GetConnection().GetProperty("userId"); err != nil{
-			ackInfo.Code = slgproto.Code_Not_Auth
+			ackInfo.Code = slgproto.CodeNotAuth
 		}else{
 			userId := p.(uint32)
 			r := slgdb.NewDefaultRole()
@@ -48,10 +48,10 @@ func (s *createRole) QryRoleReq(req liFace.IRequest)  {
 			if err := slgdb.FindRoleByUserId(&r); err == nil{
 				playerMgr.createPlayer(&r)
 				ackInfo.Role = r
-				ackInfo.Code = slgproto.Code_SLG_Success
+				ackInfo.Code = slgproto.CodeSlgSuccess
 				req.GetConnection().SetProperty("roleId", r.RoleId)
 			}else{
-				ackInfo.Code = slgproto.Code_Role_Not_Found
+				ackInfo.Code = slgproto.CodeRoleNotFound
 			}
 		}
 
@@ -67,7 +67,7 @@ func (s *createRole) NewRoleReq(req liFace.IRequest) {
 	p, err := req.GetConnection().GetProperty("userId")
 
 	if err != nil{
-		ackInfo.Code = slgproto.Code_Not_Auth
+		ackInfo.Code = slgproto.CodeNotAuth
 	}else{
 		//创建角色
 		userId := p.(uint32)
@@ -76,12 +76,12 @@ func (s *createRole) NewRoleReq(req liFace.IRequest) {
 		r.UserId = userId
 		r.Nation = reqInfo.Nation
 		if err := slgdb.FindRoleByName(&r); err == nil{
-			ackInfo.Code = slgproto.Code_Role_Exit
+			ackInfo.Code = slgproto.CodeRoleExit
 		}else{
 
 			if id, err := slgdb.InsertRoleToDB(&r); err == nil {
 				ackInfo.Role = r
-				ackInfo.Code = slgproto.Code_SLG_Success
+				ackInfo.Code = slgproto.CodeSlgSuccess
 				req.GetConnection().SetProperty("roleId", r.RoleId)
 				//创建好角色直接开放所有的建筑
 				arr1 := slgdb.NewRoleAllDwellings(uint32(id))
@@ -103,7 +103,7 @@ func (s *createRole) NewRoleReq(req liFace.IRequest) {
 
 				utils.Log.Info("new role:%d", id)
 			}else {
-				ackInfo.Code = slgproto.Code_DB_Error
+				ackInfo.Code = slgproto.CodeDbError
 				utils.Log.Info("new role error: %s", err.Error())
 			}
 		}
