@@ -1,4 +1,4 @@
-package gameutils
+package game
 
 import "github.com/llr104/LiFrame/core/liFace"
 

@@ -48,7 +48,7 @@ func (s *mainLogic) enterScene(userId uint32, sceneId int, conn liFace.IConnecti
 		return false
 	}
 
-	isIn, state := gameutils.GUserMgr.UserIsIn(userId)
+	isIn, state := GUserMgr.UserIsIn(userId)
 	if isIn{
 		if state.SceneId != sceneId{
 			t := s.scenes[state.SceneId]
@@ -59,7 +59,7 @@ func (s *mainLogic) enterScene(userId uint32, sceneId int, conn liFace.IConnecti
 	if ok {
 		ea.Code = proto.Code_Success
 		ea.SceneName = scene.Name()
-		gameutils.GUserMgr.UserChangeState(userId, gameutils.GUserStateOnline, sceneId, conn)
+		GUserMgr.UserChangeState(userId, GUserStateOnline, sceneId, conn)
 	}else{
 		ea.Code = proto.Code_EnterSceneError
 	}
@@ -82,13 +82,13 @@ func (s *mainLogic) exitScene(userId uint32, sceneId int, conn liFace.IConnectio
 		return
 	}
 
-	isIn, state := gameutils.GUserMgr.UserIsIn(userId)
+	isIn, state := GUserMgr.UserIsIn(userId)
 	if isIn{
 		if state.SceneId != sceneId{
 			ea.Code = proto.Code_ExitSceneError
 		}else{
 			scene.ExitScene(userId)
-			gameutils.GUserMgr.UserChangeState(userId, gameutils.GUserStateLeave, -1, conn)
+			GUserMgr.UserChangeState(userId, GUserStateLeave, -1, conn)
 			ea.Code = proto.Code_Success
 		}
 	}else{
@@ -121,7 +121,7 @@ func (s *mainLogic) gameMessage(userId uint32, msgName string, data []byte, conn
 		json.Unmarshal(data, &e)
 		s.exitScene(userId, e.SceneId, conn)
 	}else{
-		if ok, state := gameutils.GUserMgr.UserIsIn(userId); ok {
+		if ok, state := GUserMgr.UserIsIn(userId); ok {
 			if t, isOk := s.scenes[state.SceneId]; isOk{
 				t.GameMessage(userId, msgName, data)
 			}
@@ -135,12 +135,24 @@ func (s *mainLogic) gameMessage(userId uint32, msgName string, data []byte, conn
 返回true:用户离开了游戏，返回false:用户断线，保留用户的游戏状态
 */
 func (s *mainLogic) UserOffLine(userId uint32) bool{
-	if ok, state := gameutils.GUserMgr.UserIsIn(userId); ok {
+
+	r := false
+	if ok, state := GUserMgr.UserIsIn(userId); ok {
 		if t, isOk := s.scenes[state.SceneId]; isOk{
-			return t.UserOffLine(userId)
+			r = t.UserOffLine(userId)
 		}
 	}
-	return true
+
+	ok, state := GUserMgr.UserIsIn(userId)
+	if ok {
+		if r {
+			GUserMgr.UserChangeState(userId, GUserStateLeave, -1,nil)
+		}else{
+			GUserMgr.UserChangeState(userId, GUserStateOffLine, state.SceneId, nil)
+		}
+	}
+
+	return r
 }
 
 func (s *mainLogic) UserOnLine(userId uint32){

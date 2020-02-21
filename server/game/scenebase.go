@@ -3,7 +3,6 @@ package game
 import (
 	"encoding/json"
 	"github.com/llr104/LiFrame/server/db/dbobject"
-	"github.com/llr104/LiFrame/server/gameutils"
 	"math/rand"
 	"sync"
 	"time"
@@ -148,8 +147,8 @@ func (s*scene1) UserOffLine(userId uint32) bool{
 发送消息给指定用户
 */
 func (s *sceneBase) SendMessageToUser(userId uint32, msgName string, msg interface{}) {
-	ok, state := gameutils.GUserMgr.UserIsIn(userId)
-	if ok && state.State == gameutils.GUserStateOnline {
+	ok, state := GUserMgr.UserIsIn(userId)
+	if ok && state.State == GUserStateOnline {
 		data, err := json.Marshal(msg)
 		if err == nil{
 			state.Conn.SendMsg(msgName, data)

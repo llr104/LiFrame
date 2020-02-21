@@ -84,17 +84,8 @@ func (s* sts) UserOnOrOffReq(req liFace.IRequest) {
 }
 
 func (s* sts) userOffline(userId uint32) {
-	ok, state := GUserMgr.UserIsIn(userId)
-	if ok {
-		GUserMgr.UserChangeState(userId, GUserStateOffLine, state.SceneId, nil)
-		if s.game != nil{
-			r := s.game.UserOffLine(userId)
-			if r {
-				GUserMgr.UserChangeState(userId, GUserStateLeave, -1,nil)
-			}
-		}else{
-			GUserMgr.UserChangeState(userId, GUserStateLeave, -1,nil)
-		}
+	if s.game != nil{
+		s.game.UserOffLine(userId)
 	}
 }
 
