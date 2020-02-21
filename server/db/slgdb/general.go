@@ -20,6 +20,9 @@ type General struct {
 	SoldierMax  int16    `json:"soldierMax" orm:"description(最大士兵数量)"`
 }
 
+func (s *General) TableName() string {
+	return "tb_general"
+}
 func RandomNewGeneral(roleId uint32) *General{
 	g := General{}
 	g.Level = 1
