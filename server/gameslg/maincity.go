@@ -73,3 +73,4 @@ func (s *mainCity) UpBuildingQeq(req liFace.IRequest) {
 	req.GetConnection().SendMsg(slgproto.MainCityUpBuildingAck, data)
 }
 
+

@@ -24,25 +24,40 @@ func (s *createRole) NameSpace() string {
 
 func (s *createRole) QryRoleReq(req liFace.IRequest)  {
 	ackInfo := slgproto.QryRoleAck{}
-	p, err := req.GetConnection().GetProperty("userId")
-	if err != nil{
-		ackInfo.Code = slgproto.Code_Not_Auth
-	}else{
-		userId := p.(uint32)
-		r := slgdb.NewDefaultRole()
-		r.UserId = userId
-		if err := slgdb.FindRoleByUserId(&r); err == nil{
-			playerMgr.createPlayer(&r)
-			ackInfo.Role = r
-			ackInfo.Code = slgproto.Code_SLG_Success
-			req.GetConnection().SetProperty("roleId", r.RoleId)
-		}else{
-			ackInfo.Code = slgproto.Code_Role_Not_Found
-		}
-	}
+	if p, err := req.GetConnection().GetProperty("roleId"); err == nil {
 
-	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(slgproto.BirthQryRoleAck, data)
+		roleId := p.(uint32)
+		role := playerMgr.getRole(roleId)
+		if role == nil{
+			ackInfo.Code = slgproto.Code_Role_Not_Found
+		}else{
+			ackInfo.Code = slgproto.Code_SLG_Success
+			ackInfo.Role = *role
+		}
+		data, _ := json.Marshal(ackInfo)
+		req.GetConnection().SendMsg(slgproto.BirthQryRoleAck, data)
+
+	}else{
+
+		if p, err := req.GetConnection().GetProperty("userId"); err != nil{
+			ackInfo.Code = slgproto.Code_Not_Auth
+		}else{
+			userId := p.(uint32)
+			r := slgdb.NewDefaultRole()
+			r.UserId = userId
+			if err := slgdb.FindRoleByUserId(&r); err == nil{
+				playerMgr.createPlayer(&r)
+				ackInfo.Role = r
+				ackInfo.Code = slgproto.Code_SLG_Success
+				req.GetConnection().SetProperty("roleId", r.RoleId)
+			}else{
+				ackInfo.Code = slgproto.Code_Role_Not_Found
+			}
+		}
+
+		data, _ := json.Marshal(ackInfo)
+		req.GetConnection().SendMsg(slgproto.BirthQryRoleAck, data)
+	}
 }
 
 func (s *createRole) NewRoleReq(req liFace.IRequest) {

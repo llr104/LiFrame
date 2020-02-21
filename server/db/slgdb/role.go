@@ -21,7 +21,7 @@ type Role struct {
 	Mine        uint32   `json:"mine"`
 	Wood        uint32   `json:"wood"`
 	UserId      uint32   `json:"userId"`
-	OffLineTime int64     `json:"-"`
+	OffLineTime int64    `json:"-"`
 }
 
 func (s *Role) TableName() string {
@@ -57,5 +57,5 @@ func InsertRoleToDB(s *Role) (int64, error){
 
 func UpdateRoleOffline(s *Role)  {
 	s.OffLineTime = time.Now().Unix()
-	orm.NewOrm().Insert(s)
+	orm.NewOrm().Update(s)
 }

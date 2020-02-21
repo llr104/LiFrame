@@ -37,9 +37,6 @@ func (s *playerManager) step(){
 }
 
 
-
-
-
 func (s *playerManager) createPlayer(role* slgdb.Role) *playerData{
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
@@ -67,9 +64,12 @@ func (s *playerManager) ReleasePlayer(userId uint32) {
 	r := slgdb.Role{}
 	r.UserId = userId
 	slgdb.FindRoleByUserId(&r)
-	slgdb.UpdateRoleOffline(&r)
 
-	delete(s.playerMaps, r.RoleId)
+	player, ok := s.playerMaps[r.RoleId]
+	if ok{
+		slgdb.UpdateRoleOffline(player.role)
+		delete(s.playerMaps, r.RoleId)
+	}
 }
 
 func (s *playerManager) getBuilding(roleId uint32, buildingType int8) interface{}{
@@ -103,5 +103,16 @@ func (s *playerManager) getYield(roleId uint32,  buildingType int8) uint32 {
 		return p.getYield(buildingType)
 	}else {
 		return 0
+	}
+}
+
+func (s *playerManager) getRole(roleId uint32) *slgdb.Role{
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	p, ok := s.playerMaps[roleId]
+	if ok {
+		return p.role
+	}else{
+		return nil
 	}
 }
