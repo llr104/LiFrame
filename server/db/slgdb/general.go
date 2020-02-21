@@ -10,7 +10,7 @@ import (
 将领
 */
 type General struct {
-	Id      	uint32    `json:"Id"`
+	Id      	uint32   `json:"Id"`
 	Name        string   `json:"name"`
 	RoleId      uint32   `json:"roleId"`
 	Level       int8     `json:"level"`
@@ -53,4 +53,8 @@ func ReadGenerals(roleId uint32) []*General{
 
 func InsertGeneral(g *General)  {
 	orm.NewOrm().Insert(g)
+}
+
+func UpdateGeneral(b *General) {
+	orm.NewOrm().Update(b)
 }

@@ -68,7 +68,7 @@ func (s *playerManager) ReleasePlayer(userId uint32) {
 
 	player, ok := s.playerMaps[r.RoleId]
 	if ok{
-		slgdb.UpdateRoleOffline(player.role)
+		player.saveToDB()
 		delete(s.playerMaps, r.RoleId)
 	}
 }

@@ -254,6 +254,41 @@ func (s* playerData) getGenerals() [] *slgdb.General{
 	return arr
 }
 
+func  (s* playerData) saveToDB(){
+	/*
+	暂时傻瓜式写库，后面会优化，减少不必要的写入
+	*/
+	slgdb.UpdateRoleOffline(s.role)
+
+	for _, v := range s.minefields  {
+		slgdb.UpdateMine(v)
+	}
+
+	for _, v := range s.lumbers  {
+		slgdb.UpdateLumber(v)
+	}
+
+	for _, v := range s.farmlands  {
+		slgdb.UpdateFarmland(v)
+	}
+
+	for _, v := range s.dwellingks  {
+		slgdb.UpdateDwelling(v)
+	}
+
+	for _, v := range s.barracks  {
+		slgdb.UpdateBarrack(v)
+	}
+
+	for _, v := range s.minefields  {
+		slgdb.UpdateMine(v)
+	}
+
+	for _, v := range s.generalMap{
+		slgdb.UpdateGeneral(v)
+	}
+}
+
 func (s* playerData) stepYield() {
 	//uint32(math.Ceil(float64(s.getYield(slgproto.Building_Barrack) / 60.0)))
 	s.role.Mine += uint32(math.Ceil(float64(s.getYield(slgproto.Building_Minefield) / 60.0)))
