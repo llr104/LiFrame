@@ -6,12 +6,13 @@ import (
 )
 
 type QryRoleReq struct {
-
+	Type      	int8		`json:"type"`
 }
 
 type QryRoleAck struct {
 	proto.BaseAck
-	Role  slgdb.Role   `json:"role"`
+	Role  		slgdb.Role  `json:"role"`
+	Type      	int8		`json:"type"`
 }
 
 type NewRoleReq struct{

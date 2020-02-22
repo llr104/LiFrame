@@ -31,6 +31,7 @@ func main() {
 	s.AddRouter(&gameslg.Enter)
 	s.AddRouter(&gameslg.CreateRole)
 	s.AddRouter(&gameslg.MainCity)
+	s.AddRouter(&gameslg.NPC)
 
 	s.SetOnConnStart(gameutils.ClientConnStart)
 	s.SetOnConnStop(gameutils.ClientConnStop)

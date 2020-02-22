@@ -23,22 +23,12 @@ func (s *createRole) NameSpace() string {
 }
 
 func (s *createRole) QryRoleReq(req liFace.IRequest)  {
+	reqInfo := slgproto.QryRoleReq{}
 	ackInfo := slgproto.QryRoleAck{}
-	if p, err := req.GetConnection().GetProperty("roleId"); err == nil {
+	json.Unmarshal(req.GetData(), &reqInfo)
+	ackInfo.Type = reqInfo.Type
 
-		roleId := p.(uint32)
-		role := playerMgr.getRole(roleId)
-		if role == nil{
-			ackInfo.Code = slgproto.CodeRoleNotFound
-		}else{
-			ackInfo.Code = slgproto.CodeSlgSuccess
-			ackInfo.Role = *role
-		}
-		data, _ := json.Marshal(ackInfo)
-		req.GetConnection().SendMsg(slgproto.BirthQryRoleAck, data)
-
-	}else{
-
+	if reqInfo.Type == 0{
 		if p, err := req.GetConnection().GetProperty("userId"); err != nil{
 			ackInfo.Code = slgproto.CodeNotAuth
 		}else{
@@ -53,6 +43,23 @@ func (s *createRole) QryRoleReq(req liFace.IRequest)  {
 			}else{
 				ackInfo.Code = slgproto.CodeRoleNotFound
 			}
+		}
+
+		data, _ := json.Marshal(ackInfo)
+		req.GetConnection().SendMsg(slgproto.BirthQryRoleAck, data)
+	}else{
+		if p, err := req.GetConnection().GetProperty("roleId"); err == nil {
+
+			roleId := p.(uint32)
+			role := playerMgr.getRole(roleId)
+			if role == nil{
+				ackInfo.Code = slgproto.CodeRoleNotFound
+			}else{
+				ackInfo.Code = slgproto.CodeSlgSuccess
+				ackInfo.Role = *role
+			}
+		}else{
+			ackInfo.Code = slgproto.CodeNotAuth
 		}
 
 		data, _ := json.Marshal(ackInfo)

@@ -5,6 +5,5 @@ const BirthQryRoleAck = "birth.QryRoleAck"
 
 const MainCityQryBuildingAck = "mainCity.QryBuildingAck"
 const MainCityUpBuildingAck = "mainCity.UpBuildingAck"
-
-const MainCityQryGeneralReq = "mainCity.QryGeneralReq"
 const MainCityQryGeneralAck = "mainCity.QryGeneralAck"
+const NpcQrySceneAck = "npc.QrySceneAck"
