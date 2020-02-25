@@ -1,9 +1,12 @@
 package gameslg
 
 import (
+	"encoding/json"
+	"github.com/llr104/LiFrame/core/liFace"
 	"github.com/llr104/LiFrame/core/liNet"
 	"github.com/llr104/LiFrame/core/orm"
 	"github.com/llr104/LiFrame/server/gameslg/slgdb"
+	"github.com/llr104/LiFrame/server/gameslg/slgproto"
 	"github.com/llr104/LiFrame/utils"
 )
 
@@ -92,4 +95,33 @@ type worldMap struct {
 
 func (s *worldMap) NameSpace() string {
 	return "worldMap"
+}
+
+func (s *worldMap) PreHandle(req liFace.IRequest) bool{
+	_, err := req.GetConnection().GetProperty("roleId")
+	if err == nil {
+		return true
+	}else{
+		utils.Log.Warning("%s not has roleId", req.GetMsgName())
+		return false
+	}
+}
+
+
+func (s *worldMap) QryWorldMap(req liFace.IRequest)  {
+	reqInfo := slgproto.QryWorldMapReq{}
+	ackInfo := slgproto.QryWorldMapAck{}
+	json.Unmarshal(req.GetData(), &reqInfo)
+	ackInfo.Code = slgproto.CodeSlgSuccess
+
+	n := len(s.cityMap)
+	ackInfo.Citys = make([]slgdb.City, n)
+	i := 0
+	for _, v := range s.cityMap{
+		ackInfo.Citys[i] = *v
+		i++
+	}
+
+	data, _ := json.Marshal(ackInfo)
+	req.GetConnection().SendMsg(slgproto.WorldMapQryWorldMapAck, data)
 }
