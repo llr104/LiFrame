@@ -33,7 +33,6 @@ func main() {
 	s.AddRouter(&gameslg.MainCity)
 	s.AddRouter(&gameslg.NPC)
 	s.AddRouter(&gameslg.WorldMap)
-	gameslg.WorldMap.Load()
 
 
 	s.SetOnConnStart(gameutils.ClientConnStart)

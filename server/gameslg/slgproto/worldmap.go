@@ -13,3 +13,14 @@ type QryWorldMapAck struct{
 	proto.BaseAck
 	Citys [] slgdb.City  `json:"citys"`
 }
+
+type GarrisonCityReq struct {
+	GeneralId      	uint32   `json:"generalId"`
+	CityId          int      `json:"cityId"`
+}
+
+type GarrisonCityAck struct {
+	proto.BaseAck
+	GeneralId      	uint32   `json:"generalId"`
+	CityId          int      `json:"cityId"`
+}

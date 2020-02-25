@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/llr104/LiFrame/core/liFace"
 	"github.com/llr104/LiFrame/core/liNet"
-	"github.com/llr104/LiFrame/core/orm"
+	"github.com/llr104/LiFrame/server/gameslg/data"
 	"github.com/llr104/LiFrame/server/gameslg/slgdb"
 	"github.com/llr104/LiFrame/server/gameslg/slgproto"
 	"github.com/llr104/LiFrame/utils"
@@ -15,82 +15,10 @@ import (
 */
 var WorldMap worldMap
 
-func init() {
-	WorldMap = worldMap{cityMap:make(map[int] *slgdb.City)}
-}
-
-func (s *worldMap) Load() {
-	count, err := orm.NewOrm().QueryTable(slgdb.City{}).Count()
-	if err != nil{
-		utils.Log.Error("WorldMap db error:%s", err.Error())
-	}else{
-		if count == 0 {
-			/*
-				还没有城市数据，创建城市数据
-				先简单点一个9个城市1个关卡，魏蜀吴开始每个国家各有三个城池，魏蜀吴中间有一个关卡连接，只有占领了关卡才能攻击其他国家
-			*/
-			{
-				c1 := slgdb.City{Name:"魏都城",Nation:slgdb.NationWei}
-				slgdb.InsertCityToDB(&c1)
-				s.cityMap[c1.Id] = &c1
-
-				c2 := slgdb.City{Name:"魏副城1",Nation:slgdb.NationWei}
-				slgdb.InsertCityToDB(&c2)
-				s.cityMap[c2.Id] = &c2
-
-				c3 := slgdb.City{Name:"魏副城2",Nation:slgdb.NationWei}
-				slgdb.InsertCityToDB(&c3)
-				s.cityMap[c3.Id] = &c3
-			}
-
-			{
-				c1 := slgdb.City{Name:"蜀都城",Nation:slgdb.NationShu}
-				slgdb.InsertCityToDB(&c1)
-				s.cityMap[c1.Id] = &c1
-
-				c2 := slgdb.City{Name:"蜀副城1",Nation:slgdb.NationShu}
-				slgdb.InsertCityToDB(&c2)
-				s.cityMap[c2.Id] = &c2
-
-				c3 := slgdb.City{Name:"蜀副城2",Nation:slgdb.NationShu}
-				slgdb.InsertCityToDB(&c3)
-				s.cityMap[c3.Id] = &c3
-			}
-
-			{
-				c1 := slgdb.City{Name:"吴都城",Nation:slgdb.NationWu}
-				slgdb.InsertCityToDB(&c1)
-				s.cityMap[c1.Id] = &c1
-
-				c2 := slgdb.City{Name:"吴副城1",Nation:slgdb.NationWu}
-				slgdb.InsertCityToDB(&c2)
-				s.cityMap[c2.Id] = &c2
-
-				c3 := slgdb.City{Name:"吴副城2",Nation:slgdb.NationWu}
-				slgdb.InsertCityToDB(&c3)
-				s.cityMap[c3.Id] = &c3
-			}
-
-			{
-				c := slgdb.City{Name:"中立城",Nation:slgdb.NationOther}
-				slgdb.InsertCityToDB(&c)
-			}
-
-		}else {
-			var citys []*slgdb.City
-			orm.NewOrm().QueryTable(slgdb.City{}).All(&citys)
-			for _,v := range citys{
-				s.cityMap[v.Id] = v
-			}
-		}
-
-		utils.Log.Info("读取城市数据成功:%v", s.cityMap)
-	}
-}
 
 type worldMap struct {
 	liNet.BaseRouter
-	cityMap 		map[int] *slgdb.City
+
 }
 
 func (s *worldMap) NameSpace() string {
@@ -114,14 +42,64 @@ func (s *worldMap) QryWorldMap(req liFace.IRequest)  {
 	json.Unmarshal(req.GetData(), &reqInfo)
 	ackInfo.Code = slgproto.CodeSlgSuccess
 
-	n := len(s.cityMap)
+	n := data.CityMgr.Count()
+	cm := data.CityMgr.CityMap()
 	ackInfo.Citys = make([]slgdb.City, n)
 	i := 0
-	for _, v := range s.cityMap{
+	for _, v := range cm{
 		ackInfo.Citys[i] = *v
 		i++
 	}
 
 	data, _ := json.Marshal(ackInfo)
 	req.GetConnection().SendMsg(slgproto.WorldMapQryWorldMapAck, data)
+}
+
+/*
+驻守城池
+*/
+func (s *worldMap) GarrisonCity(req liFace.IRequest)  {
+	reqInfo := slgproto.GarrisonCityReq{}
+	ackInfo := slgproto.GarrisonCityAck{}
+	json.Unmarshal(req.GetData(), &reqInfo)
+
+	p, _ := req.GetConnection().GetProperty("roleId")
+	roleId := p.(uint32)
+
+	role := playerMgr.getRole(roleId)
+	if role == nil{
+		utils.Log.Error("playerMgr not found role")
+		return
+	}
+
+	general, ok := playerMgr.getGeneral(roleId, reqInfo.GeneralId)
+	ackInfo.CityId = reqInfo.CityId
+	ackInfo.GeneralId = reqInfo.GeneralId
+
+	if ok {
+		if reqInfo.CityId == 0{
+			//取消驻守
+			ackInfo.Code = slgproto.CodeSlgSuccess
+			general.CityId = reqInfo.CityId
+		}else{
+			//驻守
+			cm := data.CityMgr.CityMap()
+			city, found := cm[reqInfo.CityId]
+			if found{
+				if city.Nation == role.Nation{
+					general.CityId = reqInfo.CityId
+					ackInfo.Code = slgproto.CodeSlgSuccess
+				}else{
+					ackInfo.Code = slgproto.CodeNotLocalCity
+				}
+			}else{
+				ackInfo.Code = slgproto.CodeCityError
+			}
+		}
+	}else{
+		ackInfo.Code = slgproto.CodeGeneralError
+	}
+
+	data, _ := json.Marshal(ackInfo)
+	req.GetConnection().SendMsg(slgproto.WorldMapGarrisonCityAck, data)
 }

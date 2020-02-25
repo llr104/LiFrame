@@ -18,6 +18,7 @@ type General struct {
 	Defense     int32    `json:"defense"`
 	SoldierNum  int16    `json:"soldierNum" orm:"description(当前士兵数量)"`
 	SoldierMax  int16    `json:"soldierMax" orm:"description(最大士兵数量)"`
+	CityId      int      `json:"cityId" orm:"description(目前驻守的城池id)"`
 }
 
 func (s *General) TableName() string {

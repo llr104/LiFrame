@@ -8,4 +8,7 @@ const (
 	CodeRoleNotFound
 	CodeBuildingUpError
 	CodeGeneralError
-	)
+	CodeCityError
+	CodeNotLocalCity //不是本国领土
+)
+

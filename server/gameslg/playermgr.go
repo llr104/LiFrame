@@ -130,4 +130,17 @@ func (s *playerManager) getGenerals(roleId uint32) ([] *slgdb.General, bool) {
 }
 
 
+func (s *playerManager) getGeneral(roleId uint32, generalId uint32) (*slgdb.General, bool) {
+	arr, ok := s.getGenerals(roleId)
+	if ok {
+		for _, v := range arr {
+			if v.Id == generalId{
+				return v, true
+			}
+		}
+	}
+
+	return nil, false
+}
+
 
