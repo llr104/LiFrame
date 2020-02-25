@@ -103,3 +103,48 @@ func (s *worldMap) GarrisonCity(req liFace.IRequest)  {
 	data, _ := json.Marshal(ackInfo)
 	req.GetConnection().SendMsg(slgproto.WorldMapGarrisonCityAck, data)
 }
+
+/*
+攻击城池
+*/
+func (s *worldMap) AttackCityReq(req liFace.IRequest)  {
+	reqInfo := slgproto.AttackCityReq{}
+	ackInfo := slgproto.AttackCityAck{}
+	json.Unmarshal(req.GetData(), &reqInfo)
+
+	p, _ := req.GetConnection().GetProperty("roleId")
+	roleId := p.(uint32)
+
+	role := playerMgr.getRole(roleId)
+	if role == nil{
+		utils.Log.Error("playerMgr not found role")
+		return
+	}
+
+	general, ok := playerMgr.getGeneral(roleId, reqInfo.GeneralId)
+	ackInfo.CityId = reqInfo.CityId
+
+	if ok {
+		cm := data.CityMgr.CityMap()
+		city, found := cm[reqInfo.CityId]
+		if found{
+			if city.Nation != role.Nation{
+				general.CityId = reqInfo.CityId
+				ackInfo.Code = slgproto.CodeSlgSuccess
+
+				//这里需要完成战斗，得出城池是否被攻占，后面加
+
+			}else{
+				ackInfo.Code = slgproto.CodeAttackLocalCity
+			}
+		}else{
+			ackInfo.Code = slgproto.CodeCityError
+		}
+	}else{
+		ackInfo.Code = slgproto.CodeGeneralError
+	}
+
+	ackInfo.General = *general
+	data, _ := json.Marshal(ackInfo)
+	req.GetConnection().SendMsg(slgproto.WorldMapAttackCityAck, data)
+}

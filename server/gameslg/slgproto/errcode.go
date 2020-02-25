@@ -10,5 +10,6 @@ const (
 	CodeGeneralError
 	CodeCityError
 	CodeNotLocalCity //不是本国领土
+	CodeAttackLocalCity
 )
 

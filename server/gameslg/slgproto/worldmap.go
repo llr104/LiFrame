@@ -24,3 +24,15 @@ type GarrisonCityAck struct {
 	GeneralId      	uint32   `json:"generalId"`
 	CityId          int      `json:"cityId"`
 }
+
+
+type AttackCityReq struct {
+	GeneralId      	uint32   `json:"generalId"`
+	CityId          int      `json:"cityId"`
+}
+
+type AttackCityAck struct {
+	proto.BaseAck
+	CityId          int      		`json:"cityId"`
+	General       	slgdb.General	`json:"general"`
+}
