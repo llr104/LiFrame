@@ -9,6 +9,7 @@ const (
 	NationWei = iota
 	NationShu
 	NationWu
+	NationOther
 )
 
 type Role struct {

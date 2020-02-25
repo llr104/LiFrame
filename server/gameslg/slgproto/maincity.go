@@ -2,15 +2,15 @@ package slgproto
 
 import (
 	"github.com/llr104/LiFrame/proto"
-	"github.com/llr104/LiFrame/server/db/slgdb"
+	"github.com/llr104/LiFrame/server/gameslg/slgdb"
 )
 
 const (
-	Building_Dwelling = iota
-	Building_Minefield
-	Building_Farmland
-	Building_Lumberyard
-	Building_Barrack
+	BuildingDwelling = iota
+	BuildingMinefield
+	BuildingFarmland
+	BuildingLumberyard
+	BuildingBarrack
 )
 
 type QryBuildingQeq struct {
@@ -42,6 +42,6 @@ type QryGeneralReq struct {
 
 type QryGeneralAck struct {
 	proto.BaseAck
-	Generals[] *slgdb.General	 `json:"generals"`
+	Generals[] *slgdb.General `json:"generals"`
 }
 

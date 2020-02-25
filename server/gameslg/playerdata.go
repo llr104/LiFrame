@@ -1,7 +1,7 @@
 package gameslg
 
 import (
-	"github.com/llr104/LiFrame/server/db/slgdb"
+	"github.com/llr104/LiFrame/server/gameslg/slgdb"
 	"github.com/llr104/LiFrame/server/gameslg/slgproto"
 	"math"
 	"time"
@@ -41,42 +41,42 @@ func (s *playerData) init() {
 		diff := float64(e-b)/60.0
 		//uint32(math.Ceil(float64(s.getYield(slgproto.Building_Barrack) / 60.0)))
 
-		s.role.Mine += uint32(math.Ceil(float64(s.getYield(slgproto.Building_Minefield) / 60.0)*diff))
-		s.role.Food += uint32(math.Ceil(float64(s.getYield(slgproto.Building_Lumberyard) / 60.0)*diff))
-		s.role.Wood += uint32(math.Ceil(float64(s.getYield(slgproto.Building_Farmland) / 60.0)*diff))
-		s.role.Silver += uint32(math.Ceil(float64(s.getYield(slgproto.Building_Dwelling) / 60.0)*diff))
+		s.role.Mine += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingMinefield) / 60.0)*diff))
+		s.role.Food += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingLumberyard) / 60.0)*diff))
+		s.role.Wood += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingFarmland) / 60.0)*diff))
+		s.role.Silver += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingDwelling) / 60.0)*diff))
 	}
 
 }
 
 func (s *playerData) getBuilding(buildingType int8) interface{} {
-	if buildingType == slgproto.Building_Barrack {
+	if buildingType == slgproto.BuildingBarrack {
 		if s.barracks == nil{
 			r := slgdb.ReadBarracks(s.role.RoleId)
 			s.barracks = r
 		}
 		return s.barracks
-	}else if buildingType == slgproto.Building_Dwelling{
+	}else if buildingType == slgproto.BuildingDwelling {
 		if s.dwellingks == nil{
 			r := slgdb.ReadDwellings(s.role.RoleId)
 			s.dwellingks = r
 		}
 		return s.dwellingks
-	}else if buildingType == slgproto.Building_Farmland{
+	}else if buildingType == slgproto.BuildingFarmland {
 		if s.farmlands == nil{
 			r := slgdb.ReadFarmlands(s.role.RoleId)
 			s.farmlands = r
 		}
 		return s.farmlands
 
-	}else if buildingType == slgproto.Building_Lumberyard{
+	}else if buildingType == slgproto.BuildingLumberyard {
 		if s.lumbers == nil{
 			r := slgdb.ReadLumbers(s.role.RoleId)
 			s.lumbers = r
 		}
 		return s.lumbers
 
-	}else if buildingType == slgproto.Building_Minefield{
+	}else if buildingType == slgproto.BuildingMinefield {
 		if s.minefields == nil{
 			r := slgdb.ReadMines(s.role.RoleId)
 			s.minefields = r
@@ -96,7 +96,7 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 	/*
 	 先简单升级，不考虑资源消耗
 	*/
-	if buildingType == slgproto.Building_Barrack {
+	if buildingType == slgproto.BuildingBarrack {
 		b := r.([]*slgdb.Barrack)
 
 		for _,v := range b{
@@ -111,7 +111,7 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 				return v, true
 			}
 		}
-	}else if buildingType == slgproto.Building_Dwelling {
+	}else if buildingType == slgproto.BuildingDwelling {
 		b := r.([]*slgdb.Dwelling)
 		for _,v := range b{
 			if v.Id == buildId && v.Level <= int8(100){
@@ -125,7 +125,7 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 				return v, true
 			}
 		}
-	}else if buildingType == slgproto.Building_Farmland {
+	}else if buildingType == slgproto.BuildingFarmland {
 		b := r.([]*slgdb.Farmland)
 		for _,v := range b{
 			if v.Id == buildId && v.Level <= int8(100){
@@ -139,7 +139,7 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 				return v, true
 			}
 		}
-	}else if buildingType == slgproto.Building_Lumberyard {
+	}else if buildingType == slgproto.BuildingLumberyard {
 		b := r.([]*slgdb.Lumber)
 		for _,v := range b{
 			if v.Id == buildId && v.Level <= int8(100){
@@ -153,7 +153,7 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 				return v, true
 			}
 		}
-	}else if buildingType == slgproto.Building_Minefield {
+	}else if buildingType == slgproto.BuildingMinefield {
 		b := r.([]*slgdb.Mine)
 		for _,v := range b{
 			if v.Id == buildId && v.Level <= int8(100){
@@ -177,7 +177,7 @@ func (s *playerData) getYield(buildingType int8) uint32 {
 	if r == nil{
 		return  0
 	}else {
-		if buildingType == slgproto.Building_Barrack {
+		if buildingType == slgproto.BuildingBarrack {
 			if s.barrackYield == 0{
 				b := r.([]*slgdb.Barrack)
 				for _,v := range b{
@@ -186,7 +186,7 @@ func (s *playerData) getYield(buildingType int8) uint32 {
 			}
 			return s.barrackYield
 
-		}else if buildingType == slgproto.Building_Dwelling {
+		}else if buildingType == slgproto.BuildingDwelling {
 			if s.dwellingkYield == 0{
 				b := r.([]*slgdb.Dwelling)
 				for _,v := range b{
@@ -195,7 +195,7 @@ func (s *playerData) getYield(buildingType int8) uint32 {
 			}
 			return s.dwellingkYield
 
-		}else if buildingType == slgproto.Building_Farmland {
+		}else if buildingType == slgproto.BuildingFarmland {
 			if s.farmlandYield == 0{
 				b := r.([]*slgdb.Farmland)
 				for _,v := range b{
@@ -204,7 +204,7 @@ func (s *playerData) getYield(buildingType int8) uint32 {
 			}
 			return s.farmlandYield
 
-		}else if buildingType == slgproto.Building_Lumberyard {
+		}else if buildingType == slgproto.BuildingLumberyard {
 			if s.lumberYield == 0{
 				b := r.([]*slgdb.Lumber)
 				for _,v := range b{
@@ -213,7 +213,7 @@ func (s *playerData) getYield(buildingType int8) uint32 {
 			}
 			return s.lumberYield
 
-		}else if buildingType == slgproto.Building_Minefield {
+		}else if buildingType == slgproto.BuildingMinefield {
 			if s.minefieldYield == 0{
 				b := r.([]*slgdb.Mine)
 				for _,v := range b{
@@ -226,7 +226,7 @@ func (s *playerData) getYield(buildingType int8) uint32 {
 	}
 }
 
-func (s* playerData) getGenerals() [] *slgdb.General{
+func (s* playerData) getGenerals() [] *slgdb.General {
 	if len(s.generalMap) == 0{
 		generals := slgdb.ReadGenerals(s.role.RoleId)
 		if len(generals) == 0{
@@ -291,9 +291,9 @@ func  (s* playerData) saveToDB(){
 
 func (s* playerData) stepYield() {
 	//uint32(math.Ceil(float64(s.getYield(slgproto.Building_Barrack) / 60.0)))
-	s.role.Mine += uint32(math.Ceil(float64(s.getYield(slgproto.Building_Minefield) / 60.0)))
-	s.role.Food += uint32(math.Ceil(float64(s.getYield(slgproto.Building_Lumberyard) / 60.0)))
-	s.role.Wood += uint32(math.Ceil(float64(s.getYield(slgproto.Building_Farmland) / 60.0)))
-	s.role.Silver += uint32(math.Ceil(float64(s.getYield(slgproto.Building_Dwelling) / 60.0)))
+	s.role.Mine += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingMinefield) / 60.0)))
+	s.role.Food += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingLumberyard) / 60.0)))
+	s.role.Wood += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingFarmland) / 60.0)))
+	s.role.Silver += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingDwelling) / 60.0)))
 
 }

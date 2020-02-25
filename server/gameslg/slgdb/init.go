@@ -10,6 +10,6 @@ func Init() {
 	orm.RegisterModel(new(Farmland))
 	orm.RegisterModel(new(Lumber))
 	orm.RegisterModel(new(Mine))
-
 	orm.RegisterModel(new(General))
+	orm.RegisterModel(new(City))
 }

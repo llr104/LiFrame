@@ -2,7 +2,7 @@ package slgproto
 
 import (
 	"github.com/llr104/LiFrame/proto"
-	"github.com/llr104/LiFrame/server/db/slgdb"
+	"github.com/llr104/LiFrame/server/gameslg/slgdb"
 )
 
 type QryRoleReq struct {
@@ -11,8 +11,8 @@ type QryRoleReq struct {
 
 type QryRoleAck struct {
 	proto.BaseAck
-	Role  		slgdb.Role  `json:"role"`
-	Type      	int8		`json:"type"`
+	Role slgdb.Role `json:"role"`
+	Type int8       `json:"type"`
 }
 
 type NewRoleReq struct{
@@ -22,5 +22,5 @@ type NewRoleReq struct{
 
 type NewRoleAck struct{
 	proto.BaseAck
-	Role  slgdb.Role   `json:"role"`
+	Role slgdb.Role `json:"role"`
 }

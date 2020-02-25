@@ -1,7 +1,7 @@
 package gameslg
 
 import (
-	"github.com/llr104/LiFrame/server/db/slgdb"
+	"github.com/llr104/LiFrame/server/gameslg/slgdb"
 	"github.com/llr104/LiFrame/utils"
 	"sync"
 	"time"
@@ -37,7 +37,7 @@ func (s *playerManager) step(){
 }
 
 
-func (s *playerManager) createPlayer(role* slgdb.Role) *playerData{
+func (s *playerManager) createPlayer(role*slgdb.Role) *playerData{
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -50,7 +50,7 @@ func (s *playerManager) createPlayer(role* slgdb.Role) *playerData{
 }
 
 
-func (s *playerManager) addPlayer(role* slgdb.Role, barracks[]*slgdb.Barrack, dwellingks []*slgdb.Dwelling,
+func (s *playerManager) addPlayer(role*slgdb.Role, barracks[]*slgdb.Barrack, dwellingks []*slgdb.Dwelling,
 	farmlands []*slgdb.Farmland, lumbers []*slgdb.Lumber, minefields []*slgdb.Mine) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
@@ -73,7 +73,7 @@ func (s *playerManager) ReleasePlayer(userId uint32) {
 	}
 }
 
-func (s *playerManager) getRole(roleId uint32) *slgdb.Role{
+func (s *playerManager) getRole(roleId uint32) *slgdb.Role {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	p, ok := s.playerMaps[roleId]

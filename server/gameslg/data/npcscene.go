@@ -2,15 +2,15 @@ package data
 
 import (
 	"fmt"
-	"github.com/llr104/LiFrame/server/db/slgdb"
+	"github.com/llr104/LiFrame/server/gameslg/slgdb"
 	"math/rand"
 	"time"
 )
 
 type NpcScene struct {
 	Id       uint16
-	Name     string				`json:"name"`
-	Generals []*slgdb.General  	`json:"generals"`
+	Name     string           `json:"name"`
+	Generals []*slgdb.General `json:"generals"`
 }
 
 func RandomNPCScene(Id uint16) *NpcScene {

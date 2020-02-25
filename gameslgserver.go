@@ -5,8 +5,8 @@ import (
 	"github.com/llr104/LiFrame/proto"
 	"github.com/llr104/LiFrame/server/app"
 	"github.com/llr104/LiFrame/server/db"
-	"github.com/llr104/LiFrame/server/db/slgdb"
 	"github.com/llr104/LiFrame/server/gameslg"
+	"github.com/llr104/LiFrame/server/gameslg/slgdb"
 	"github.com/llr104/LiFrame/server/gameutils"
 	"github.com/llr104/LiFrame/utils"
 	"os"
@@ -32,6 +32,9 @@ func main() {
 	s.AddRouter(&gameslg.CreateRole)
 	s.AddRouter(&gameslg.MainCity)
 	s.AddRouter(&gameslg.NPC)
+	s.AddRouter(&gameslg.WorldMap)
+	gameslg.WorldMap.Load()
+
 
 	s.SetOnConnStart(gameutils.ClientConnStart)
 	s.SetOnConnStop(gameutils.ClientConnStop)

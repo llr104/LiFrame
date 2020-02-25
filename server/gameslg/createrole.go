@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/llr104/LiFrame/core/liFace"
 	"github.com/llr104/LiFrame/core/liNet"
-	"github.com/llr104/LiFrame/server/db/slgdb"
+	"github.com/llr104/LiFrame/server/gameslg/slgdb"
 	"github.com/llr104/LiFrame/server/gameslg/slgproto"
 	"github.com/llr104/LiFrame/utils"
 )
