@@ -1,6 +1,7 @@
 package gameslg
 
 import (
+	"github.com/llr104/LiFrame/server/gameslg/data"
 	"github.com/llr104/LiFrame/server/gameslg/slgdb"
 	"github.com/llr104/LiFrame/server/gameslg/slgproto"
 	"math"
@@ -114,11 +115,11 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 	}else if buildingType == slgproto.BuildingDwelling {
 		b := r.([]*slgdb.Dwelling)
 		for _,v := range b{
-			if v.Id == buildId && v.Level <= int8(100){
+			if v.Id == buildId && v.Level < data.DwellingMaxLevel(){
 				v.Level++
 				old := s.getYield(buildingType)
 				old -= v.Yield
-				v.Yield = uint32(int(v.Level) * 1000)
+				v.Yield = data.DwellingYield(v.Level)
 				s.dwellingkYield = old + v.Yield
 
 				slgdb.UpdateDwelling(v)

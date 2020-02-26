@@ -105,6 +105,10 @@ func (s* table) GetFloat64(key string, idx int)(float64, error){
 	return 0.0, errors.New("GetFloat64 error")
 }
 
+func (s* table) GetCnt() int {
+	return len(s.sheets)
+}
+
 func newDataRow(n int) dataRow{
 	return dataRow{datas: make([]string, n)}
 }
