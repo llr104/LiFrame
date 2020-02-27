@@ -101,11 +101,11 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 		b := r.([]*slgdb.Barrack)
 
 		for _,v := range b{
-			if v.Id == buildId && v.Level <= int8(100){
+			if v.Id == buildId && v.Level < data.BarrackMaxLevel(){
 				v.Level++
 				old := s.getYield(buildingType)
 				old -= v.Yield
-				v.Yield = uint32(int(v.Level) * 1000)
+				v.Yield = data.BarrackYield(v.Level)
 				s.barrackYield = old + v.Yield
 
 				slgdb.UpdateBarrack(v)
@@ -129,11 +129,11 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 	}else if buildingType == slgproto.BuildingFarmland {
 		b := r.([]*slgdb.Farmland)
 		for _,v := range b{
-			if v.Id == buildId && v.Level <= int8(100){
+			if v.Id == buildId && v.Level < data.FarmlandMaxLevel(){
 				v.Level++
 				old := s.getYield(buildingType)
 				old -= v.Yield
-				v.Yield = uint32(int(v.Level) * 1000)
+				v.Yield = data.FarmlandYield(v.Level)
 				s.farmlandYield = old + v.Yield
 
 				slgdb.UpdateFarmland(v)
@@ -143,11 +143,11 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 	}else if buildingType == slgproto.BuildingLumberyard {
 		b := r.([]*slgdb.Lumber)
 		for _,v := range b{
-			if v.Id == buildId && v.Level <= int8(100){
+			if v.Id == buildId && v.Level < data.LumberMaxLevel(){
 				v.Level++
 				old := s.getYield(buildingType)
 				old -= v.Yield
-				v.Yield = uint32(int(v.Level) * 1000)
+				v.Yield = data.LumberYield(v.Level)
 				s.lumberYield = old + v.Yield
 
 				slgdb.UpdateLumber(v)
@@ -157,11 +157,11 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 	}else if buildingType == slgproto.BuildingMinefield {
 		b := r.([]*slgdb.Mine)
 		for _,v := range b{
-			if v.Id == buildId && v.Level <= int8(100){
+			if v.Id == buildId && v.Level < data.MineMaxLevel(){
 				v.Level++
 				old := s.getYield(buildingType)
 				old -= v.Yield
-				v.Yield = uint32(int(v.Level) * 1000)
+				v.Yield = data.MineYield(v.Level)
 				s.minefieldYield = old + v.Yield
 
 				slgdb.UpdateMine(v)
