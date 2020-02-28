@@ -111,11 +111,15 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 
 		for _,v := range b{
 			if v.Id == buildId && v.Level < data.BarrackMaxLevel(){
+				oldC := s.getCapacity(buildingType)
+				oldC -= data.BarrackCapacity(v.Level)
+
 				v.Level++
 				old := s.getYield(buildingType)
 				old -= v.Yield
 				v.Yield = data.BarrackYield(v.Level)
 				s.barrackYield = old + v.Yield
+				s.barrackCapacity += data.BarrackCapacity(v.Level)
 
 				slgdb.UpdateBarrack(v)
 				return v, true
@@ -125,11 +129,15 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 		b := r.([]*slgdb.Dwelling)
 		for _,v := range b{
 			if v.Id == buildId && v.Level < data.DwellingMaxLevel(){
+				oldC := s.getCapacity(buildingType)
+				oldC -= data.DwellingCapacity(v.Level)
+
 				v.Level++
 				old := s.getYield(buildingType)
 				old -= v.Yield
 				v.Yield = data.DwellingYield(v.Level)
 				s.dwellingkYield = old + v.Yield
+				s.dwellingkCapacity += data.DwellingCapacity(v.Level)
 
 				slgdb.UpdateDwelling(v)
 				return v, true
@@ -139,11 +147,15 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 		b := r.([]*slgdb.Farmland)
 		for _,v := range b{
 			if v.Id == buildId && v.Level < data.FarmlandMaxLevel(){
+				oldC := s.getCapacity(buildingType)
+				oldC -= data.FarmlandCapacity(v.Level)
+
 				v.Level++
 				old := s.getYield(buildingType)
 				old -= v.Yield
 				v.Yield = data.FarmlandYield(v.Level)
 				s.farmlandYield = old + v.Yield
+				s.farmlandCapacity += data.FarmlandCapacity(v.Level)
 
 				slgdb.UpdateFarmland(v)
 				return v, true
@@ -153,11 +165,15 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 		b := r.([]*slgdb.Lumber)
 		for _,v := range b{
 			if v.Id == buildId && v.Level < data.LumberMaxLevel(){
+				oldC := s.getCapacity(buildingType)
+				oldC -= data.LumberCapacity(v.Level)
+
 				v.Level++
 				old := s.getYield(buildingType)
 				old -= v.Yield
 				v.Yield = data.LumberYield(v.Level)
 				s.lumberYield = old + v.Yield
+				s.lumberCapacity += data.LumberCapacity(v.Level)
 
 				slgdb.UpdateLumber(v)
 				return v, true
@@ -167,11 +183,15 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 		b := r.([]*slgdb.Mine)
 		for _,v := range b{
 			if v.Id == buildId && v.Level < data.MineMaxLevel(){
+				oldC := s.getCapacity(buildingType)
+				oldC -= data.MineCapacity(v.Level)
+
 				v.Level++
 				old := s.getYield(buildingType)
 				old -= v.Yield
 				v.Yield = data.MineYield(v.Level)
 				s.minefieldYield = old + v.Yield
+				s.minefieldCapacity += data.MineCapacity(v.Level)
 
 				slgdb.UpdateMine(v)
 				return v, true
