@@ -31,6 +31,13 @@ type playerData struct {
 	lumberYield 		uint32
 	minefieldYield 		uint32
 
+	barrackCapacity		uint32
+	dwellingkCapacity	uint32
+	farmlandCapacity	uint32
+	lumberCapacity	 	uint32
+	minefieldCapacity	uint32
+
+
 }
 
 func (s *playerData) init() {
@@ -46,6 +53,8 @@ func (s *playerData) init() {
 		s.role.Food += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingLumberyard) / 60.0)*diff))
 		s.role.Wood += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingFarmland) / 60.0)*diff))
 		s.role.Silver += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingDwelling) / 60.0)*diff))
+
+		s.checkCapacity()
 	}
 
 }
@@ -173,6 +182,60 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 	return nil, false
 }
 
+func (s* playerData) getCapacity(buildingType int8) uint32{
+	r := s.getBuilding(buildingType)
+	if r == nil{
+		return  0
+	}else {
+		if buildingType == slgproto.BuildingBarrack {
+			if s.barrackCapacity == 0{
+				b := r.([]*slgdb.Barrack)
+				for _,v := range b{
+					s.barrackCapacity += data.BarrackCapacity(v.Level)
+				}
+			}
+			return s.barrackCapacity
+
+		}else if buildingType == slgproto.BuildingDwelling {
+			if s.dwellingkCapacity == 0{
+				b := r.([]*slgdb.Dwelling)
+				for _,v := range b{
+					s.dwellingkCapacity += data.DwellingCapacity(v.Level)
+				}
+			}
+			return s.dwellingkCapacity
+
+		}else if buildingType == slgproto.BuildingFarmland {
+			if s.farmlandCapacity == 0{
+				b := r.([]*slgdb.Farmland)
+				for _,v := range b{
+					s.farmlandCapacity += data.FarmlandCapacity(v.Level)
+				}
+			}
+			return s.farmlandCapacity
+
+		}else if buildingType == slgproto.BuildingLumberyard {
+			if s.lumberCapacity == 0{
+				b := r.([]*slgdb.Lumber)
+				for _,v := range b{
+					s.lumberCapacity += data.LumberCapacity(v.Level)
+				}
+			}
+			return s.lumberYield
+
+		}else if buildingType == slgproto.BuildingMinefield {
+			if s.minefieldCapacity == 0{
+				b := r.([]*slgdb.Mine)
+				for _,v := range b{
+					s.minefieldCapacity +=  data.MineCapacity(v.Level)
+				}
+			}
+			return s.minefieldCapacity
+		}
+		return 0
+	}
+}
+
 func (s *playerData) getYield(buildingType int8) uint32 {
 	r := s.getBuilding(buildingType)
 	if r == nil{
@@ -292,9 +355,25 @@ func  (s* playerData) saveToDB(){
 
 func (s* playerData) stepYield() {
 	//uint32(math.Ceil(float64(s.getYield(slgproto.Building_Barrack) / 60.0)))
+
 	s.role.Mine += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingMinefield) / 60.0)))
 	s.role.Food += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingLumberyard) / 60.0)))
 	s.role.Wood += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingFarmland) / 60.0)))
 	s.role.Silver += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingDwelling) / 60.0)))
+	s.checkCapacity()
+}
 
+func (s* playerData) checkCapacity(){
+	/*
+		需要考虑仓库容量，不能爆仓
+	*/
+	maxM := s.getCapacity(slgproto.BuildingMinefield)
+	maxL := s.getCapacity(slgproto.BuildingLumberyard)
+	maxF := s.getCapacity(slgproto.BuildingFarmland)
+	maxD := s.getCapacity(slgproto.BuildingDwelling)
+
+	s.role.Mine = uint32(math.Min(float64(maxM), float64(s.role.Mine)))
+	s.role.Food = uint32(math.Min(float64(maxL), float64(s.role.Food)))
+	s.role.Wood = uint32(math.Min(float64(maxF), float64(s.role.Wood)))
+	s.role.Silver = uint32(math.Min(float64(maxD), float64(s.role.Silver)))
 }

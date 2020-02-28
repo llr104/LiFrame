@@ -13,39 +13,7 @@ func init() {
 	utils.XlsxMgr.Load(XlsxBuilding)
 }
 
-func DwellingMaxLevel() int8 {
-	 t := utils.XlsxMgr.Get(XlsxBuilding, SheetDwelling)
-	 if t != nil {
-		c := t.GetCnt()
-		return int8(c)
-	 }else{
-		 return 1
-	 }
-}
 
-func DwellingYield(level int8) uint32{
-	t := utils.XlsxMgr.Get(XlsxBuilding, SheetDwelling)
-	if t != nil {
-		if int(level) < t.GetCnt(){
-			yield, _ := t.GetInt("yield", int(level))
-			return uint32(yield)
-		}
-	}else{
-		return 0
-	}
-	return 0
-}
-
-
-func BarrackMaxLevel() int8 {
-	t := utils.XlsxMgr.Get(XlsxBuilding, SheetBarrack)
-	if t != nil {
-		c := t.GetCnt()
-		return int8(c)
-	}else{
-		return 1
-	}
-}
 
 func BarrackYield(level int8) uint32{
 	t := utils.XlsxMgr.Get(XlsxBuilding, SheetBarrack)
@@ -60,15 +28,17 @@ func BarrackYield(level int8) uint32{
 	return 0
 }
 
-
-func FarmlandMaxLevel() int8 {
-	t := utils.XlsxMgr.Get(XlsxBuilding, SheetFarmland)
+func DwellingYield(level int8) uint32{
+	t := utils.XlsxMgr.Get(XlsxBuilding, SheetDwelling)
 	if t != nil {
-		c := t.GetCnt()
-		return int8(c)
+		if int(level) < t.GetCnt(){
+			yield, _ := t.GetInt("yield", int(level))
+			return uint32(yield)
+		}
 	}else{
-		return 1
+		return 0
 	}
+	return 0
 }
 
 func FarmlandYield(level int8) uint32{
@@ -86,16 +56,6 @@ func FarmlandYield(level int8) uint32{
 
 
 
-func LumberMaxLevel() int8 {
-	t := utils.XlsxMgr.Get(XlsxBuilding, SheetLumber)
-	if t != nil {
-		c := t.GetCnt()
-		return int8(c)
-	}else{
-		return 1
-	}
-}
-
 func LumberYield(level int8) uint32{
 	t := utils.XlsxMgr.Get(XlsxBuilding, SheetLumber)
 	if t != nil {
@@ -107,17 +67,6 @@ func LumberYield(level int8) uint32{
 		return 0
 	}
 	return 0
-}
-
-
-func MineMaxLevel() int8 {
-	t := utils.XlsxMgr.Get(XlsxBuilding, SheetMine)
-	if t != nil {
-		c := t.GetCnt()
-		return int8(c)
-	}else{
-		return 1
-	}
 }
 
 func MineYield(level int8) uint32{
@@ -132,3 +81,125 @@ func MineYield(level int8) uint32{
 	}
 	return 0
 }
+
+
+func DwellingMaxLevel() int8 {
+	t := utils.XlsxMgr.Get(XlsxBuilding, SheetDwelling)
+	if t != nil {
+		c := t.GetCnt()
+		return int8(c)
+	}else{
+		return 1
+	}
+}
+
+func BarrackMaxLevel() int8 {
+	t := utils.XlsxMgr.Get(XlsxBuilding, SheetBarrack)
+	if t != nil {
+		c := t.GetCnt()
+		return int8(c)
+	}else{
+		return 1
+	}
+}
+
+
+func MineMaxLevel() int8 {
+	t := utils.XlsxMgr.Get(XlsxBuilding, SheetMine)
+	if t != nil {
+		c := t.GetCnt()
+		return int8(c)
+	}else{
+		return 1
+	}
+}
+
+func LumberMaxLevel() int8 {
+	t := utils.XlsxMgr.Get(XlsxBuilding, SheetLumber)
+	if t != nil {
+		c := t.GetCnt()
+		return int8(c)
+	}else{
+		return 1
+	}
+}
+
+func FarmlandMaxLevel() int8 {
+	t := utils.XlsxMgr.Get(XlsxBuilding, SheetFarmland)
+	if t != nil {
+		c := t.GetCnt()
+		return int8(c)
+	}else{
+		return 1
+	}
+}
+
+
+func BarrackCapacity(level int8) uint32{
+	t := utils.XlsxMgr.Get(XlsxBuilding, SheetBarrack)
+	if t != nil {
+		if int(level) < t.GetCnt(){
+			capacity, _ := t.GetInt("capacity", int(level))
+			return uint32(capacity)
+		}
+	}else{
+		return 0
+	}
+	return 0
+}
+
+func DwellingCapacity(level int8) uint32{
+	t := utils.XlsxMgr.Get(XlsxBuilding, SheetDwelling)
+	if t != nil {
+		if int(level) < t.GetCnt(){
+			capacity, _ := t.GetInt("capacity", int(level))
+			return uint32(capacity)
+		}
+	}else{
+		return 0
+	}
+	return 0
+}
+
+func FarmlandCapacity(level int8) uint32{
+	t := utils.XlsxMgr.Get(XlsxBuilding, SheetFarmland)
+	if t != nil {
+		if int(level) < t.GetCnt(){
+			capacity, _ := t.GetInt("capacity", int(level))
+			return uint32(capacity)
+		}
+	}else{
+		return 0
+	}
+	return 0
+}
+
+
+
+func LumberCapacity(level int8) uint32{
+	t := utils.XlsxMgr.Get(XlsxBuilding, SheetLumber)
+	if t != nil {
+		if int(level) < t.GetCnt(){
+			capacity, _ := t.GetInt("capacity", int(level))
+			return uint32(capacity)
+		}
+	}else{
+		return 0
+	}
+	return 0
+}
+
+func MineCapacity(level int8) uint32{
+	t := utils.XlsxMgr.Get(XlsxBuilding, SheetMine)
+	if t != nil {
+		if int(level) < t.GetCnt(){
+			capacity, _ := t.GetInt("capacity", int(level))
+			return uint32(capacity)
+		}
+	}else{
+		return 0
+	}
+	return 0
+}
+
+
