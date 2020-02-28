@@ -13,19 +13,23 @@ var NPC npc
 
 func init() {
 	NPC = npc{}
-
-	/*
-	先简单点默认随机几个npc场景，后面会改成配表，先做大概功能
-	*/
 	NPC.scenes = make(map[int]*data.NpcScene)
-	for i:=0; i<3; i++ {
-		NPC.scenes[i] = data.RandomNPCScene(uint16(i))
-	}
+
 }
 
 type npc struct {
 	liNet.BaseRouter
 	scenes map[int]*data.NpcScene
+}
+
+func (s *npc) After()  {
+	/*
+		先简单点默认随机几个npc场景，后面会改成配表，先做大概功能
+	*/
+
+	for i:=0; i<3; i++ {
+		NPC.scenes[i] = data.RandomNPCScene(uint16(i))
+	}
 }
 
 func (s *npc) NameSpace() string {

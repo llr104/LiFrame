@@ -35,6 +35,7 @@ func main() {
 	s.AddRouter(&gameslg.WorldMap)
 
 
+
 	s.SetOnConnStart(gameutils.ClientConnStart)
 	s.SetOnConnStop(gameutils.ClientConnStop)
 	app.SetShutDownFunc(gameutils.ShutDown)

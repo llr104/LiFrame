@@ -1,9 +1,9 @@
 package gameslg
 
 import (
-	"github.com/llr104/LiFrame/server/gameslg/data"
 	"github.com/llr104/LiFrame/server/gameslg/slgdb"
 	"github.com/llr104/LiFrame/server/gameslg/slgproto"
+	"github.com/llr104/LiFrame/server/gameslg/xlsx"
 	"math"
 	"time"
 )
@@ -110,16 +110,16 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 		b := r.([]*slgdb.Barrack)
 
 		for _,v := range b{
-			if v.Id == buildId && v.Level < data.BarrackMaxLevel(){
+			if v.Id == buildId && v.Level < xlsx.BarrackMaxLevel(){
 				oldC := s.getCapacity(buildingType)
-				oldC -= data.BarrackCapacity(v.Level)
+				oldC -= xlsx.BarrackCapacity(v.Level)
 
 				v.Level++
 				old := s.getYield(buildingType)
 				old -= v.Yield
-				v.Yield = data.BarrackYield(v.Level)
+				v.Yield = xlsx.BarrackYield(v.Level)
 				s.barrackYield = old + v.Yield
-				s.barrackCapacity += data.BarrackCapacity(v.Level)
+				s.barrackCapacity += xlsx.BarrackCapacity(v.Level)
 
 				slgdb.UpdateBarrack(v)
 				return v, true
@@ -128,16 +128,16 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 	}else if buildingType == slgproto.BuildingDwelling {
 		b := r.([]*slgdb.Dwelling)
 		for _,v := range b{
-			if v.Id == buildId && v.Level < data.DwellingMaxLevel(){
+			if v.Id == buildId && v.Level < xlsx.DwellingMaxLevel(){
 				oldC := s.getCapacity(buildingType)
-				oldC -= data.DwellingCapacity(v.Level)
+				oldC -= xlsx.DwellingCapacity(v.Level)
 
 				v.Level++
 				old := s.getYield(buildingType)
 				old -= v.Yield
-				v.Yield = data.DwellingYield(v.Level)
+				v.Yield = xlsx.DwellingYield(v.Level)
 				s.dwellingkYield = old + v.Yield
-				s.dwellingkCapacity += data.DwellingCapacity(v.Level)
+				s.dwellingkCapacity += xlsx.DwellingCapacity(v.Level)
 
 				slgdb.UpdateDwelling(v)
 				return v, true
@@ -146,16 +146,16 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 	}else if buildingType == slgproto.BuildingFarmland {
 		b := r.([]*slgdb.Farmland)
 		for _,v := range b{
-			if v.Id == buildId && v.Level < data.FarmlandMaxLevel(){
+			if v.Id == buildId && v.Level < xlsx.FarmlandMaxLevel(){
 				oldC := s.getCapacity(buildingType)
-				oldC -= data.FarmlandCapacity(v.Level)
+				oldC -= xlsx.FarmlandCapacity(v.Level)
 
 				v.Level++
 				old := s.getYield(buildingType)
 				old -= v.Yield
-				v.Yield = data.FarmlandYield(v.Level)
+				v.Yield = xlsx.FarmlandYield(v.Level)
 				s.farmlandYield = old + v.Yield
-				s.farmlandCapacity += data.FarmlandCapacity(v.Level)
+				s.farmlandCapacity += xlsx.FarmlandCapacity(v.Level)
 
 				slgdb.UpdateFarmland(v)
 				return v, true
@@ -164,16 +164,16 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 	}else if buildingType == slgproto.BuildingLumberyard {
 		b := r.([]*slgdb.Lumber)
 		for _,v := range b{
-			if v.Id == buildId && v.Level < data.LumberMaxLevel(){
+			if v.Id == buildId && v.Level < xlsx.LumberMaxLevel(){
 				oldC := s.getCapacity(buildingType)
-				oldC -= data.LumberCapacity(v.Level)
+				oldC -= xlsx.LumberCapacity(v.Level)
 
 				v.Level++
 				old := s.getYield(buildingType)
 				old -= v.Yield
-				v.Yield = data.LumberYield(v.Level)
+				v.Yield = xlsx.LumberYield(v.Level)
 				s.lumberYield = old + v.Yield
-				s.lumberCapacity += data.LumberCapacity(v.Level)
+				s.lumberCapacity += xlsx.LumberCapacity(v.Level)
 
 				slgdb.UpdateLumber(v)
 				return v, true
@@ -182,16 +182,16 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 	}else if buildingType == slgproto.BuildingMinefield {
 		b := r.([]*slgdb.Mine)
 		for _,v := range b{
-			if v.Id == buildId && v.Level < data.MineMaxLevel(){
+			if v.Id == buildId && v.Level < xlsx.MineMaxLevel(){
 				oldC := s.getCapacity(buildingType)
-				oldC -= data.MineCapacity(v.Level)
+				oldC -= xlsx.MineCapacity(v.Level)
 
 				v.Level++
 				old := s.getYield(buildingType)
 				old -= v.Yield
-				v.Yield = data.MineYield(v.Level)
+				v.Yield = xlsx.MineYield(v.Level)
 				s.minefieldYield = old + v.Yield
-				s.minefieldCapacity += data.MineCapacity(v.Level)
+				s.minefieldCapacity += xlsx.MineCapacity(v.Level)
 
 				slgdb.UpdateMine(v)
 				return v, true
@@ -211,7 +211,7 @@ func (s* playerData) getCapacity(buildingType int8) uint32{
 			if s.barrackCapacity == 0{
 				b := r.([]*slgdb.Barrack)
 				for _,v := range b{
-					s.barrackCapacity += data.BarrackCapacity(v.Level)
+					s.barrackCapacity += xlsx.BarrackCapacity(v.Level)
 				}
 			}
 			return s.barrackCapacity
@@ -220,7 +220,7 @@ func (s* playerData) getCapacity(buildingType int8) uint32{
 			if s.dwellingkCapacity == 0{
 				b := r.([]*slgdb.Dwelling)
 				for _,v := range b{
-					s.dwellingkCapacity += data.DwellingCapacity(v.Level)
+					s.dwellingkCapacity += xlsx.DwellingCapacity(v.Level)
 				}
 			}
 			return s.dwellingkCapacity
@@ -229,7 +229,7 @@ func (s* playerData) getCapacity(buildingType int8) uint32{
 			if s.farmlandCapacity == 0{
 				b := r.([]*slgdb.Farmland)
 				for _,v := range b{
-					s.farmlandCapacity += data.FarmlandCapacity(v.Level)
+					s.farmlandCapacity += xlsx.FarmlandCapacity(v.Level)
 				}
 			}
 			return s.farmlandCapacity
@@ -238,7 +238,7 @@ func (s* playerData) getCapacity(buildingType int8) uint32{
 			if s.lumberCapacity == 0{
 				b := r.([]*slgdb.Lumber)
 				for _,v := range b{
-					s.lumberCapacity += data.LumberCapacity(v.Level)
+					s.lumberCapacity += xlsx.LumberCapacity(v.Level)
 				}
 			}
 			return s.lumberYield
@@ -247,7 +247,7 @@ func (s* playerData) getCapacity(buildingType int8) uint32{
 			if s.minefieldCapacity == 0{
 				b := r.([]*slgdb.Mine)
 				for _,v := range b{
-					s.minefieldCapacity +=  data.MineCapacity(v.Level)
+					s.minefieldCapacity +=  xlsx.MineCapacity(v.Level)
 				}
 			}
 			return s.minefieldCapacity

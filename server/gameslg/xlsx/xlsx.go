@@ -1,4 +1,4 @@
-package data
+package xlsx
 
 import "github.com/llr104/LiFrame/utils"
 
@@ -9,8 +9,12 @@ const SheetFarmland  = "farmland"
 const SheetLumber  = "lumber"
 const SheetMine  = "mine"
 
+const XlsxGeneral= "conf/xlsx/general.xlsx"
+const SheetBase= "base"
+
 func init() {
 	utils.XlsxMgr.Load(XlsxBuilding)
+	utils.XlsxMgr.Load(XlsxGeneral)
 }
 
 
@@ -201,5 +205,4 @@ func MineCapacity(level int8) uint32{
 	}
 	return 0
 }
-
 
