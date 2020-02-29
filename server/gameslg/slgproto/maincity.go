@@ -31,9 +31,10 @@ type UpBuildingQeq struct {
 
 type UpBuildingAck struct {
 	proto.BaseAck
-	BuildType    int8	 `json:"type"`
-	Build        string  `json:"build"`
-	Yield        uint32  `json:"yield"`
+	BuildType    int8	 	`json:"type"`
+	Build        string  	`json:"build"`
+	Yield        uint32  	`json:"yield"`
+	Role		 slgdb.Role	`json:"role"`
 }
 
 type QryGeneralReq struct {

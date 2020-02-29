@@ -4,6 +4,7 @@ import (
 	"github.com/llr104/LiFrame/server/gameslg/slgdb"
 	"github.com/llr104/LiFrame/server/gameslg/slgproto"
 	"github.com/llr104/LiFrame/server/gameslg/xlsx"
+	"github.com/llr104/LiFrame/utils"
 	"math"
 	"time"
 )
@@ -103,98 +104,121 @@ func (s *playerData) upBuilding(buildId int, buildingType int8) (interface{}, bo
 		return nil, false
 	}
 
-	/*
-	 先简单升级，不考虑资源消耗
-	*/
+
 	if buildingType == slgproto.BuildingBarrack {
 		b := r.([]*slgdb.Barrack)
 
 		for _,v := range b{
 			if v.Id == buildId && v.Level < xlsx.BarrackMaxLevel(){
-				oldC := s.getCapacity(buildingType)
-				oldC -= xlsx.BarrackCapacity(v.Level)
+				isCan := IsCanUpLevel(v.Level+1, buildingType, s.role)
+				if isCan {
+					oldC := s.getCapacity(buildingType)
+					oldC -= xlsx.BarrackCapacity(v.Level)
 
-				v.Level++
-				old := s.getYield(buildingType)
-				old -= v.Yield
-				v.Yield = xlsx.BarrackYield(v.Level)
-				s.barrackYield = old + v.Yield
-				s.barrackCapacity += xlsx.BarrackCapacity(v.Level)
+					v.Level++
+					old := s.getYield(buildingType)
+					old -= v.Yield
+					v.Yield = xlsx.BarrackYield(v.Level)
+					s.barrackYield = old + v.Yield
+					s.barrackCapacity += xlsx.BarrackCapacity(v.Level)
 
-				slgdb.UpdateBarrack(v)
-				return v, true
+					slgdb.UpdateBarrack(v)
+					return v, true
+				}else{
+					return v, false
+				}
 			}
 		}
 	}else if buildingType == slgproto.BuildingDwelling {
 		b := r.([]*slgdb.Dwelling)
 		for _,v := range b{
 			if v.Id == buildId && v.Level < xlsx.DwellingMaxLevel(){
-				oldC := s.getCapacity(buildingType)
-				oldC -= xlsx.DwellingCapacity(v.Level)
+				isCan := IsCanUpLevel(v.Level+1, buildingType, s.role)
+				if isCan{
+					oldC := s.getCapacity(buildingType)
+					oldC -= xlsx.DwellingCapacity(v.Level)
 
-				v.Level++
-				old := s.getYield(buildingType)
-				old -= v.Yield
-				v.Yield = xlsx.DwellingYield(v.Level)
-				s.dwellingkYield = old + v.Yield
-				s.dwellingkCapacity += xlsx.DwellingCapacity(v.Level)
+					v.Level++
+					old := s.getYield(buildingType)
+					old -= v.Yield
+					v.Yield = xlsx.DwellingYield(v.Level)
+					s.dwellingkYield = old + v.Yield
+					s.dwellingkCapacity += xlsx.DwellingCapacity(v.Level)
 
-				slgdb.UpdateDwelling(v)
-				return v, true
+					slgdb.UpdateDwelling(v)
+					return v, true
+				}else{
+					return v, false
+				}
 			}
 		}
 	}else if buildingType == slgproto.BuildingFarmland {
 		b := r.([]*slgdb.Farmland)
 		for _,v := range b{
 			if v.Id == buildId && v.Level < xlsx.FarmlandMaxLevel(){
-				oldC := s.getCapacity(buildingType)
-				oldC -= xlsx.FarmlandCapacity(v.Level)
+				isCan := IsCanUpLevel(v.Level+1, buildingType, s.role)
+				if isCan{
+					oldC := s.getCapacity(buildingType)
+					oldC -= xlsx.FarmlandCapacity(v.Level)
 
-				v.Level++
-				old := s.getYield(buildingType)
-				old -= v.Yield
-				v.Yield = xlsx.FarmlandYield(v.Level)
-				s.farmlandYield = old + v.Yield
-				s.farmlandCapacity += xlsx.FarmlandCapacity(v.Level)
+					v.Level++
+					old := s.getYield(buildingType)
+					old -= v.Yield
+					v.Yield = xlsx.FarmlandYield(v.Level)
+					s.farmlandYield = old + v.Yield
+					s.farmlandCapacity += xlsx.FarmlandCapacity(v.Level)
 
-				slgdb.UpdateFarmland(v)
-				return v, true
+					slgdb.UpdateFarmland(v)
+					return v, true
+				}else{
+					return v, false
+				}
 			}
 		}
 	}else if buildingType == slgproto.BuildingLumberyard {
 		b := r.([]*slgdb.Lumber)
 		for _,v := range b{
 			if v.Id == buildId && v.Level < xlsx.LumberMaxLevel(){
-				oldC := s.getCapacity(buildingType)
-				oldC -= xlsx.LumberCapacity(v.Level)
+				isCan := IsCanUpLevel(v.Level+1, buildingType, s.role)
+				if isCan{
+					oldC := s.getCapacity(buildingType)
+					oldC -= xlsx.LumberCapacity(v.Level)
 
-				v.Level++
-				old := s.getYield(buildingType)
-				old -= v.Yield
-				v.Yield = xlsx.LumberYield(v.Level)
-				s.lumberYield = old + v.Yield
-				s.lumberCapacity += xlsx.LumberCapacity(v.Level)
+					v.Level++
+					old := s.getYield(buildingType)
+					old -= v.Yield
+					v.Yield = xlsx.LumberYield(v.Level)
+					s.lumberYield = old + v.Yield
+					s.lumberCapacity += xlsx.LumberCapacity(v.Level)
 
-				slgdb.UpdateLumber(v)
-				return v, true
+					slgdb.UpdateLumber(v)
+					return v, true
+				}else{
+					return v, false
+				}
 			}
 		}
 	}else if buildingType == slgproto.BuildingMinefield {
 		b := r.([]*slgdb.Mine)
 		for _,v := range b{
 			if v.Id == buildId && v.Level < xlsx.MineMaxLevel(){
-				oldC := s.getCapacity(buildingType)
-				oldC -= xlsx.MineCapacity(v.Level)
+				isCan := IsCanUpLevel(v.Level+1, buildingType, s.role)
+				if isCan{
+					oldC := s.getCapacity(buildingType)
+					oldC -= xlsx.MineCapacity(v.Level)
 
-				v.Level++
-				old := s.getYield(buildingType)
-				old -= v.Yield
-				v.Yield = xlsx.MineYield(v.Level)
-				s.minefieldYield = old + v.Yield
-				s.minefieldCapacity += xlsx.MineCapacity(v.Level)
+					v.Level++
+					old := s.getYield(buildingType)
+					old -= v.Yield
+					v.Yield = xlsx.MineYield(v.Level)
+					s.minefieldYield = old + v.Yield
+					s.minefieldCapacity += xlsx.MineCapacity(v.Level)
 
-				slgdb.UpdateMine(v)
-				return v, true
+					slgdb.UpdateMine(v)
+					return v, true
+				}else{
+					return v, false
+				}
 			}
 		}
 	}
@@ -396,4 +420,37 @@ func (s* playerData) checkCapacity(){
 	s.role.Food = uint32(math.Min(float64(maxL), float64(s.role.Food)))
 	s.role.Wood = uint32(math.Min(float64(maxF), float64(s.role.Wood)))
 	s.role.Silver = uint32(math.Min(float64(maxD), float64(s.role.Silver)))
+}
+
+func IsCanUpLevel(level int8, buildingType int8,  role* slgdb.Role) bool {
+
+	var t* utils.Table
+	if buildingType == slgproto.BuildingBarrack{
+		t = utils.XlsxMgr.Get(xlsx.XlsxBuilding, xlsx.SheetBarrack)
+	}else if buildingType == slgproto.BuildingDwelling{
+		t = utils.XlsxMgr.Get(xlsx.XlsxBuilding, xlsx.SheetDwelling)
+	}else if buildingType == slgproto.BuildingFarmland{
+		t = utils.XlsxMgr.Get(xlsx.XlsxBuilding, xlsx.SheetFarmland)
+	}else if buildingType == slgproto.BuildingLumberyard{
+		t = utils.XlsxMgr.Get(xlsx.XlsxBuilding, xlsx.SheetLumber)
+	}else if buildingType == slgproto.BuildingMinefield{
+		t = utils.XlsxMgr.Get(xlsx.XlsxBuilding, xlsx.SheetMine)
+	}
+	if t != nil{
+		need_silve, _ := t.GetInt("need_silve", int(level))
+		need_food, _ := t.GetInt("need_food", int(level))
+		need_mine, _ := t.GetInt("need_mine", int(level))
+		need_wood, _ := t.GetInt("need_wood", int(level))
+		if role.Silver >= uint32(need_silve) && role.Food >= uint32(need_food) &&
+			role.Mine >= uint32(need_mine) && role.Wood >= uint32(need_wood){
+
+			role.Silver -= uint32(need_silve)
+			role.Food -= uint32(need_food)
+			role.Mine -= uint32(need_mine)
+			role.Wood -= uint32(need_wood)
+
+			return true
+		}
+	}
+	return false
 }

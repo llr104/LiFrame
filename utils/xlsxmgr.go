@@ -12,7 +12,7 @@ var XlsxMgr xlsxManager
 
 func init() {
 	XlsxMgr = xlsxManager{}
-	XlsxMgr.sheetMap = make(map[string]*table)
+	XlsxMgr.sheetMap = make(map[string]*Table)
 }
 
 type dataRow struct {
@@ -56,14 +56,14 @@ func (s* dataRow) toFloat64(index int) (float64, error) {
 	return f, err
 }
 
-type table struct {
+type Table struct {
 	sheets        	[] *dataRow
 	types 			dataRow
 	keyToIndexMap	map[string] int
 }
 
-func (s* table) GetInt(key string, idx int)(int, error){
-	if idx <= len(s.sheets){
+func (s*Table) GetInt(key string, idx int)(int, error){
+	if idx < len(s.sheets){
 		i,ok:= s.keyToIndexMap[key]
 		if ok {
 			row := s.sheets[idx]
@@ -73,8 +73,8 @@ func (s* table) GetInt(key string, idx int)(int, error){
 	return 0, errors.New("GetInt error")
 }
 
-func (s* table) GetString(key string, idx int)(string, error){
-	if idx <= len(s.sheets){
+func (s*Table) GetString(key string, idx int)(string, error){
+	if idx < len(s.sheets){
 		i,ok:= s.keyToIndexMap[key]
 		if ok {
 			row := s.sheets[idx]
@@ -84,8 +84,8 @@ func (s* table) GetString(key string, idx int)(string, error){
 	return "", errors.New("GetString error")
 }
 
-func (s* table) GetFloat32(key string, idx int)(float32, error){
-	if idx <= len(s.sheets){
+func (s*Table) GetFloat32(key string, idx int)(float32, error){
+	if idx < len(s.sheets){
 		i,ok:= s.keyToIndexMap[key]
 		if ok {
 			row := s.sheets[idx]
@@ -95,8 +95,8 @@ func (s* table) GetFloat32(key string, idx int)(float32, error){
 	return 0.0, errors.New("GetFloat32 error")
 }
 
-func (s* table) GetFloat64(key string, idx int)(float64, error){
-	if idx <= len(s.sheets){
+func (s*Table) GetFloat64(key string, idx int)(float64, error){
+	if idx < len(s.sheets){
 		i,ok:= s.keyToIndexMap[key]
 		if ok {
 			row := s.sheets[idx]
@@ -106,7 +106,7 @@ func (s* table) GetFloat64(key string, idx int)(float64, error){
 	return 0.0, errors.New("GetFloat64 error")
 }
 
-func (s* table) GetCnt() int {
+func (s*Table) GetCnt() int {
 	return len(s.sheets)
 }
 
@@ -115,7 +115,7 @@ func newDataRow(n int) dataRow{
 }
 
 type xlsxManager struct {
-	sheetMap        map[string]*table
+	sheetMap        map[string]*Table
 	mutex 			sync.RWMutex
 	rootDir         string
 }
@@ -139,7 +139,7 @@ func (s* xlsxManager) Load(xlsx string){
 		n := len(rows)
 		if n >0 {
 			key := xlsx+"/"+name
-			t := table{}
+			t := Table{}
 			t.sheets = make([] *dataRow, n-2)
 			for idx, row := range rows {
 
@@ -177,7 +177,7 @@ func (s* xlsxManager) Load(xlsx string){
 	Log.Info("Load xlsx %s finish", xlsx)
 }
 
-func (s* xlsxManager) Get(xlsx string, sheet string) *table{
+func (s* xlsxManager) Get(xlsx string, sheet string) *Table {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 

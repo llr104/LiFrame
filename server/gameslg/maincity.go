@@ -66,6 +66,9 @@ func (s *mainCity) UpBuildingQeq(req liFace.IRequest) {
 		ackInfo.Yield = playerMgr.getYield(roleId, reqInfo.BuildType)
 		data, _ := json.Marshal(b)
 		ackInfo.Build = string(data)
+		if role := playerMgr.getRole(roleId);role != nil{
+			ackInfo.Role = *role
+		}
 	}else{
 		ackInfo.Code = slgproto.CodeBuildingUpError
 	}

@@ -209,3 +209,4 @@ func MineCapacity(level int8) uint32{
 	return 0
 }
 
+
