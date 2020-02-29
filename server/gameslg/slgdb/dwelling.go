@@ -7,7 +7,7 @@ import (
 
 type Dwelling struct {
 	Id      	int      `json:"Id"`
-	Name        string   `json:"name"`
+	Name        string   `json:"name" orm:"size(20)"`
 	RoleId      uint32   `json:"roleId"`
 	Level       int8     `json:"level"`
 	Type        int8     `json:"type"`

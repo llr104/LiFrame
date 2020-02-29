@@ -14,7 +14,7 @@ const (
 
 type Role struct {
 	RoleId      uint32   `orm:"column(id);pk;auto" json:"roleId"`
-	Name        string   `orm:"column(name);unique;size(16)" json:"name"`
+	Name        string   `orm:"column(name);unique;size(32)" json:"name"`
 	Nation      int8     `json:"nation"`
 	Gold        uint32   `json:"gold"`
 	Silver      uint32   `json:"silver"`

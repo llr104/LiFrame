@@ -14,7 +14,7 @@ import (
 type General struct {
 	Id      		uint32   `json:"Id"`
 	GID				uint32   `json:"gId" orm:"column(gId);description(武将配置Id)"`
-	Name        	string   `json:"name"`
+	Name        	string   `json:"name" orm:"size(20)"`
 	RoleId      	uint32   `json:"roleId"`
 	Attack      	int32    `json:"attack"`
 	Defense     	int32    `json:"defense"`
@@ -25,7 +25,7 @@ type General struct {
 	SoldierMax  	int16    `json:"soldierMax" orm:"description(最大士兵数量)"`
 	Level       	int8     `json:"level"`
 	Exp             int32	 `json:"exp"`
-	CityId      	int      `json:"cityId" orm:"description(目前驻守的城池Id)"`
+	CityId      	int16    `json:"cityId" orm:"description(目前驻守的城池Id)"`
 }
 
 func (s *General) TableName() string {

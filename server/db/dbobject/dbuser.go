@@ -9,10 +9,10 @@ const (
 
 type User struct {
 	Id      	  uint32
-	Name     	  string
-	Password 	  string
+	Name     	  string	`orm:"size(64)"`
+	Password 	  string	`orm:"size(128)"`
 	LoginTimes    int
-	LastLoginIp   string
+	LastLoginIp   string	`orm:"size(64)"`
 	LastLoginTime int64
 	LogoutTime	  int64
 	IsOnline	  bool

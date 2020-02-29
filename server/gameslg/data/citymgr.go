@@ -3,12 +3,13 @@ package data
 import (
 	"github.com/llr104/LiFrame/core/orm"
 	"github.com/llr104/LiFrame/server/gameslg/slgdb"
+	"github.com/llr104/LiFrame/server/gameslg/xlsx"
 	"github.com/llr104/LiFrame/utils"
 	"sync"
 )
 
 type cityManager struct {
-	cityMap 		map[int] *slgdb.City
+	cityMap 		map[int16] *slgdb.City
 	mutex 			sync.RWMutex
 }
 
@@ -25,60 +26,26 @@ func (s* cityManager) load() {
 		if count == 0 {
 			/*
 				还没有城市数据，创建城市数据
-				先简单点一个9个城市1个关卡，魏蜀吴开始每个国家各有三个城池，魏蜀吴中间有一个关卡连接，只有占领了关卡才能攻击其他国家
+				先简单点一个10个城市，魏蜀吴开始每个国家各有三个城池，魏蜀吴中间有一个空白城连接，只有占领了空白城才能攻击其他国家
 			*/
-			{
-				c1 := slgdb.City{Name:"魏都城",Nation:slgdb.NationWei}
-				slgdb.InsertCityToDB(&c1)
-				s.cityMap[c1.Id] = &c1
-
-				c2 := slgdb.City{Name:"魏副城1",Nation:slgdb.NationWei}
-				slgdb.InsertCityToDB(&c2)
-				s.cityMap[c2.Id] = &c2
-
-				c3 := slgdb.City{Name:"魏副城2",Nation:slgdb.NationWei}
-				slgdb.InsertCityToDB(&c3)
-				s.cityMap[c3.Id] = &c3
-			}
-
-			{
-				c1 := slgdb.City{Name:"蜀都城",Nation:slgdb.NationShu}
-				slgdb.InsertCityToDB(&c1)
-				s.cityMap[c1.Id] = &c1
-
-				c2 := slgdb.City{Name:"蜀副城1",Nation:slgdb.NationShu}
-				slgdb.InsertCityToDB(&c2)
-				s.cityMap[c2.Id] = &c2
-
-				c3 := slgdb.City{Name:"蜀副城2",Nation:slgdb.NationShu}
-				slgdb.InsertCityToDB(&c3)
-				s.cityMap[c3.Id] = &c3
-			}
-
-			{
-				c1 := slgdb.City{Name:"吴都城",Nation:slgdb.NationWu}
-				slgdb.InsertCityToDB(&c1)
-				s.cityMap[c1.Id] = &c1
-
-				c2 := slgdb.City{Name:"吴副城1",Nation:slgdb.NationWu}
-				slgdb.InsertCityToDB(&c2)
-				s.cityMap[c2.Id] = &c2
-
-				c3 := slgdb.City{Name:"吴副城2",Nation:slgdb.NationWu}
-				slgdb.InsertCityToDB(&c3)
-				s.cityMap[c3.Id] = &c3
-			}
-
-			{
-				c := slgdb.City{Name:"中立城",Nation:slgdb.NationOther}
+			t := utils.XlsxMgr.Get(xlsx.XlsxCity, xlsx.SheetWorldCity)
+			n := t.GetCnt()
+			for i:=0; i<n; i++ {
+				cId, _ := t.GetInt("cId", i)
+				name, _ := t.GetString("name", i)
+				nation, _ := t.GetInt("nation", i)
+				capital, _ := t.GetInt("capital", i)
+				adjacent, _ := t.GetString("adjacent", i)
+				c := slgdb.City{CId:int16(cId), Name:name, Nation:int8(nation), Capital:capital==1, Adjacent:adjacent}
 				slgdb.InsertCityToDB(&c)
+				s.cityMap[c.CId] = &c
 			}
 
 		}else {
 			var citys []*slgdb.City
 			orm.NewOrm().QueryTable(slgdb.City{}).All(&citys)
 			for _,v := range citys{
-				s.cityMap[v.Id] = v
+				s.cityMap[v.CId] = v
 			}
 		}
 
@@ -93,7 +60,7 @@ func (s* cityManager) Count() int{
 	return len(s.cityMap)
 }
 
-func (s* cityManager) CityMap() map[int] *slgdb.City {
+func (s* cityManager) CityMap() map[int16] *slgdb.City {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	return s.cityMap

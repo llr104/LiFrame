@@ -12,13 +12,16 @@ const SheetFarmland  = "farmland"
 const SheetLumber  = "lumber"
 const SheetMine  = "mine"
 
-const XlsxGeneral= "general.xlsx"
-const SheetBase= "base"
+const XlsxGeneral = "general.xlsx"
+const SheetBase = "base"
+const XlsxCity = "city.xlsx"
+const SheetWorldCity  = "worldcity"
 
 func Init(xlsxDir string) {
 	utils.XlsxMgr.SetRootDir(xlsxDir)
 	utils.XlsxMgr.Load(XlsxBuilding)
 	utils.XlsxMgr.Load(XlsxGeneral)
+	utils.XlsxMgr.Load(XlsxCity)
 }
 
 

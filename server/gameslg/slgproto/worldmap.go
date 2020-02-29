@@ -16,23 +16,23 @@ type QryWorldMapAck struct{
 
 type GarrisonCityReq struct {
 	GeneralId      	uint32   `json:"generalId"`
-	CityId          int      `json:"cityId"`
+	CityId          int16    `json:"cityId"`
 }
 
 type GarrisonCityAck struct {
 	proto.BaseAck
 	GeneralId      	uint32   `json:"generalId"`
-	CityId          int      `json:"cityId"`
+	CityId          int16    `json:"cityId"`
 }
 
 
 type AttackCityReq struct {
 	GeneralId      	uint32   `json:"generalId"`
-	CityId          int      `json:"cityId"`
+	CityId          int16    `json:"cityId"`
 }
 
 type AttackCityAck struct {
 	proto.BaseAck
-	CityId          int      		`json:"cityId"`
+	CityId          int16     		`json:"cityId"`
 	General       	slgdb.General	`json:"general"`
 }

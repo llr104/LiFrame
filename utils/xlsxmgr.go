@@ -135,7 +135,7 @@ func (s *Table) ToString() string {
 					int, _ := strconv.Atoi(value)
 					objStr += fmt.Sprintf(",\"%s\":%d",key, int)
 				}else{
-					objStr += fmt.Sprintf(",\"%s\":%d",key, value)
+					objStr += fmt.Sprintf(",\"%s\":%s",key, value)
 				}
 			}else{
 				if vtype == "string"{
@@ -144,7 +144,7 @@ func (s *Table) ToString() string {
 					int, _ := strconv.Atoi(value)
 					objStr += fmt.Sprintf("\"%s\":%d",key, int)
 				}else{
-					objStr += fmt.Sprintf("\"%s\":%d",key, value)
+					objStr += fmt.Sprintf("\"%s\":%s",key, value)
 				}
 			}
 		}
@@ -219,6 +219,7 @@ func (s* xlsxManager) Load(xlsx string){
 				}
 			}
 			s.sheetMap[key] = &t
+			t.ToString()
 		}
 	}
 
