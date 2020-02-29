@@ -2,9 +2,11 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -108,6 +110,52 @@ func (s*Table) GetFloat64(key string, idx int)(float64, error){
 
 func (s*Table) GetCnt() int {
 	return len(s.sheets)
+}
+
+func (s *Table) ToString() string {
+
+	indexToKey := make(map[int] string)
+	for k, i := range s.keyToIndexMap{
+		indexToKey[i] = k
+	}
+
+	objStr := ""
+	for i, v := range s.sheets{
+		objStr += "{"
+		for j, d := range v.datas{
+			value := d
+			key := indexToKey[j]
+			vtype := s.types.datas[j]
+			vtype = strings.ToLower(vtype)
+
+			if j != 0{
+				if vtype == "string"{
+					objStr += fmt.Sprintf(",\"%s\":\"%s\"",key, value)
+				}else if vtype == "int"{
+					int, _ := strconv.Atoi(value)
+					objStr += fmt.Sprintf(",\"%s\":%d",key, int)
+				}else{
+					objStr += fmt.Sprintf(",\"%s\":%d",key, value)
+				}
+			}else{
+				if vtype == "string"{
+					objStr += fmt.Sprintf("\"%s\":\"%s\"",key, value)
+				}else if vtype == "int"{
+					int, _ := strconv.Atoi(value)
+					objStr += fmt.Sprintf("\"%s\":%d",key, int)
+				}else{
+					objStr += fmt.Sprintf("\"%s\":%d",key, value)
+				}
+			}
+		}
+		if i != len(s.sheets) - 1{
+			objStr+="},"
+		}else{
+			objStr+="}"
+		}
+	}
+	ret := fmt.Sprintf("[%s]", objStr)
+	return ret
 }
 
 func newDataRow(n int) dataRow{
