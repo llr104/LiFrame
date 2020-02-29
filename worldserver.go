@@ -20,7 +20,7 @@ func main() {
 		utils.GlobalObject.Load("conf/world.json")
 	}
 
-	db.InitDataBase()
+	db.Init()
 
 	s := liNet.NewServer()
 	s.AddRouter(&world.STS)

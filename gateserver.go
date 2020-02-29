@@ -174,7 +174,7 @@ func main() {
 		utils.GlobalObject.Load("conf/gate.json")
 	}
 
-	db.InitDataBase()
+	db.Init()
 
 	go app.MasterClient(proto.ServerTypeGate)
 	app.SetShutDownFunc(ShutDown)

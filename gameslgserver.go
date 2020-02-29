@@ -4,9 +4,7 @@ import (
 	"github.com/llr104/LiFrame/core/liNet"
 	"github.com/llr104/LiFrame/proto"
 	"github.com/llr104/LiFrame/server/app"
-	"github.com/llr104/LiFrame/server/db"
 	"github.com/llr104/LiFrame/server/gameslg"
-	"github.com/llr104/LiFrame/server/gameslg/slgdb"
 	"github.com/llr104/LiFrame/server/gameutils"
 	"github.com/llr104/LiFrame/utils"
 	"os"
@@ -22,8 +20,7 @@ func main() {
 		utils.GlobalObject.Load("conf/gameslg.json")
 	}
 
-	slgdb.Init()
-	db.InitDataBase()
+	gameslg.Init()
 
 
 	s := liNet.NewServer()

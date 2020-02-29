@@ -20,7 +20,7 @@ func main() {
 	}else{
 		utils.GlobalObject.Load("conf/master.json")
 	}
-	db.InitDataBase()
+	db.Init()
 
 	/*
 	http 监测服务器状态

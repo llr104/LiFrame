@@ -5,7 +5,6 @@ import (
 	"github.com/llr104/LiFrame/server/gameslg/slgdb"
 	"github.com/llr104/LiFrame/utils"
 	"sync"
-	"time"
 )
 
 type cityManager struct {
@@ -14,18 +13,6 @@ type cityManager struct {
 }
 
 var CityMgr cityManager
-
-func init() {
-	CityMgr = cityManager{
-		cityMap:make(map[int] *slgdb.City),
-	}
-
-	utils.Scheduler.NewTimerAfter(1*time.Second, load, []interface{}{})
-}
-
-func load(v ...interface{}) {
-	CityMgr.load()
-}
 
 func (s* cityManager) load() {
 	s.mutex.Lock()

@@ -19,7 +19,7 @@ func main() {
 		utils.GlobalObject.Load("conf/login.json")
 	}
 
-	db.InitDataBase()
+	db.Init()
 
 	s := liNet.NewServer()
 	s.AddRouter(&login.STS)

@@ -21,7 +21,7 @@ func main() {
 		utils.GlobalObject.Load("conf/game.json")
 	}
 
-	db.InitDataBase()
+	db.Init()
 
 	s := liNet.NewServer()
 	s.AddRouter(&gameutils.STS)
