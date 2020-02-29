@@ -22,7 +22,7 @@ func RandomNPCScene(Id uint16) *NpcScene {
 	rand.Seed(time.Now().UnixNano())
 
 	for i:=0; i<3; i++ {
-		g := slgdb.RandomNewGeneral(0)
+		g := slgdb.RandomNPCNewGeneral()
 		s.Generals[i] = g
 	}
 

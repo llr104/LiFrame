@@ -13,15 +13,17 @@ import (
 
 func main() {
 
-	if len(os.Args) > 1 {
-		cfgPath := os.Args[1]
-		utils.GlobalObject.Load(cfgPath)
+	defaultXlsxDir := "conf/xlsx"
+	if len(os.Args) == 3 {
+		utils.GlobalObject.Load(os.Args[1])
+		defaultXlsxDir = os.Args[2]
+	}else if len(os.Args) == 2{
+		utils.GlobalObject.Load(os.Args[1])
 	}else{
 		utils.GlobalObject.Load("conf/gameslg.json")
 	}
 
-	gameslg.Init()
-
+	gameslg.Init(defaultXlsxDir)
 
 	s := liNet.NewServer()
 	s.AddRouter(&gameutils.STS)

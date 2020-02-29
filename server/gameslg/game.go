@@ -4,17 +4,19 @@ import (
 	"github.com/llr104/LiFrame/server/db"
 	"github.com/llr104/LiFrame/server/gameslg/data"
 	"github.com/llr104/LiFrame/server/gameslg/slgdb"
+	"github.com/llr104/LiFrame/server/gameslg/xlsx"
 	"github.com/llr104/LiFrame/server/gameutils"
 	"github.com/llr104/LiFrame/utils"
 )
 
 var Game mainLogic
 
-func Init() {
+func Init(xlsxDir string) {
 	Game = mainLogic{}
 	gameutils.STS.SetGame(&Game)
 	slgdb.Init()
 	db.Init()
+	xlsx.Init(xlsxDir)
 	data.Init()
 }
 

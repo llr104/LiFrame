@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"github.com/360EntSecGroup-Skylar/excelize"
+	"path/filepath"
 	"strconv"
 	"sync"
 )
@@ -62,7 +63,7 @@ type table struct {
 }
 
 func (s* table) GetInt(key string, idx int)(int, error){
-	if idx >= len(s.sheets){
+	if idx <= len(s.sheets){
 		i,ok:= s.keyToIndexMap[key]
 		if ok {
 			row := s.sheets[idx]
@@ -73,7 +74,7 @@ func (s* table) GetInt(key string, idx int)(int, error){
 }
 
 func (s* table) GetString(key string, idx int)(string, error){
-	if idx >= len(s.sheets){
+	if idx <= len(s.sheets){
 		i,ok:= s.keyToIndexMap[key]
 		if ok {
 			row := s.sheets[idx]
@@ -84,7 +85,7 @@ func (s* table) GetString(key string, idx int)(string, error){
 }
 
 func (s* table) GetFloat32(key string, idx int)(float32, error){
-	if idx >= len(s.sheets){
+	if idx <= len(s.sheets){
 		i,ok:= s.keyToIndexMap[key]
 		if ok {
 			row := s.sheets[idx]
@@ -95,7 +96,7 @@ func (s* table) GetFloat32(key string, idx int)(float32, error){
 }
 
 func (s* table) GetFloat64(key string, idx int)(float64, error){
-	if idx >= len(s.sheets){
+	if idx <= len(s.sheets){
 		i,ok:= s.keyToIndexMap[key]
 		if ok {
 			row := s.sheets[idx]
@@ -116,10 +117,14 @@ func newDataRow(n int) dataRow{
 type xlsxManager struct {
 	sheetMap        map[string]*table
 	mutex 			sync.RWMutex
+	rootDir         string
 }
 
+func (s* xlsxManager) SetRootDir(rootDir string)  {
+	s.rootDir = rootDir
+}
 func (s* xlsxManager) Load(xlsx string){
-
+	xlsx = filepath.Join(s.rootDir, xlsx)
 	f, err := excelize.OpenFile(xlsx)
 	if err != nil{
 		Log.Error("Load xlsx %s error:%s", xlsx, err.Error())
@@ -176,6 +181,7 @@ func (s* xlsxManager) Get(xlsx string, sheet string) *table{
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
+	xlsx = filepath.Join(s.rootDir, xlsx)
 	key := xlsx+"/"+sheet
 	return s.sheetMap[key]
 }

@@ -1,22 +1,25 @@
 package xlsx
 
-import "github.com/llr104/LiFrame/utils"
+import (
+	"github.com/llr104/LiFrame/utils"
+)
 
-const XlsxBuilding = "conf/xlsx/building.xlsx"
+
+const XlsxBuilding = "building.xlsx"
 const SheetDwelling  = "dwelling"
 const SheetBarrack  = "barrack"
 const SheetFarmland  = "farmland"
 const SheetLumber  = "lumber"
 const SheetMine  = "mine"
 
-const XlsxGeneral= "conf/xlsx/general.xlsx"
+const XlsxGeneral= "general.xlsx"
 const SheetBase= "base"
 
-func init() {
+func Init(xlsxDir string) {
+	utils.XlsxMgr.SetRootDir(xlsxDir)
 	utils.XlsxMgr.Load(XlsxBuilding)
 	utils.XlsxMgr.Load(XlsxGeneral)
 }
-
 
 
 func BarrackYield(level int8) uint32{

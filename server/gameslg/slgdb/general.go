@@ -32,10 +32,9 @@ func (s *General) TableName() string {
 	return "tb_general"
 }
 
-func RandomNewGeneral(roleId uint32) *General{
-
+func RandomNPCNewGeneral() *General{
 	/*
-	随机一个武将
+		随机一个武将
 	*/
 	rand.Seed(time.Now().UnixNano())
 	t := utils.XlsxMgr.Get(xlsx.XlsxGeneral, xlsx.SheetBase)
@@ -43,7 +42,7 @@ func RandomNewGeneral(roleId uint32) *General{
 
 	g := General{}
 	g.Level = 1
-	g.RoleId = roleId
+	g.RoleId = 0
 	g.Exp = 0
 
 	gId, _ := t.GetInt("gId" , i)
@@ -62,10 +61,16 @@ func RandomNewGeneral(roleId uint32) *General{
 	g.AttackRate = int32(attackRate)
 	g.SoldierNum = int16(soldier)
 	g.SoldierMax = int16(soldier)
-
-	InsertGeneral(&g)
-	
 	return &g
+}
+
+func RandomNewGeneral(roleId uint32) *General{
+
+	g := RandomNPCNewGeneral()
+	g.RoleId = roleId
+	InsertGeneral(g)
+	
+	return g
 }
 
 func ReadGenerals(roleId uint32) []*General{

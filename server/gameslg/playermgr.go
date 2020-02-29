@@ -55,6 +55,8 @@ func (s *playerManager) addPlayer(role*slgdb.Role, barracks[]*slgdb.Barrack, dwe
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	p := playerData{role:role,barracks:barracks,dwellingks:dwellingks,farmlands:farmlands,lumbers:lumbers,minefields:minefields}
+	p.init()
+
 	s.playerMaps[role.RoleId] = &p
 }
 
