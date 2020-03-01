@@ -51,8 +51,8 @@ func (s *playerData) init() {
 		//uint32(math.Ceil(float64(s.getYield(slgproto.Building_Barrack) / 60.0)))
 
 		s.role.Mine += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingMinefield) / 60.0)*diff))
-		s.role.Food += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingLumberyard) / 60.0)*diff))
-		s.role.Wood += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingFarmland) / 60.0)*diff))
+		s.role.Food += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingFarmland) / 60.0)*diff))
+		s.role.Wood += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingLumberyard) / 60.0)*diff))
 		s.role.Silver += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingDwelling) / 60.0)*diff))
 
 		s.checkCapacity()
@@ -401,8 +401,8 @@ func (s* playerData) stepYield() {
 	//uint32(math.Ceil(float64(s.getYield(slgproto.Building_Barrack) / 60.0)))
 
 	s.role.Mine += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingMinefield) / 60.0)))
-	s.role.Food += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingLumberyard) / 60.0)))
-	s.role.Wood += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingFarmland) / 60.0)))
+	s.role.Food += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingFarmland) / 60.0)))
+	s.role.Wood += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingLumberyard) / 60.0)))
 	s.role.Silver += uint32(math.Ceil(float64(s.getYield(slgproto.BuildingDwelling) / 60.0)))
 	s.checkCapacity()
 }
