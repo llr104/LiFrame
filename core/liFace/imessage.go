@@ -10,7 +10,7 @@ type IMessage interface {
 	GetMsgNameByte() []byte
 	GetMsgName() string //获取消息ID
 	GetBody() []byte    //获取消息内容
-
+	GetSeq() uint32
 	SetMsgNameByte([]byte) 	//设置消息ID
 	SetMsgName(string) 		//设置消息ID
 	SetNameLen(uint32)

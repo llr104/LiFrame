@@ -79,11 +79,12 @@ func handleWsMessage(wsConn *liNet.WsConnection, req *liNet.WsMessage) {
 	data := string(decode)
 
 	msgArr := strings.Split(data,"|")
-	if len(msgArr) == 3{
+	if len(msgArr) == 4{
 
 		msgName := msgArr[0]
 		msgProxyId := msgArr[1]
-		body := msgArr[2]
+		//seq := msgArr[2]
+		body := msgArr[3]
 
 		if msgName == proto.GateHandshake{
 			if body == ""{

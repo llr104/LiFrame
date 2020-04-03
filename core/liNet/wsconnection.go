@@ -125,7 +125,7 @@ func (wsConn *WsConnection) WriteObject(proxyName string, funcName string, body 
 }
 
 func (wsConn *WsConnection) WriteMessage(proxyName string, funcName string, body[] byte){
-	text := fmt.Sprintf("%s|%s|%s", funcName, proxyName, body)
+	text := fmt.Sprintf("%s|%s|%d|%s", funcName, proxyName, 1,body)
 
 	enData, err := openssl.AesCBCEncrypt([]byte(text), GateMessageKey, GateMessageKey, openssl.ZEROS_PADDING)
 

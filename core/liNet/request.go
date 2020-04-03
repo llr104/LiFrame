@@ -20,3 +20,4 @@ func(r *Request) GetData() []byte {
 func (r *Request) GetMsgName() string {
 	return r.msg.GetMsgName()
 }
+

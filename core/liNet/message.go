@@ -6,9 +6,10 @@ import (
 
 type Message struct {
 	NameLen uint32
-	BodyLen uint32 //消息的长度
-	Name    []byte //消息的ID
-	Body    []byte //消息的内容
+	BodyLen uint32  //消息的长度
+	Name    []byte  //消息的ID
+	Seq  	uint32	//序列号
+	Body    []byte  //消息的内容
 }
 
 
@@ -71,3 +72,7 @@ func (msg *Message) SetBody(data []byte) {
 	msg.Body = data
 }
 
+//获取消息序列号
+func (msg *Message) GetSeq() uint32  {
+	return msg.Seq
+}

@@ -9,11 +9,11 @@ import (
 	"github.com/thinkoner/openssl"
 )
 
-
-//|---4 bytes---|---4 bytes---|-------dataLen-------|
-//|-------------------------------------------------|
-//|---dataLen---|---nameLen---|---name---|---body---|
-//|-------------------------------------------------|
+//|---dataLen---|---nameLen---|-----------------data-----------------|
+//|---4 bytes---|---4 bytes---|----4 bytes----|--------dataLen-------|
+//|------------------------------------------------------------------|
+//|---dataLen---|---nameLen---|------seq------|---name---|----msg----|
+//|------------------------------------------------------------------|
 
 var DataPackKey = []byte("msgprotokey12345")
 //封包拆包类实例，暂时不需要成员
@@ -26,9 +26,10 @@ func NewDataPack() *DataPack {
 
 //获取包头长度方法
 func(dp *DataPack) GetHeadLen() uint32 {
-	//NameLen uint32(4字节) +  BodyLen uint32(4字节)
-	return 8
+	//dataLen uint32(4字节) +  nameLen uint32(4字节) + seq uint32(4字节)
+	return 12
 }
+
 //封包方法(压缩数据)
 func(dp *DataPack) Pack(msg liFace.IMessage)([]byte, error) {
 	//创建一个存放bytes字节的缓冲
@@ -41,7 +42,7 @@ func(dp *DataPack) Pack(msg liFace.IMessage)([]byte, error) {
 		return nil, err
 	}else{
 		body = dst
-		dataLen = uint32(len(dst)) + msg.GetNameLen()
+		dataLen = uint32(len(dst)) + msg.GetNameLen()+4
 	}
 
 	//写dataLen
@@ -51,6 +52,11 @@ func(dp *DataPack) Pack(msg liFace.IMessage)([]byte, error) {
 
 	//写nameLen
 	if err := binary.Write(dataBuff, binary.LittleEndian, msg.GetNameLen()); err != nil {
+		return nil, err
+	}
+
+	//写seq
+	if err := binary.Write(dataBuff, binary.LittleEndian, msg.GetSeq()); err != nil {
 		return nil, err
 	}
 
@@ -85,8 +91,14 @@ func(dp *DataPack) Unpack(binaryData []byte)(liFace.IMessage, error) {
 		return nil, err
 	}
 
+	//读seq
+	if err := binary.Read(dataBuff, binary.LittleEndian, &msg.Seq); err != nil {
+		return nil, err
+	}
+
+
 	//bodyLen
-	msg.BodyLen = dataLen-msg.NameLen
+	msg.BodyLen = dataLen-msg.NameLen-4
 	//判断dataLen的长度是否超出我们允许的最大包长度
 	if utils.GlobalObject.MaxPacketSize > 0 && dataLen > utils.GlobalObject.MaxPacketSize {
 		return nil, errors.New("too large msg Data received")
