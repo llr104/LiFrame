@@ -46,7 +46,7 @@ func (g*gate) ProxyClient(wsConn* liNet.WsConnection, msgProxyId string, router 
 	msgProxy, err := app.ServerMgr.GetProxy(msgProxyId)
 	if err != nil{
 		utils.Log.Warn("%s", err.Error())
-		wsConn.WriteMessage(msgProxyId, proto.ProxyError, []byte(err.Error()))
+		wsConn.WriteMessage(msgProxyId, proto.ProxyError, 0, []byte(err.Error()))
 		return nil, false
 	}
 

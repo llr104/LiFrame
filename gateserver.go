@@ -17,6 +17,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -51,7 +52,7 @@ func handleOnClose(wsConn *liNet.WsConnection)  {
 	utils.Log.Debug("handleOnClose wsCount:%d", app.MClientData.GetOnlineCnt())
 }
 
-func handleWsMessage(wsConn *liNet.WsConnection, req *liNet.WsMessage) {
+func handleWsMessage(wsConn *liNet.WsConnection, req *liNet.WsMessageReq, rsp* liNet.WsMessageRsp) {
 	if req.MsgType == websocket.TextMessage{
 		return
 	}
@@ -83,19 +84,25 @@ func handleWsMessage(wsConn *liNet.WsConnection, req *liNet.WsMessage) {
 
 		msgName := msgArr[0]
 		msgProxyId := msgArr[1]
-		//seq := msgArr[2]
+		seq := msgArr[2]
+		req.Seq, _ = strconv.Atoi(seq)
 		body := msgArr[3]
 
 		if msgName == proto.GateHandshake{
 			if body == ""{
 				utils.Log.Info("不是断线重连")
-
 				handshakeId := gate.MyGate.ConnectEnter(wsConn)
-				wsConn.WriteMessage("", proto.GateHandshake, []byte(handshakeId))
+				rsp.Seq = req.Seq
+				rsp.Data = handshakeId
+				rsp.FuncName = proto.GateHandshake
+				rsp.ProxyName = ""
 			}else{
 				utils.Log.Info("是断线重连")
 				handshakeId := gate.MyGate.Reconnect(wsConn, body)
-				wsConn.WriteMessage("", proto.GateHandshake, []byte(handshakeId))
+				rsp.Seq = req.Seq
+				rsp.Data = handshakeId
+				rsp.FuncName = proto.GateHandshake
+				rsp.ProxyName = ""
 			}
 			return
 		}
@@ -115,18 +122,22 @@ func handleWsMessage(wsConn *liNet.WsConnection, req *liNet.WsMessage) {
 				ackInfo.Code = proto.Code_Success
 				ackInfo.ServerInfo = serverInfo
 			}
-			wsConn.WriteObject("",proto.GateLoginServerAck, ackInfo)
+			rsp.FuncName = proto.GateLoginServerAck
+			rsp.ProxyName = ""
+			rsp.Data = ackInfo
+			rsp.Seq = req.Seq
 
 		}else if msgName == proto.GateExitProxy{
 			gate.MyGate.CloseProxy(wsConn, msgProxyId)
 		}else{
-			routerToTarget(wsConn, msgName, msgProxyId, body)
+			rsp.Seq = req.Seq
+			routerToTarget(wsConn, msgName, msgProxyId, body, rsp)
 		}
 	}
 
 }
 
-func routerToTarget(wsConn* liNet.WsConnection, msgName string, msgProxyId string, body string){
+func routerToTarget(wsConn* liNet.WsConnection, msgName string, msgProxyId string, body string, rsp* liNet.WsMessageRsp){
 	isAuth := false
 	if proto.EnterLoginLoginReq == msgName || proto.EnterLoginRegisterReq == msgName{
 		isAuth = true
@@ -153,10 +164,15 @@ func routerToTarget(wsConn* liNet.WsConnection, msgName string, msgProxyId strin
 		if isLive == false{
 			msg := fmt.Sprintf("%s ProxyClient not live", msgProxyId)
 			utils.Log.Warn(msg)
-			wsConn.WriteMessage(msgProxyId, proto.ProxyError, []byte(msg))
+
+			rsp.ProxyName = msgProxyId
+			rsp.FuncName = proto.ProxyError
+			rsp.Data = msg
 		}
 	}else {
-		wsConn.WriteMessage(msgProxyId, proto.AuthError, []byte(""))
+		rsp.ProxyName = msgProxyId
+		rsp.FuncName = proto.AuthError
+		rsp.Data = ""
 	}
 
 }

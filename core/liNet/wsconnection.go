@@ -15,20 +15,29 @@ import (
 
 var GateMessageKey = []byte("liFrameVeryGood!")
 
-// 客户端读写消息
-type WsMessage struct {
+type WsMessageReq struct {
 	MsgType int
+	Seq     int
 	Data    []byte
 }
 
+type WsMessageRsp struct {
+	MsgType 	int
+	Seq     	int
+	FuncName 	string
+	ProxyName   string
+	Data    	interface{}
+}
+
+
 // 客户端连接
 type WsConnection struct {
-	wsSocket 	*websocket.Conn 			// 底层websocket
-	outChan 	chan *WsMessage 			// 写队列
-	mutex 		sync.Mutex					// 避免重复关闭管道
+	wsSocket 	*websocket.Conn   	// 底层websocket
+	outChan 	chan *WsMessageReq 	// 写队列
+	mutex 		sync.Mutex       	// 避免重复关闭管道
 	isClosed 	bool
-	id       	uint64                		// id
-	onMessage	func(wsConn *WsConnection, req *WsMessage)
+	id       	uint64              // id
+	onMessage	func(wsConn *WsConnection, req *WsMessageReq, rsp*WsMessageRsp)
 	onClose     func(wsConn* WsConnection)
 	//链接属性
 	property map[string]interface{}
@@ -39,7 +48,7 @@ type WsConnection struct {
 func NewWsConnection(wsSocket *websocket.Conn, cid uint64) *WsConnection {
 	wsConn := &WsConnection{
 		wsSocket: wsSocket,
-		outChan: make(chan *WsMessage, 1000),
+		outChan: make(chan *WsMessageReq, 1000),
 		isClosed:false,
 		id:cid,
 		property:make(map[string]interface{}),
@@ -66,21 +75,31 @@ func (wsConn *WsConnection) wsReadLoop() {
 		if err != nil {
 			break
 		}
-		req := &WsMessage{
+
+		req := &WsMessageReq{
 			msgType,
+			1,
+			data,
+		}
+
+		rsp := &WsMessageRsp{
+			msgType,
+			1,
+			"",
+			"",
 			data,
 		}
 
 		if wsConn.onMessage != nil{
-			wsConn.onMessage(wsConn, req)
+			wsConn.onMessage(wsConn, req, rsp)
+			wsConn.WriteObject(rsp.ProxyName, rsp.FuncName, rsp.Seq, rsp.Data)
 		}
-
 	}
 
 	wsConn.Close()
 }
 
-func (wsConn *WsConnection) SetOnMessage(hookFunc func (*WsConnection, *WsMessage))  {
+func (wsConn *WsConnection) SetOnMessage(hookFunc func (*WsConnection, *WsMessageReq, *WsMessageRsp))  {
 	wsConn.onMessage = hookFunc
 }
 
@@ -105,27 +124,26 @@ func (wsConn *WsConnection) wsWriteLoop() {
 
 }
 
-func (wsConn *WsConnection) WriteProxyMessage(proxyName string, funcName string, body interface{})  {
+func (wsConn *WsConnection) WriteProxyMessage(proxyName string, funcName string, seq int, body interface{})  {
+	data, err := json.Marshal(body)
+	if err != nil{
+		return
+	}
+	wsConn.WriteMessage(proxyName, funcName, seq, data)
+}
+
+
+func (wsConn *WsConnection) WriteObject(proxyName string, funcName string, seq int, body interface{})  {
 	data, err := json.Marshal(body)
 	if err != nil{
 		return
 	}
 
-	wsConn.WriteMessage(proxyName, funcName, data)
+	wsConn.WriteMessage(proxyName, funcName, seq, data)
 }
 
-
-func (wsConn *WsConnection) WriteObject(proxyName string, funcName string, body interface{})  {
-	data, err := json.Marshal(body)
-	if err != nil{
-		return
-	}
-
-	wsConn.WriteMessage(proxyName, funcName, data)
-}
-
-func (wsConn *WsConnection) WriteMessage(proxyName string, funcName string, body[] byte){
-	text := fmt.Sprintf("%s|%s|%d|%s", funcName, proxyName, 1,body)
+func (wsConn *WsConnection) WriteMessage(proxyName string, funcName string, seq int, body[] byte){
+	text := fmt.Sprintf("%s|%s|%d|%s", funcName, proxyName, seq, body)
 
 	enData, err := openssl.AesCBCEncrypt([]byte(text), GateMessageKey, GateMessageKey, openssl.ZEROS_PADDING)
 
@@ -146,16 +164,16 @@ func (wsConn *WsConnection) WriteMessage(proxyName string, funcName string, body
 		return
 	}
 
-	wsConn.writeBytes(b.Bytes())
+	wsConn.writeBytes(b.Bytes(), seq)
 }
 
-func (wsConn *WsConnection) writeBytes(bytes []byte)  {
-	wsConn.outChan <- &WsMessage{websocket.BinaryMessage, bytes,}
+func (wsConn *WsConnection) writeBytes(bytes []byte, seq int)  {
+	wsConn.outChan <- &WsMessageReq{websocket.BinaryMessage,seq,bytes,}
 }
 
-func (wsConn *WsConnection) writeText(text string)  {
+func (wsConn *WsConnection) writeText(text string, seq int)  {
 	data := []byte(text)
-	wsConn.outChan <- &WsMessage{websocket.TextMessage, data,}
+	wsConn.outChan <- &WsMessageReq{websocket.TextMessage,seq,data,}
 }
 
 

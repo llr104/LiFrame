@@ -47,10 +47,10 @@ func (s *router) EveryThingHandle(req liFace.IRequest) {
 
 	proxy, e :=  req.GetConnection().GetProperty("proxy")
 	if e != nil{
-		gateConn.WriteMessage("", msgName, req.GetData())
+		gateConn.WriteMessage("", msgName, 0, req.GetData())
 	}else{
 		proxyName := proxy.(string)
-		gateConn.WriteMessage(proxyName, msgName, req.GetData())
+		gateConn.WriteMessage(proxyName, msgName, 0, req.GetData())
 	}
 
 }
