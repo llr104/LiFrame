@@ -150,8 +150,8 @@ func routerToTarget(wsConn* liNet.WsConnection, msgName string, msgProxyId strin
 
 	if isAuth {
 		isLive := false
-		proxyClient, ok := gate.MyGate.ProxyClient(wsConn, msgProxyId, gate.Router)
-		if ok {
+		proxyClient, err := gate.MyGate.ProxyClient(wsConn, msgProxyId, gate.Router)
+		if err == nil {
 			sendData  := []byte(body)
 			if proxyClient.GetConn() != nil && proxyClient.GetConn().IsClose() == false{
 				isLive = true
@@ -159,6 +159,13 @@ func routerToTarget(wsConn* liNet.WsConnection, msgName string, msgProxyId strin
 				proxyClient.GetConn().SetProperty("proxy", msgProxyId)
 				proxyClient.GetConn().SendMsg(msgName, sendData)
 			}
+		}else{
+
+			utils.Log.Warn(err.Error())
+
+			rsp.ProxyName = msgProxyId
+			rsp.FuncName = proto.ProxyError
+			rsp.Data = err.Error()
 		}
 
 		if isLive == false{

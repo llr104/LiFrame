@@ -3,6 +3,7 @@ package gate
 import (
 	"crypto/md5"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/llr104/LiFrame/core/liFace"
 	"github.com/llr104/LiFrame/core/liNet"
@@ -39,20 +40,19 @@ func init() {
 	utils.Scheduler.NewTimerInterval(10*time.Second, utils.IntervalForever, checkOffLine, []interface{}{})
 }
 
-func (g*gate) ProxyClient(wsConn* liNet.WsConnection, msgProxyId string, router liFace.IRouter) (*liNet.Client, bool ){
+func (g*gate) ProxyClient(wsConn* liNet.WsConnection, msgProxyId string, router liFace.IRouter) (*liNet.Client, error ){
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
 	msgProxy, err := app.ServerMgr.GetProxy(msgProxyId)
 	if err != nil{
 		utils.Log.Warn("%s", err.Error())
-		wsConn.Push(msgProxyId, proto.ProxyError, err.Error())
-		return nil, false
+		return nil, err
 	}
 
 	id, err1 := wsConn.GetProperty("handshakeId")
 	if err1 != nil{
-		return nil, false
+		return nil, err
 	}
 	handshakeId := id.(string)
 	isNeedCreate := false
@@ -78,7 +78,7 @@ func (g*gate) ProxyClient(wsConn* liNet.WsConnection, msgProxyId string, router 
 		clientId := fmt.Sprintf("id_%d_%s", wsConn.GetId(), msgProxy)
 		arr := strings.Split(msgProxy,":")
 		if len(arr) != 2 {
-			return nil, false
+			return nil, errors.New("msgProxy format error")
 		}
 		name := fmt.Sprintf("name_%s", msgProxy)
 		port, _ := strconv.Atoi(arr[1])
@@ -92,8 +92,8 @@ func (g*gate) ProxyClient(wsConn* liNet.WsConnection, msgProxyId string, router 
 		}
 	}
 
-	proxyClient, b := g.onlineProxyMap[handshakeId][msgProxyId]
-	return proxyClient, b
+	proxyClient, _ := g.onlineProxyMap[handshakeId][msgProxyId]
+	return proxyClient, nil
 }
 
 func (g*gate) CloseProxy(wsConn* liNet.WsConnection, msgProxyId string) {
