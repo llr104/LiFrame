@@ -92,7 +92,7 @@ func (wsConn *WsConnection) wsReadLoop() {
 
 		if wsConn.onMessage != nil{
 			wsConn.onMessage(wsConn, req, rsp)
-			wsConn.WriteObject(rsp.ProxyName, rsp.FuncName, rsp.Seq, rsp.Data)
+			wsConn.Response(rsp.ProxyName, rsp.FuncName, rsp.Seq, rsp.Data)
 		}
 	}
 
@@ -121,28 +121,20 @@ func (wsConn *WsConnection) wsWriteLoop() {
 				}
 			}
 	}
-
-}
-
-func (wsConn *WsConnection) WriteProxyMessage(proxyName string, funcName string, seq int, body interface{})  {
-	data, err := json.Marshal(body)
-	if err != nil{
-		return
-	}
-	wsConn.WriteMessage(proxyName, funcName, seq, data)
 }
 
 
-func (wsConn *WsConnection) WriteObject(proxyName string, funcName string, seq int, body interface{})  {
+func (wsConn *WsConnection) writeObject(proxyName string, funcName string, seq int, body interface{})  {
 	data, err := json.Marshal(body)
 	if err != nil{
 		return
 	}
 
-	wsConn.WriteMessage(proxyName, funcName, seq, data)
+	wsConn.writeMessage(proxyName, funcName, seq, data)
 }
 
-func (wsConn *WsConnection) WriteMessage(proxyName string, funcName string, seq int, body[] byte){
+
+func (wsConn *WsConnection) writeMessage(proxyName string, funcName string, seq int, body[] byte){
 	text := fmt.Sprintf("%s|%s|%d|%s", funcName, proxyName, seq, body)
 
 	enData, err := openssl.AesCBCEncrypt([]byte(text), GateMessageKey, GateMessageKey, openssl.ZEROS_PADDING)
@@ -164,16 +156,15 @@ func (wsConn *WsConnection) WriteMessage(proxyName string, funcName string, seq 
 		return
 	}
 
-	wsConn.writeBytes(b.Bytes(), seq)
+	wsConn.outChan <- &WsMessageReq{websocket.BinaryMessage,seq,b.Bytes(),}
 }
 
-func (wsConn *WsConnection) writeBytes(bytes []byte, seq int)  {
-	wsConn.outChan <- &WsMessageReq{websocket.BinaryMessage,seq,bytes,}
+func (wsConn *WsConnection) Response(proxyName string, funcName string, seq int, body interface{}) {
+	wsConn.writeObject(proxyName, funcName, seq, body)
 }
 
-func (wsConn *WsConnection) writeText(text string, seq int)  {
-	data := []byte(text)
-	wsConn.outChan <- &WsMessageReq{websocket.TextMessage,seq,data,}
+func (wsConn *WsConnection) Push(proxyName string, funcName string, body interface{}) {
+	wsConn.writeObject(proxyName, funcName, 0, body)
 }
 
 
