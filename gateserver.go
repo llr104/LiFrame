@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"encoding/binary"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/llr104/LiFrame/core/liNet"
@@ -93,14 +94,14 @@ func handleWsMessage(wsConn *liNet.WsConnection, req *liNet.WsMessageReq, rsp* l
 				utils.Log.Info("不是断线重连")
 				handshakeId := gate.MyGate.ConnectEnter(wsConn)
 				rsp.Seq = req.Seq
-				rsp.Data = handshakeId
+				rsp.Data = []byte(handshakeId)
 				rsp.FuncName = proto.GateHandshake
 				rsp.ProxyName = ""
 			}else{
 				utils.Log.Info("是断线重连")
 				handshakeId := gate.MyGate.Reconnect(wsConn, body)
 				rsp.Seq = req.Seq
-				rsp.Data = handshakeId
+				rsp.Data = []byte(handshakeId)
 				rsp.FuncName = proto.GateHandshake
 				rsp.ProxyName = ""
 			}
@@ -124,7 +125,7 @@ func handleWsMessage(wsConn *liNet.WsConnection, req *liNet.WsMessageReq, rsp* l
 			}
 			rsp.FuncName = proto.GateLoginServerAck
 			rsp.ProxyName = ""
-			rsp.Data = ackInfo
+			rsp.Data, _ = json.Marshal(ackInfo)
 			rsp.Seq = req.Seq
 
 		}else if msgName == proto.GateExitProxy{
@@ -165,7 +166,7 @@ func routerToTarget(wsConn* liNet.WsConnection, msgName string, msgProxyId strin
 
 			rsp.ProxyName = msgProxyId
 			rsp.FuncName = proto.ProxyError
-			rsp.Data = err.Error()
+			rsp.Data = []byte(err.Error())
 		}
 
 		if isLive == false{
@@ -174,12 +175,12 @@ func routerToTarget(wsConn* liNet.WsConnection, msgName string, msgProxyId strin
 
 			rsp.ProxyName = msgProxyId
 			rsp.FuncName = proto.ProxyError
-			rsp.Data = msg
+			rsp.Data = []byte(msg)
 		}
 	}else {
 		rsp.ProxyName = msgProxyId
 		rsp.FuncName = proto.AuthError
-		rsp.Data = ""
+		rsp.Data = []byte("")
 	}
 
 }

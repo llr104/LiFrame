@@ -26,7 +26,7 @@ type WsMessageRsp struct {
 	Seq     	int
 	FuncName 	string
 	ProxyName   string
-	Data    	interface{}
+	Data    	[]byte
 }
 
 
@@ -95,7 +95,7 @@ func (wsConn *WsConnection) wsReadLoop() {
 			if rsp.FuncName == "" && rsp.ProxyName == ""{
 
 			}else{
-				wsConn.ResponseObject(rsp.ProxyName, rsp.FuncName, rsp.Seq, rsp.Data)
+				wsConn.Response(rsp.ProxyName, rsp.FuncName, rsp.Seq, rsp.Data)
 			}
 
 		}
@@ -164,16 +164,13 @@ func (wsConn *WsConnection) writeMessage(proxyName string, funcName string, seq 
 	wsConn.outChan <- &WsMessageReq{websocket.BinaryMessage,seq,b.Bytes(),}
 }
 
-func (wsConn *WsConnection) ResponseObject(proxyName string, funcName string, seq int, body interface{}) {
-	wsConn.writeObject(proxyName, funcName, seq, body)
-}
 
-func (wsConn *WsConnection) ResponseByte(proxyName string, funcName string, seq int, body[] byte) {
+func (wsConn *WsConnection) Response(proxyName string, funcName string, seq int, body[] byte) {
 	wsConn.writeMessage(proxyName, funcName, seq, body)
 }
 
 
-func (wsConn *WsConnection) Push(proxyName string, funcName string, body interface{}) {
+func (wsConn *WsConnection) Push(proxyName string, funcName string, body[] byte) {
 	wsConn.writeObject(proxyName, funcName, 0, body)
 }
 
