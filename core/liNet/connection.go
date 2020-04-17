@@ -6,6 +6,7 @@ import (
 	"github.com/llr104/LiFrame/utils"
 	"github.com/thinkoner/openssl"
 	"io"
+	"math"
 	"net"
 	"sync"
 )
@@ -22,12 +23,11 @@ type Connection struct {
 	//消息管理msgName和对应处理方法的消息管理模块
 	MsgHandler liFace.IMsgHandle
 	//告知该链接已经退出/停止的channel
-	ExitBuffChan chan bool
+	exitChan chan bool
 	//无缓冲管道，用于读、写两个goroutine之间的消息通信
 	msgChan chan []byte
-	//有关冲管道，用于读、写两个goroutine之间的消息通信
-	msgBuffChan chan []byte
 
+	lastSeq uint32
 	//链接属性
 	property map[string]interface{}
 	//保护链接属性修改的锁
@@ -38,15 +38,15 @@ type Connection struct {
 func NewConnection(netWork liFace.INetWork, conn *net.TCPConn, connID uint32, msgHandler liFace.IMsgHandle) *Connection {
 	//初始化Conn属性
 	c := &Connection{
-		TcpNetWork:   netWork,
-		Conn:         conn,
-		ConnID:       connID,
-		isClosed:     false,
-		MsgHandler:   msgHandler,
-		ExitBuffChan: make(chan bool, 1),
-		msgChan:      make(chan []byte),
-		msgBuffChan:  make(chan []byte, utils.GlobalObject.MaxMsgChanLen),
-		property:     make(map[string]interface{}),
+		TcpNetWork: netWork,
+		Conn:       conn,
+		ConnID:     connID,
+		isClosed:   false,
+		MsgHandler: msgHandler,
+		exitChan:   make(chan bool, 1),
+		msgChan:    make(chan []byte),
+		property:   make(map[string]interface{}),
+		lastSeq:    1,
 	}
 
 	if conn != nil{
@@ -77,13 +77,7 @@ func (c *Connection) StartWriter() {
 					return
 				}
 
-			case data := <-c.msgBuffChan:
-				//有数据要写给客户端
-				if _, err := c.Conn.Write(data); err != nil {
-					utils.Log.Error("%s Send Buff Body error: %s, Conn Writer exit",c.TcpNetWork.GetName(), err.Error())
-					return
-				}
-			case <-c.ExitBuffChan:
+			case <-c.exitChan:
 				return
 		}
 	}
@@ -181,11 +175,11 @@ func (c *Connection) Stop() {
 	// 关闭socket链接
 	c.Conn.Close()
 	//关闭Writer
-	c.ExitBuffChan <- true
+	c.exitChan <- true
 
 	//关闭该链接全部管道
-	close(c.ExitBuffChan)
-	close(c.msgBuffChan)
+	close(c.exitChan)
+
 }
 
 func (c *Connection) GetTcpNetWork() liFace.INetWork {
@@ -218,9 +212,16 @@ func (c *Connection) SendMsg(msgName string, data []byte) error {
 		utils.Log.Warning("connection closed when send msg")
 		return errors.New("connection closed when send msg")
 	}
+
+	if c.lastSeq > math.MaxUint32-1 {
+		c.lastSeq = 1
+	}
+
 	//将data封包，并且发送
 	dp := NewDataPack()
-	msg, err := dp.Pack(NewMsgPackage(msgName, data))
+	p := NewMsgPackage(msgName, data)
+	p.SetSeq(c.lastSeq)
+	msg, err := dp.Pack(p)
 	if err != nil {
 		utils.Log.Warning("%s Pack error msg id = %s", c.TcpNetWork.GetName(), msgName)
 		return errors.New("Pack error msg ")
@@ -232,23 +233,6 @@ func (c *Connection) SendMsg(msgName string, data []byte) error {
 	return nil
 }
 
-func (c *Connection) SendBuffMsg(msgName string, data []byte) error {
-	if c.isClosed == true {
-		return errors.New("Connection closed when send buff msg")
-	}
-	//将data封包，并且发送
-	dp := NewDataPack()
-	msg, err := dp.Pack(NewMsgPackage(msgName, data))
-	if err != nil {
-		utils.Log.Warning("%s Pack error msg id = %s",c.TcpNetWork.GetName(),  msgName)
-		return errors.New("Pack error msg ")
-	}
-
-	//写回客户端
-	c.msgBuffChan <- msg
-
-	return nil
-}
 
 //设置链接属性
 func (c *Connection) SetProperty(key string, value interface{}) {

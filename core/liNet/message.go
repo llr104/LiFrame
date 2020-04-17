@@ -72,7 +72,10 @@ func (msg *Message) SetBody(data []byte) {
 	msg.Body = data
 }
 
-//获取消息序列号
+func (msg *Message) SetSeq(seq uint32) {
+	msg.Seq = seq
+}
+
 func (msg *Message) GetSeq() uint32  {
 	return msg.Seq
 }
