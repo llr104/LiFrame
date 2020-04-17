@@ -92,7 +92,12 @@ func (wsConn *WsConnection) wsReadLoop() {
 
 		if wsConn.onMessage != nil{
 			wsConn.onMessage(wsConn, req, rsp)
-			wsConn.Response(rsp.ProxyName, rsp.FuncName, rsp.Seq, rsp.Data)
+			if rsp.FuncName == "" && rsp.ProxyName == ""{
+
+			}else{
+				wsConn.ResponseObject(rsp.ProxyName, rsp.FuncName, rsp.Seq, rsp.Data)
+			}
+
 		}
 	}
 
@@ -159,9 +164,14 @@ func (wsConn *WsConnection) writeMessage(proxyName string, funcName string, seq 
 	wsConn.outChan <- &WsMessageReq{websocket.BinaryMessage,seq,b.Bytes(),}
 }
 
-func (wsConn *WsConnection) Response(proxyName string, funcName string, seq int, body interface{}) {
+func (wsConn *WsConnection) ResponseObject(proxyName string, funcName string, seq int, body interface{}) {
 	wsConn.writeObject(proxyName, funcName, seq, body)
 }
+
+func (wsConn *WsConnection) ResponseByte(proxyName string, funcName string, seq int, body[] byte) {
+	wsConn.writeMessage(proxyName, funcName, seq, body)
+}
+
 
 func (wsConn *WsConnection) Push(proxyName string, funcName string, body interface{}) {
 	wsConn.writeObject(proxyName, funcName, 0, body)
