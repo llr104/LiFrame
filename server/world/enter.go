@@ -21,7 +21,7 @@ func init() {
 	Enter = enterWorld{}
 }
 
-func (s *enterWorld) PreHandle(req liFace.IRequest) bool{
+func (s *enterWorld) PreHandle(req liFace.IRequest, rsp liFace.IRespond) bool{
 	name := req.GetMsgName()
 	if name == proto.EnterWorldJoinWorldReq{
 		return true
@@ -45,7 +45,7 @@ func (s *enterWorld) NameSpace() string {
 	return "EnterWorld"
 }
 
-func (s *enterWorld) JoinWorldReq(req liFace.IRequest) {
+func (s *enterWorld) JoinWorldReq(req liFace.IRequest, rsp liFace.IRespond) {
 
 	reqInfo := proto.JoinWorldReq{}
 	ackInfo := proto.JoinWorldAck{}
@@ -93,7 +93,7 @@ func (s *enterWorld) JoinWorldReq(req liFace.IRequest) {
 
 }
 
-func (s *enterWorld) UserInfoReq(req liFace.IRequest) {
+func (s *enterWorld) UserInfoReq(req liFace.IRequest, rsp liFace.IRespond) {
 	utils.Log.Info("UserInfoReq begin: %s", req.GetMsgName())
 	reqInfo := proto.UserInfoReq{}
 	ackInfo := proto.UserInfoAck{}
@@ -128,7 +128,7 @@ func (s *enterWorld) UserInfoReq(req liFace.IRequest) {
 	utils.Log.Info("UserInfoReq end: %v", reqInfo)
 }
 
-func (s *enterWorld) UserLogoutReq(req liFace.IRequest) {
+func (s *enterWorld) UserLogoutReq(req liFace.IRequest, rsp liFace.IRespond) {
 
 	reqInfo := proto.UserLogoutReq{}
 	ackInfo := proto.UserLogoutAck{}
@@ -175,7 +175,7 @@ func (s *enterWorld) UserLogoutReq(req liFace.IRequest) {
 
 }
 
-func (s *enterWorld) GameServersReq(req liFace.IRequest) {
+func (s *enterWorld) GameServersReq(req liFace.IRequest, rsp liFace.IRespond) {
 	reqInfo := proto.GameServersReq{}
 	ackInfo := proto.GameServersAck{}
 

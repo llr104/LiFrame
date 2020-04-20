@@ -41,7 +41,7 @@ func (s *sts) NameSpace() string {
 	return "System"
 }
 
-func (s* sts) Ping(req liFace.IRequest){
+func (s* sts) Ping(req liFace.IRequest, rsp liFace.IRespond){
 	utils.Log.Info("Ping")
 	info := proto.PingPong{}
 	info.CurTime = time.Now().Unix()
@@ -49,11 +49,11 @@ func (s* sts) Ping(req liFace.IRequest){
 	req.GetConnection().SendMsg(proto.SystemPong, data)
 }
 
-func (s* sts) Pong(req liFace.IRequest){
+func (s* sts) Pong(req liFace.IRequest, rsp liFace.IRespond){
 	utils.Log.Info("Pong")
 }
 
-func (s *sts) CheckSessionAck(req liFace.IRequest) {
+func (s *sts) CheckSessionAck(req liFace.IRequest, rsp liFace.IRespond) {
 
 	reqInfo := proto.CheckSessionAck{}
 	err := json.Unmarshal(req.GetData(), &reqInfo)
@@ -96,7 +96,7 @@ func (s *sts) CheckSessionAck(req liFace.IRequest) {
 	}
 }
 
-func (s* sts) UserOnOrOffReq(req liFace.IRequest) {
+func (s* sts) UserOnOrOffReq(req liFace.IRequest, rsp liFace.IRespond) {
 
 	reqInfo := proto.UserOnlineOrOffLineReq{}
 	json.Unmarshal(req.GetData(), &reqInfo)

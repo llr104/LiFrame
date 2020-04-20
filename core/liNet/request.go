@@ -21,3 +21,23 @@ func (r *Request) GetMsgName() string {
 	return r.msg.GetMsgName()
 }
 
+
+type Respond struct {
+	msg  	liFace.IMessage
+	req 	liFace.IRequest
+}
+
+
+//获取响应消息的数据
+func(r *Respond) GetData() []byte {
+	return r.msg.GetBody()
+}
+
+//获取响应的消息的ID
+func (r *Respond) GetRequest() liFace.IRequest {
+	return r.req
+}
+
+
+
+

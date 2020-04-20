@@ -26,7 +26,6 @@ type Connection struct {
 	exitChan chan bool
 	//无缓冲管道，用于读、写两个goroutine之间的消息通信
 	msgChan chan []byte
-
 	lastSeq uint32
 	//链接属性
 	property map[string]interface{}
@@ -137,12 +136,17 @@ func (c *Connection) StartReader() {
 			msg:  msg,
 		}
 
+		rsp := Respond{
+			msg:&Message{},
+			req:&req,
+		}
+
 		if utils.GlobalObject.ServerWorkerSize > 0 {
 			//已经启动工作池机制，将消息交给Worker处理
-			c.MsgHandler.SendMsgToTaskQueue(&req)
+			c.MsgHandler.SendMsgToTaskQueue(&req, &rsp)
 		} else {
 			//从绑定好的消息和对应的处理方法中执行对应的Handle方法
-			go c.MsgHandler.DoMsgHandler(&req)
+			go c.MsgHandler.DoMsgHandler(&req, &rsp)
 		}
 	}
 }
@@ -215,6 +219,8 @@ func (c *Connection) SendMsg(msgName string, data []byte) error {
 
 	if c.lastSeq > math.MaxUint32-1 {
 		c.lastSeq = 1
+	}else{
+		c.lastSeq++
 	}
 
 	//将data封包，并且发送

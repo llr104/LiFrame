@@ -12,9 +12,9 @@ type BaseRouter struct {}
 // 是因为有的Router不希望有PreHandle或PostHandle
 // 所以Router全部继承BaseRouter的好处是，不需要实现PreHandle和PostHandle也可以实例化
 func (b *BaseRouter) After() {}
-func (b *BaseRouter) PreHandle(req liFace.IRequest) bool   { return true}
-func (b *BaseRouter) PostHandle(req liFace.IRequest)       {}
-func (b *BaseRouter) EveryThingHandle(req liFace.IRequest) {}
+func (b *BaseRouter) PreHandle(req liFace.IRequest, rsp liFace.IRespond) bool   { return true}
+func (b *BaseRouter) PostHandle(req liFace.IRequest, rsp liFace.IRespond)       {}
+func (b *BaseRouter) EveryThingHandle(req liFace.IRequest, rsp liFace.IRespond) {}
 
 func (b *BaseRouter) NameSpace() string{
 	utils.Log.Warning("NameSpace not implement")

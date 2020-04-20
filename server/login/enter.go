@@ -30,7 +30,7 @@ func (s *enterLogin) NameSpace() string {
 /*
 登录
 */
-func (s *enterLogin) LoginReq(req liFace.IRequest) {
+func (s *enterLogin) LoginReq(req liFace.IRequest, rsp liFace.IRespond) {
 	beginTime := time.Now().Nanosecond()
 
 	reqInfo := proto.LoginReq{}
@@ -83,7 +83,7 @@ func (s *enterLogin) LoginReq(req liFace.IRequest) {
 /*
 注册
 */
-func (s *enterLogin) RegisterReq(req liFace.IRequest) {
+func (s *enterLogin) RegisterReq(req liFace.IRequest, rsp liFace.IRespond) {
 
 	reqInfo := proto.RegisterReq{}
 	ackInfo := proto.RegisterAck{}
@@ -124,7 +124,7 @@ func (s *enterLogin) RegisterReq(req liFace.IRequest) {
 /*
 根据负载分配world服务器
 */
-func (s *enterLogin) DistributeWorldReq(req liFace.IRequest) {
+func (s *enterLogin) DistributeWorldReq(req liFace.IRequest, rsp liFace.IRespond) {
 
 	reqInfo := proto.DistributeServerReq{}
 	ackInfo := proto.DistributeServerAck{}

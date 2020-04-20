@@ -27,7 +27,7 @@ func (s *enterGame) NameSpace() string {
 	return "*.*"
 }
 
-func (s *enterGame) EveryThingHandle(req liFace.IRequest) {
+func (s *enterGame) EveryThingHandle(req liFace.IRequest, rsp liFace.IRespond) {
 
 	if gameutils.STS.IsShutDown() {
 		return

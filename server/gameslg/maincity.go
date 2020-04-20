@@ -23,7 +23,7 @@ func (s *mainCity) NameSpace() string {
 	return "mainCity"
 }
 
-func (s *mainCity) PreHandle(req liFace.IRequest) bool{
+func (s *mainCity) PreHandle(req liFace.IRequest, rsp liFace.IRespond) bool{
 	_, err := req.GetConnection().GetProperty("roleId")
 	if err == nil {
 		return true
@@ -33,7 +33,7 @@ func (s *mainCity) PreHandle(req liFace.IRequest) bool{
 	}
 }
 
-func (s *mainCity) QryBuildingQeq(req liFace.IRequest) {
+func (s *mainCity) QryBuildingQeq(req liFace.IRequest, rsp liFace.IRespond) {
 	reqInfo := slgproto.QryBuildingQeq{}
 	ackInfo := slgproto.QryBuildingAck{}
 	json.Unmarshal(req.GetData(), &reqInfo)
@@ -52,7 +52,7 @@ func (s *mainCity) QryBuildingQeq(req liFace.IRequest) {
 	req.GetConnection().SendMsg(slgproto.MainCityQryBuildingAck, data)
 }
 
-func (s *mainCity) UpBuildingQeq(req liFace.IRequest) {
+func (s *mainCity) UpBuildingQeq(req liFace.IRequest, rsp liFace.IRespond) {
 	reqInfo := slgproto.UpBuildingQeq{}
 	ackInfo := slgproto.UpBuildingAck{}
 	json.Unmarshal(req.GetData(), &reqInfo)
@@ -77,7 +77,7 @@ func (s *mainCity) UpBuildingQeq(req liFace.IRequest) {
 }
 
 
-func (s *mainCity) QryGeneralReq(req liFace.IRequest) {
+func (s *mainCity) QryGeneralReq(req liFace.IRequest, rsp liFace.IRespond) {
 	reqInfo := slgproto.QryGeneralReq{}
 	ackInfo := slgproto.QryGeneralAck{}
 	json.Unmarshal(req.GetData(), &reqInfo)

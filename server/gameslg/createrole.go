@@ -22,7 +22,7 @@ func (s *createRole) NameSpace() string {
 	return "birth"
 }
 
-func (s *createRole) QryRoleReq(req liFace.IRequest)  {
+func (s *createRole) QryRoleReq(req liFace.IRequest, rsp liFace.IRespond)  {
 	reqInfo := slgproto.QryRoleReq{}
 	ackInfo := slgproto.QryRoleAck{}
 	json.Unmarshal(req.GetData(), &reqInfo)
@@ -67,7 +67,7 @@ func (s *createRole) QryRoleReq(req liFace.IRequest)  {
 	}
 }
 
-func (s *createRole) NewRoleReq(req liFace.IRequest) {
+func (s *createRole) NewRoleReq(req liFace.IRequest, rsp liFace.IRespond) {
 	reqInfo := slgproto.NewRoleReq{}
 	ackInfo := slgproto.NewRoleAck{}
 	json.Unmarshal(req.GetData(), &reqInfo)

@@ -22,11 +22,11 @@ func (s *MasterClientRouter) NameSpace() string {
 	return "System"
 }
 
-func (s *MasterClientRouter) Pong(req liFace.IRequest) {
+func (s *MasterClientRouter) Pong(req liFace.IRequest, rsp liFace.IRespond) {
 	utils.Log.Info("Pong")
 }
 
-func (s *MasterClientRouter) ServerListAck(req liFace.IRequest) {
+func (s *MasterClientRouter) ServerListAck(req liFace.IRequest, rsp liFace.IRespond) {
 
 	ackInfo := proto.ServerListAck{}
 	err := json.Unmarshal(req.GetData(), &ackInfo)
@@ -39,7 +39,7 @@ func (s *MasterClientRouter) ServerListAck(req liFace.IRequest) {
 
 }
 
-func (s *MasterClientRouter) ShutDown(req liFace.IRequest) {
+func (s *MasterClientRouter) ShutDown(req liFace.IRequest, rsp liFace.IRespond) {
 	utils.Log.Info("ShutDown:%s", req.GetMsgName())
 
 	if s.isShutDown == false {

@@ -22,7 +22,7 @@ func (s *router) NameSpace() string {
 	return "*.*"
 }
 
-func (s *router) EveryThingHandle(req liFace.IRequest) {
+func (s *router) EveryThingHandle(req liFace.IRequest, rsp liFace.IRespond) {
 	conn, err := req.GetConnection().GetProperty("gateConn")
 	if err != nil{
 		utils.Log.Warn("EveryThingHandle not found gateConn")

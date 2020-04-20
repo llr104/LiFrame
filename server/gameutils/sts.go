@@ -53,7 +53,7 @@ func (s *sts) IsShutDown() bool {
 	return s.isShutDown
 }
 
-func (s* sts) UserOnOrOffReq(req liFace.IRequest) {
+func (s* sts) UserOnOrOffReq(req liFace.IRequest, rsp liFace.IRespond) {
 
 	reqInfo := proto.UserOnlineOrOffLineReq{}
 	json.Unmarshal(req.GetData(), &reqInfo)

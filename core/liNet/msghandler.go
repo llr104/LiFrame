@@ -26,7 +26,7 @@ func NewMsgHandle(workerSize uint32) *MsgHandle {
 }
 
 //将消息交给TaskQueue,由worker进行处理
-func (mh *MsgHandle)SendMsgToTaskQueue(request liFace.IRequest) {
+func (mh *MsgHandle) SendMsgToTaskQueue(request liFace.IRequest, respond liFace.IRespond) {
 	//根据ConnID来分配当前的连接应该由哪个worker负责处理
 	//轮询的平均分配法则
 
@@ -39,7 +39,7 @@ func (mh *MsgHandle)SendMsgToTaskQueue(request liFace.IRequest) {
 
 
 //马上以非阻塞方式处理消息
-func (mh *MsgHandle) DoMsgHandler(request liFace.IRequest) {
+func (mh *MsgHandle) DoMsgHandler(request liFace.IRequest, respond liFace.IRespond) {
 	msgName := request.GetMsgName()
 	arr := strings.Split(msgName,".")
 	isFound := false
@@ -60,15 +60,17 @@ func (mh *MsgHandle) DoMsgHandler(request liFace.IRequest) {
 					utils.Log.Warn("DoMsgHandler warning %s function not found",funcName)
 				}else{
 
+					//执行对应处理方法
 					isFound = true
 					router := handler.Value.(liFace.IRouter)
-					//执行对应处理方法
-					ret := router.PreHandle(request)
+					ret := router.PreHandle(request, respond)
+
 					if ret {
-						in := make([]reflect.Value, 1)
+						in := make([]reflect.Value, 2)
 						in[0] = reflect.ValueOf(request)
+						in[1] = reflect.ValueOf(respond)
 						method.Call(in)
-						router.PostHandle(request)
+						router.PostHandle(request, respond)
 					}else{
 						utils.Log.Warn("DoMsgHandler skip: %s",msgName)
 					}
@@ -80,9 +82,15 @@ func (mh *MsgHandle) DoMsgHandler(request liFace.IRequest) {
 	//查看是否有通配匹配
 	if l, ok := mh.Apis["*.*"]; ok{
 		isFound = true
+		respond := Respond{
+			msg:&Message{},
+			req:request,
+		}
+		respond.msg.SetSeq(respond.msg.GetSeq())
+
 		for handler := l.Front(); nil != handler; handler = handler.Next() {
 			router := handler.Value.(liFace.IRouter)
-			router.EveryThingHandle(request)
+			router.EveryThingHandle(request, &respond)
 		}
 	}
 
@@ -120,7 +128,11 @@ func (mh *MsgHandle) StartOneWorker(workerID int, taskQueue chan liFace.IRequest
 		select {
 			//有消息则取出队列的Request，并执行绑定的业务方法
 			case request := <-taskQueue:
-				mh.DoMsgHandler(request)
+				rsp := Respond{
+					msg:&Message{},
+					req:request,
+				}
+				mh.DoMsgHandler(request, &rsp)
 			case isExit := <-taskExit:
 				if isExit {
 					utils.Log.Info("Worker ID = %d is stop.", workerID)

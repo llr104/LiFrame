@@ -23,7 +23,7 @@ func (s *enterGame) NameSpace() string {
 	return "*.*"
 }
 
-func (s *enterGame) EveryThingHandle(req liFace.IRequest) {
+func (s *enterGame) EveryThingHandle(req liFace.IRequest, rsp liFace.IRespond) {
 	if req.GetMsgName() == proto.GameEnterGameReq{
 		reqInfo := proto.EnterGameReq{}
 		ackInfo := proto.EnterGameAck{}

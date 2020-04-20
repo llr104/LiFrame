@@ -25,7 +25,7 @@ func (s *worldMap) NameSpace() string {
 	return "worldMap"
 }
 
-func (s *worldMap) PreHandle(req liFace.IRequest) bool{
+func (s *worldMap) PreHandle(req liFace.IRequest, rsp liFace.IRespond) bool{
 	_, err := req.GetConnection().GetProperty("roleId")
 	if err == nil {
 		return true

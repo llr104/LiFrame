@@ -39,7 +39,7 @@ func (s *sts) NameSpace() string {
 	return "System"
 }
 
-func (s* sts) Ping(req liFace.IRequest){
+func (s* sts) Ping(req liFace.IRequest, rsp liFace.IRespond){
 	utils.Log.Info("Ping")
 	info := proto.PingPong{}
 	info.CurTime = time.Now().Unix()
@@ -47,14 +47,14 @@ func (s* sts) Ping(req liFace.IRequest){
 	req.GetConnection().SendMsg(proto.SystemPong, data)
 }
 
-func (s* sts) Pong(req liFace.IRequest){
+func (s* sts) Pong(req liFace.IRequest, rsp liFace.IRespond){
 	utils.Log.Info("Pong")
 }
 
 /*
 校验session
 */
-func (s *sts) CheckSessionReq(req liFace.IRequest) {
+func (s *sts) CheckSessionReq(req liFace.IRequest, rsp liFace.IRespond) {
 
 	reqInfo := proto.CheckSessionReq{}
 	ackInfo := proto.CheckSessionAck{}
@@ -82,7 +82,7 @@ func (s *sts) CheckSessionReq(req liFace.IRequest) {
 /*
 更新session操作
 */
-func (s *sts) SessionUpdateReq(req liFace.IRequest) {
+func (s *sts) SessionUpdateReq(req liFace.IRequest, rsp liFace.IRespond) {
 
 	reqInfo := proto.SessionUpdateReq{}
 	ackInfo := proto.SessionUpdateAck{}
@@ -109,7 +109,7 @@ func (s *sts) SessionUpdateReq(req liFace.IRequest) {
 
 }
 
-func (s* sts) UserOnOrOffReq(req liFace.IRequest) {
+func (s* sts) UserOnOrOffReq(req liFace.IRequest, rsp liFace.IRespond) {
 
 	reqInfo := proto.UserOnlineOrOffLineReq{}
 	json.Unmarshal(req.GetData(), &reqInfo)
