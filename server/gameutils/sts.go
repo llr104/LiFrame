@@ -65,7 +65,7 @@ func (s* sts) UserOnOrOffReq(req liFace.IRequest, rsp liFace.IRespond) {
 	ackInfo.UserId = reqInfo.UserId
 
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(proto.SystemUserOnOrOffAck, data)
+	rsp.GetMessage().SetBody(data)
 
 	if reqInfo.Type == proto.UserOffline {
 		s.userOffline(reqInfo.UserId)

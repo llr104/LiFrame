@@ -11,6 +11,11 @@ import (
 	"sync"
 )
 
+type connReq struct {
+	function func(rsp liFace.IRespond)
+	req liFace.IRequest
+}
+
 type Connection struct {
 	//当前Conn属于哪个Server
 	TcpNetWork liFace.INetWork
@@ -26,11 +31,13 @@ type Connection struct {
 	exitChan chan bool
 	//无缓冲管道，用于读、写两个goroutine之间的消息通信
 	msgChan chan []byte
-	lastSeq uint32
 	//链接属性
 	property map[string]interface{}
 	//保护链接属性修改的锁
 	propertyLock sync.RWMutex
+	lastSeq uint32
+	rpcMap map[uint32]connReq
+	rpcLock sync.RWMutex
 }
 
 //创建连接的方法
@@ -46,6 +53,7 @@ func NewConnection(netWork liFace.INetWork, conn *net.TCPConn, connID uint32, ms
 		msgChan:    make(chan []byte),
 		property:   make(map[string]interface{}),
 		lastSeq:    1,
+		rpcMap:		make(map[uint32]connReq),
 	}
 
 	if conn != nil{
@@ -211,11 +219,9 @@ func (c *Connection) RemoteAddr() net.Addr {
 
 
 //直接将Message数据发送数据给远程的TCP客户端
-func (c *Connection) SendMsg(msgName string, data []byte) error {
-	if c.isClosed == true {
-		utils.Log.Warning("connection closed when send msg")
-		return errors.New("connection closed when send msg")
-	}
+func (c *Connection) RpcCall(msgName string, data []byte, f func(rsp liFace.IRespond)) error {
+	c.rpcLock.Lock()
+	defer c.rpcLock.Unlock()
 
 	if c.lastSeq > math.MaxUint32-1 {
 		c.lastSeq = 1
@@ -223,20 +229,67 @@ func (c *Connection) SendMsg(msgName string, data []byte) error {
 		c.lastSeq++
 	}
 
+	m, err := c.send(msgName, c.lastSeq, liFace.RPC_Req, data)
+	if err == nil{
+		r := Request{msg:m,conn:c}
+		rpc := connReq{
+			function: f,
+			req:      &r,
+		}
+		c.rpcMap[c.lastSeq] = rpc
+	}
+	return err
+}
+
+func (c *Connection) RpcReply(msgName string, seq uint32, data []byte) error{
+	_, err := c.send(msgName, seq, liFace.RPC_Ack, data)
+	return err
+}
+
+func (c *Connection) RpcPush(msgName string, data []byte) error{
+	_, err := c.send(msgName, 0, liFace.RPC_Push, data)
+	return err
+}
+
+func (c *Connection) send(msgName string, seq uint32, t byte, data []byte) (liFace.IMessage, error) {
+
+	if c.isClosed == true {
+		utils.Log.Warning("connection closed when send msg")
+		return nil, errors.New("connection closed when send msg")
+	}
+
 	//将data封包，并且发送
 	dp := NewDataPack()
 	p := NewMsgPackage(msgName, data)
-	p.SetSeq(c.lastSeq)
+	p.Type = t
+	p.SetSeq(seq)
 	msg, err := dp.Pack(p)
 	if err != nil {
 		utils.Log.Warning("%s Pack error msg id = %s", c.TcpNetWork.GetName(), msgName)
-		return errors.New("Pack error msg ")
+		return nil, errors.New("Pack error msg ")
 	}
-
 	//写回客户端
 	c.msgChan <- msg
+	return p , nil
+}
 
-	return nil
+func (c *Connection) CheckRpc(seq uint32, rsp liFace.IRespond) bool{
+	c.rpcLock.Lock()
+	defer c.rpcLock.Unlock()
+
+	f, isOk := c.rpcMap[seq]
+	if isOk == false {
+		return false
+	}else{
+		rsp.SetRequest(f.req)
+		if f.function != nil{
+			f.function(rsp)
+		}
+
+		delete(c.rpcMap, seq)
+		return true
+	}
+
 }
 
 

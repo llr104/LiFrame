@@ -18,5 +18,6 @@ type IMessage interface {
 
 	SetBody([]byte)    //设置消息内容
 	SetBodyLen(uint32) //设置消息数据段长度
-
+	SetType(t byte)
+	GetType() byte
 }

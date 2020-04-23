@@ -83,7 +83,7 @@ func (s *scene1) ExitScene(userId uint32) bool{
 }
 
 
-func (s*scene1) GameMessage(userId uint32, msgName string, data []byte){
+func (s*scene1) GameMessage(userId uint32, msgName string, data []byte) interface{}{
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -91,7 +91,8 @@ func (s*scene1) GameMessage(userId uint32, msgName string, data []byte){
 		up := sceneData{}
 		up.Players = s.players
 		up.Monsters = s.monsters
-		s.SendMessageToUser(userId, protoSceneAck, up)
+		return up
+		//s.SendMessageToUser(userId, protoSceneAck, up)
 	}else if msgName == protoMoveReq {
 		m := move{}
 		json.Unmarshal(data, &m)
@@ -101,7 +102,7 @@ func (s*scene1) GameMessage(userId uint32, msgName string, data []byte){
 			p.X = m.TX
 			p.Y = m.TY
 		}
-
+		return p
 	}else if msgName == protoAttackReq {
 		a := attackReq{}
 
@@ -124,9 +125,10 @@ func (s*scene1) GameMessage(userId uint32, msgName string, data []byte){
 			if m.Hp == 0{
 				delete(s.monsters, a.MonsterId)
 			}
+			return ap
 		}
-
 	}
+	return nil
 }
 
 func (s*scene1) UserOffLine(userId uint32) bool{
@@ -151,7 +153,7 @@ func (s *sceneBase) SendMessageToUser(userId uint32, msgName string, msg interfa
 	if ok && state.State == GUserStateOnline {
 		data, err := json.Marshal(msg)
 		if err == nil{
-			state.Conn.SendMsg(msgName, data)
+			state.Conn.RpcPush(msgName, data)
 		}
 	}
 }

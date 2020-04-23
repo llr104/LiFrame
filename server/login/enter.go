@@ -70,7 +70,7 @@ func (s *enterLogin) LoginReq(req liFace.IRequest, rsp liFace.IRespond) {
 	}
 
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(proto.EnterLoginLoginAck, data)
+	rsp.GetMessage().SetBody(data)
 
 	endTime := time.Now().Nanosecond()
 	diff := endTime-beginTime
@@ -116,7 +116,7 @@ func (s *enterLogin) RegisterReq(req liFace.IRequest, rsp liFace.IRespond) {
 	}
 
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(proto.EnterLoginRegisterAck, data)
+	rsp.GetMessage().SetBody(data)
 
 }
 
@@ -144,7 +144,7 @@ func (s *enterLogin) DistributeWorldReq(req liFace.IRequest, rsp liFace.IRespond
 	}
 
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(proto.EnterLoginDistributeWorldAck, data)
+	rsp.GetMessage().SetBody(data)
 
 }
 

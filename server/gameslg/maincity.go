@@ -49,7 +49,7 @@ func (s *mainCity) QryBuildingQeq(req liFace.IRequest, rsp liFace.IRespond) {
 		ackInfo.Yield = playerMgr.getYield(roleId, reqInfo.BuildType)
 	}
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(slgproto.MainCityQryBuildingAck, data)
+	req.GetConnection().RpcCall(slgproto.MainCityQryBuildingAck, data)
 }
 
 func (s *mainCity) UpBuildingQeq(req liFace.IRequest, rsp liFace.IRespond) {
@@ -73,7 +73,7 @@ func (s *mainCity) UpBuildingQeq(req liFace.IRequest, rsp liFace.IRespond) {
 		ackInfo.Code = slgproto.CodeBuildingUpError
 	}
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(slgproto.MainCityUpBuildingAck, data)
+	req.GetConnection().RpcCall(slgproto.MainCityUpBuildingAck, data)
 }
 
 
@@ -92,6 +92,6 @@ func (s *mainCity) QryGeneralReq(req liFace.IRequest, rsp liFace.IRespond) {
 		ackInfo.Code = slgproto.CodeGeneralError
 	}
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(slgproto.MainCityQryGeneralAck, data)
+	req.GetConnection().RpcCall(slgproto.MainCityQryGeneralAck, data)
 }
 

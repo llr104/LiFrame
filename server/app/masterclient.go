@@ -87,7 +87,7 @@ func mPingTimer(v ...interface{})  {
 
 	data ,err := json.Marshal(info)
 	if err == nil{
-		conn.SendMsg(proto.SystemPing, data)
+		conn.RpcCall(proto.SystemPing, data, MClientRouter.Pong)
 	}else{
 		utils.Log.Info("mReportTimer error:%s", err.Error())
 	}
@@ -109,7 +109,7 @@ func mReportTimer(v ...interface{})  {
 
 	data ,err := json.Marshal(info)
 	if err == nil{
-		conn.SendMsg(proto.SystemServerInfoReport, data)
+		conn.RpcCall(proto.SystemServerInfoReport, data, nil)
 	}else{
 		utils.Log.Info("mReportTimer error:%s", err.Error())
 	}
@@ -124,7 +124,7 @@ func mServerListTimer(v ...interface{})  {
 
 		data ,err := json.Marshal(info)
 		if err == nil{
-			conn.SendMsg(proto.SystemServerListReq, data)
+			conn.RpcCall(proto.SystemServerListReq, data, MClientRouter.ServerListAck)
 		}else{
 			utils.Log.Info("mServerListTimer error:%s", err.Error())
 		}

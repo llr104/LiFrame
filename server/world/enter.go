@@ -33,10 +33,10 @@ func (s *enterWorld) PreHandle(req liFace.IRequest, rsp liFace.IRespond) bool{
 	}else{
 
 		//session检验不通过，跳过后面的逻辑
-		ackInfo := proto.JoinWorldAck{}
+		ackInfo := proto.SessionAck{}
 		ackInfo.Code = proto.Code_Session_Error
 		data, _ := json.Marshal(ackInfo)
-		req.GetConnection().SendMsg(proto.EnterWorldJoinWorldAck, data)
+		req.GetConnection().RpcCall(proto.EnterWorldSession, data, nil)
 		return false
 	}
 }
@@ -55,7 +55,7 @@ func (s *enterWorld) JoinWorldReq(req liFace.IRequest, rsp liFace.IRespond) {
 		utils.Log.Info("JoinWorldReq req error:",err.Error())
 		ackInfo.Code = proto.Code_Illegal
 		data, _ := json.Marshal(ackInfo)
-		req.GetConnection().SendMsg(proto.EnterWorldJoinWorldAck, data)
+		rsp.GetMessage().SetBody(data)
 	}else{
 		//向login校验session是否有效
 		if serverId, err := app.SessionMgr.CheckSessionFrom(reqInfo.Session); err == nil{
@@ -65,29 +65,32 @@ func (s *enterWorld) JoinWorldReq(req liFace.IRequest, rsp liFace.IRespond) {
 				sessionReq.Session = reqInfo.Session
 				sessionReq.UserId = reqInfo.UserId
 				sessionReq.ConnId = req.GetConnection().GetConnID()
-				data, _ := json.Marshal(sessionReq)
 
 				conn := c.GetConn()
 				if conn != nil{
-					conn.SendMsg(proto.SystemCheckSessionReq, data)
+					ackInfo.Code = proto.Code_Success
+					data, _ := json.Marshal(ackInfo)
+					rsp.GetMessage().SetBody(data)
+					sessionData, _ := json.Marshal(sessionReq)
+					conn.RpcCall(proto.SystemCheckSessionReq, sessionData, STS.CheckSessionAck)
 				}else{
 					ackInfo.Code = proto.Code_Session_Error
 					data, _ := json.Marshal(ackInfo)
-					req.GetConnection().SendMsg(proto.EnterWorldJoinWorldAck, data)
+					rsp.GetMessage().SetBody(data)
 				}
 			}else{
 				utils.Log.Info("session serverId: %s not found app connect server", serverId)
 
 				ackInfo.Code = proto.Code_Session_Error
 				data, _ := json.Marshal(ackInfo)
-				req.GetConnection().SendMsg(proto.EnterWorldJoinWorldAck, data)
+				rsp.GetMessage().SetBody(data)
 			}
 		}else{
 			utils.Log.Info("session serverId: %s not found from server", serverId)
 
 			ackInfo.Code = proto.Code_Session_Error
 			data, _ := json.Marshal(ackInfo)
-			req.GetConnection().SendMsg(proto.EnterWorldJoinWorldAck, data)
+			rsp.GetMessage().SetBody(data)
 		}
 	}
 
@@ -103,12 +106,12 @@ func (s *enterWorld) UserInfoReq(req liFace.IRequest, rsp liFace.IRespond) {
 		utils.Log.Info("UserInfoReq req error:",err.Error())
 		ackInfo.Code = proto.Code_Illegal
 		data, _ := json.Marshal(ackInfo)
-		req.GetConnection().SendMsg(proto.EnterWorldUserInfoAck, data)
+		rsp.GetMessage().SetBody(data)
 	}else{
 		if u, e := req.GetConnection().GetProperty("userId"); e != nil{
 			ackInfo.Code = proto.Code_Illegal
 			data, _ := json.Marshal(ackInfo)
-			req.GetConnection().SendMsg(proto.EnterWorldUserInfoAck, data)
+			rsp.GetMessage().SetBody(data)
 		}else{
 			reqInfo.UserId = u.(uint32)
 			user := dbobject.User{}
@@ -121,7 +124,7 @@ func (s *enterWorld) UserInfoReq(req liFace.IRequest, rsp liFace.IRespond) {
 			}
 
 			data, _ := json.Marshal(ackInfo)
-			req.GetConnection().SendMsg(proto.EnterWorldUserInfoAck, data)
+			rsp.GetMessage().SetBody(data)
 		}
 	}
 
@@ -136,7 +139,7 @@ func (s *enterWorld) UserLogoutReq(req liFace.IRequest, rsp liFace.IRespond) {
 	ackInfo.Code = proto.Code_Success
 	data, _ := json.Marshal(ackInfo)
 	utils.Log.Info("UserLogoutReq end: %v", reqInfo)
-	req.GetConnection().SendMsg(proto.EnterWorldUserLogoutAck, data)
+	rsp.GetMessage().SetBody(data)
 
 
 	//上报到登录服begin
@@ -159,7 +162,7 @@ func (s *enterWorld) UserLogoutReq(req liFace.IRequest, rsp liFace.IRespond) {
 				data, _ := json.Marshal(sessReq)
 				conn := client.GetConn()
 				if conn != nil{
-					conn.SendMsg(proto.SystemSessionUpdateReq, data)
+					conn.RpcCall(proto.SystemSessionUpdateReq, data, nil)
 				}
 			}
 		}
@@ -183,6 +186,6 @@ func (s *enterWorld) GameServersReq(req liFace.IRequest, rsp liFace.IRespond) {
 	ackInfo.Servers = m
 	ackInfo.Code = proto.Code_Success
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(proto.EnterWorldGameServersAck, data)
+	rsp.GetMessage().SetBody(data)
 	utils.Log.Info("GameServersReq: %v", reqInfo)
 }

@@ -44,7 +44,7 @@ func (s* sts) Ping(req liFace.IRequest, rsp liFace.IRespond){
 	info := proto.PingPong{}
 	info.CurTime = time.Now().Unix()
 	data, _ := json.Marshal(info)
-	req.GetConnection().SendMsg(proto.SystemPong, data)
+	req.GetConnection().RpcCall(proto.SystemPong, data, nil)
 }
 
 func (s* sts) Pong(req liFace.IRequest, rsp liFace.IRespond){
@@ -76,7 +76,8 @@ func (s *sts) CheckSessionReq(req liFace.IRequest, rsp liFace.IRespond) {
 	ackInfo.ConnId = reqInfo.ConnId
 
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(proto.SystemCheckSessionAck, data)
+	rsp.GetMessage().SetBody(data)
+
 }
 
 /*
@@ -105,7 +106,7 @@ func (s *sts) SessionUpdateReq(req liFace.IRequest, rsp liFace.IRespond) {
 	}
 
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(proto.SystemSessionUpdateAck, data)
+	rsp.GetMessage().SetBody(data)
 
 }
 
@@ -121,6 +122,6 @@ func (s* sts) UserOnOrOffReq(req liFace.IRequest, rsp liFace.IRespond) {
 	ackInfo.UserId = reqInfo.UserId
 
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(proto.SystemUserOnOrOffAck, data)
+	rsp.GetMessage().SetBody(data)
 
 }

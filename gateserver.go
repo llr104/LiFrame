@@ -86,7 +86,8 @@ func handleWsMessage(wsConn *liNet.WsConnection, req *liNet.WsMessageReq, rsp* l
 		msgName := msgArr[0]
 		msgProxyId := msgArr[1]
 		seq := msgArr[2]
-		req.Seq, _ = strconv.Atoi(seq)
+		t, _ := strconv.Atoi(seq)
+		rsp.Seq = uint32(t)
 		body := msgArr[3]
 
 		if msgName == proto.GateHandshake{
@@ -123,7 +124,7 @@ func handleWsMessage(wsConn *liNet.WsConnection, req *liNet.WsMessageReq, rsp* l
 				ackInfo.Code = proto.Code_Success
 				ackInfo.ServerInfo = serverInfo
 			}
-			rsp.FuncName = proto.GateLoginServerAck
+			rsp.FuncName = proto.GateLoginServerReq
 			rsp.ProxyName = ""
 			rsp.Data, _ = json.Marshal(ackInfo)
 			rsp.Seq = req.Seq
@@ -158,7 +159,7 @@ func routerToTarget(wsConn* liNet.WsConnection, msgName string, msgProxyId strin
 				isLive = true
 				proxyClient.GetConn().SetProperty("gateConn", wsConn)
 				proxyClient.GetConn().SetProperty("proxy", msgProxyId)
-				proxyClient.GetConn().SendMsg(msgName, sendData)
+				proxyClient.GetConn().RpcCall(msgName, sendData, gate.Router.Handle)
 			}
 		}else{
 

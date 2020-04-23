@@ -17,13 +17,13 @@ var GateMessageKey = []byte("liFrameVeryGood!")
 
 type WsMessageReq struct {
 	MsgType int
-	Seq     int
+	Seq     uint32
 	Data    []byte
 }
 
 type WsMessageRsp struct {
 	MsgType 	int
-	Seq     	int
+	Seq     	uint32
 	FuncName 	string
 	ProxyName   string
 	Data    	[]byte
@@ -129,7 +129,7 @@ func (wsConn *WsConnection) wsWriteLoop() {
 }
 
 
-func (wsConn *WsConnection) writeObject(proxyName string, funcName string, seq int, body interface{})  {
+func (wsConn *WsConnection) writeObject(proxyName string, funcName string, seq uint32, body interface{})  {
 	data, err := json.Marshal(body)
 	if err != nil{
 		return
@@ -139,7 +139,7 @@ func (wsConn *WsConnection) writeObject(proxyName string, funcName string, seq i
 }
 
 
-func (wsConn *WsConnection) writeMessage(proxyName string, funcName string, seq int, body[] byte){
+func (wsConn *WsConnection) writeMessage(proxyName string, funcName string, seq uint32, body[] byte){
 	text := fmt.Sprintf("%s|%s|%d|%s", funcName, proxyName, seq, body)
 
 	enData, err := openssl.AesCBCEncrypt([]byte(text), GateMessageKey, GateMessageKey, openssl.ZEROS_PADDING)
@@ -165,7 +165,7 @@ func (wsConn *WsConnection) writeMessage(proxyName string, funcName string, seq 
 }
 
 
-func (wsConn *WsConnection) Response(proxyName string, funcName string, seq int, body[] byte) {
+func (wsConn *WsConnection) Response(proxyName string, funcName string, seq uint32, body[] byte) {
 	wsConn.writeMessage(proxyName, funcName, seq, body)
 }
 

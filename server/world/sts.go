@@ -46,26 +46,27 @@ func (s* sts) Ping(req liFace.IRequest, rsp liFace.IRespond){
 	info := proto.PingPong{}
 	info.CurTime = time.Now().Unix()
 	data, _ := json.Marshal(info)
-	req.GetConnection().SendMsg(proto.SystemPong, data)
+	rsp.GetMessage().SetBody(data)
 }
 
 func (s* sts) Pong(req liFace.IRequest, rsp liFace.IRespond){
 	utils.Log.Info("Pong")
 }
 
-func (s *sts) CheckSessionAck(req liFace.IRequest, rsp liFace.IRespond) {
+func (s *sts) CheckSessionAck(rsp liFace.IRespond) {
 
+	req := rsp.GetRequest()
 	reqInfo := proto.CheckSessionAck{}
 	err := json.Unmarshal(req.GetData(), &reqInfo)
 	utils.Log.Info("CheckSessionAck: %v", reqInfo)
 	if err != nil{
-		utils.Log.Info("CheckSessionAck req error:",err.Error())
-		ackInfo := proto.JoinWorldAck{}
+		utils.Log.Info("CheckSessionAck req error:", err.Error())
+		ackInfo := proto.SessionAck{}
 		ackInfo.Code = proto.Code_Illegal
 		ackInfo.UserId = reqInfo.UserId
 		ackInfo.Session = reqInfo.Session
 		data, _ := json.Marshal(ackInfo)
-		req.GetConnection().SendMsg(proto.EnterWorldJoinWorldAck, data)
+		req.GetConnection().RpcCall(proto.EnterWorldSession, data,nil)
 
 	}else{
 
@@ -86,12 +87,12 @@ func (s *sts) CheckSessionAck(req liFace.IRequest, rsp liFace.IRespond) {
 				OnlineInstance.Join(c)
 			}
 
-			ackInfo := proto.JoinWorldAck{}
+			ackInfo := proto.SessionAck{}
 			ackInfo.Code = reqInfo.Code
 			ackInfo.UserId = reqInfo.UserId
 			ackInfo.Session = reqInfo.Session
 			data, _ := json.Marshal(ackInfo)
-			conn.SendMsg(proto.EnterWorldJoinWorldAck, data)
+			conn.RpcCall(proto.EnterWorldSession, data, nil)
 		}
 	}
 }
@@ -108,6 +109,6 @@ func (s* sts) UserOnOrOffReq(req liFace.IRequest, rsp liFace.IRespond) {
 	ackInfo.UserId = reqInfo.UserId
 
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(proto.SystemUserOnOrOffAck, data)
+	rsp.GetMessage().SetBody(data)
 
 }

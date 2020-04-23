@@ -51,7 +51,7 @@ func (s *enterGame) EveryThingHandle(req liFace.IRequest, rsp liFace.IRespond) {
 			}
 		}
 		data, _ := json.Marshal(ackInfo)
-		req.GetConnection().SendMsg(proto.GameEnterGameAck, data)
+		rsp.GetMessage().SetBody(data)
 
 	}else if req.GetMsgName() == protoLogoutReq{
 		//通知场景
@@ -62,24 +62,26 @@ func (s *enterGame) EveryThingHandle(req liFace.IRequest, rsp liFace.IRespond) {
 		}
 
 		req.GetConnection().RemoveProperty("userId")
-		req.GetConnection().SendMsg(protoLogoutAck, nil)
+		rsp.GetMessage().SetBody(nil)
 
 	} else if req.GetMsgName() == protoHeartBeatReq{
 		h := heartBeat{}
 		json.Unmarshal(req.GetData(), &h)
 		h.ServerTimeStamp = time.Now().UnixNano() / 1e6
-		data,_ := json.Marshal(h)
-		req.GetConnection().SendMsg(protoHeartBeatAck, data)
+		data, _ := json.Marshal(h)
+		rsp.GetMessage().SetBody(data)
 	} else{
 		//验证连接是否已经授权能进入游戏了
 		userId, err := req.GetConnection().GetProperty("userId")
 		if err == nil {
 			d := userId.(uint32)
-			game.gameMessage(d, req.GetMsgName(), req.GetData(), req.GetConnection())
+			ack := game.gameMessage(d, req.GetMsgName(), req.GetData(), req.GetConnection())
+			data, _:= json.Marshal(ack)
+			rsp.GetMessage().SetBody(data)
 		}else{
 			v := req.GetMsgName()
 			fmt.Println(v)
-			req.GetConnection().SendMsg(proto.AuthError, nil)
+			req.GetConnection().RpcCall(proto.AuthError, nil, nil)
 		}
 	}
 

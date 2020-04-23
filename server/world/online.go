@@ -47,7 +47,7 @@ func checkOnline(v ...interface{}) {
 						data, _ := json.Marshal(sessReq)
 						conn := client.GetConn()
 						if conn != nil{
-							conn.SendMsg(proto.SystemSessionUpdateReq, data)
+							conn.RpcCall(proto.SystemSessionUpdateReq, data,nil)
 						}
 						v.SetProperty("lastKeepLive", curTime)
 					}

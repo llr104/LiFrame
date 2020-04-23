@@ -62,6 +62,6 @@ func (s *npc) QrySceneReq(req liFace.IRequest)  {
 	}
 
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(slgproto.NpcQrySceneAck, data)
+	req.GetConnection().RpcCall(slgproto.NpcQrySceneAck, data)
 
 }

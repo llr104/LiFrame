@@ -159,7 +159,7 @@ func (g*gate) Reconnect(wsConn* liNet.WsConnection, handshakeId string) string{
 					pack.UserId = userId
 					pack.Type = proto.UserOnline
 					data, _ := json.Marshal(pack)
-					c.SendMsg(proto.SystemUserOnOrOffReq, data)
+					c.RpcCall(proto.SystemUserOnOrOffReq, data, nil)
 				}
 			}
 		}
@@ -201,7 +201,7 @@ func (g*gate) ConnectExit(wsConn* liNet.WsConnection){
 					pack.UserId = userId
 					pack.Type = proto.UserOffline
 					data, _ := json.Marshal(pack)
-					c.SendMsg(proto.SystemUserOnOrOffReq, data)
+					c.RpcCall(proto.SystemUserOnOrOffReq, data, nil)
 				}
 			}
 		}

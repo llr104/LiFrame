@@ -35,7 +35,7 @@ func (s *mainLogic) enterGame(req proto.EnterGameReq) bool{
 	return true
 }
 
-func (s *mainLogic) enterScene(userId uint32, sceneId int, conn liFace.IConnection) bool{
+func (s *mainLogic) enterScene(userId uint32, sceneId int, conn liFace.IConnection) (bool, enterSceneAck){
 
 	ea := enterSceneAck{}
 	ea.SceneId = sceneId
@@ -43,9 +43,7 @@ func (s *mainLogic) enterScene(userId uint32, sceneId int, conn liFace.IConnecti
 	scene, ok := s.scenes[sceneId]
 	if ok == false {
 		ea.Code = proto.Code_EnterSceneError
-		data, _ := json.Marshal(ea)
-		conn.SendMsg(protoEnterSceneAck, data)
-		return false
+		return false, ea
 	}
 
 	isIn, state := GUserMgr.UserIsIn(userId)
@@ -64,22 +62,17 @@ func (s *mainLogic) enterScene(userId uint32, sceneId int, conn liFace.IConnecti
 		ea.Code = proto.Code_EnterSceneError
 	}
 
-	data, _ := json.Marshal(ea)
-	conn.SendMsg(protoEnterSceneAck, data)
-
-	return ok
+	return ok, ea
 }
 
-func (s *mainLogic) exitScene(userId uint32, sceneId int, conn liFace.IConnection){
+func (s *mainLogic) exitScene(userId uint32, sceneId int, conn liFace.IConnection) exitSceneAck{
 	scene, ok := s.scenes[sceneId]
 	ea := exitSceneAck{}
 	ea.SceneId = sceneId
 
 	if ok == false {
 		ea.Code = proto.Code_ExitSceneError
-		data, _ := json.Marshal(ea)
-		conn.SendMsg(protoExitSceneAck, data)
-		return
+		return ea
 	}
 
 	isIn, state := GUserMgr.UserIsIn(userId)
@@ -95,38 +88,40 @@ func (s *mainLogic) exitScene(userId uint32, sceneId int, conn liFace.IConnectio
 		ea.Code = proto.Code_ExitSceneError
 	}
 
-	data, _ := json.Marshal(ea)
-	conn.SendMsg(protoExitSceneAck, data)
+	return ea
 }
 
-func (s *mainLogic) gameMessage(userId uint32, msgName string, data []byte, conn liFace.IConnection){
+func (s *mainLogic) gameMessage(userId uint32, msgName string, data []byte, conn liFace.IConnection) interface{} {
 
 	if msgName == protoSceneListReq{
-		a := sceneListAck{}
-		a.SceneId = make([]int, len(s.scenes))
-		a.SceneName = make([]string, len(s.scenes))
+		ack := sceneListAck{}
+		ack.SceneId = make([]int, len(s.scenes))
+		ack.SceneName = make([]string, len(s.scenes))
 		for k, v := range s.scenes{
-			a.SceneName[k] = v.Name()
-			a.SceneId[k] = v.Id()
+			ack.SceneName[k] = v.Name()
+			ack.SceneId[k] = v.Id()
 		}
-		data, _ := json.Marshal(a)
-		conn.SendMsg(protoSceneListAck, data)
+		return ack
 
 	} else if msgName == protoEnterSceneReq{
 		e := enterSceneReq{}
 		json.Unmarshal(data, &e)
-		s.enterScene(userId, e.SceneId, conn)
+		_, ack := s.enterScene(userId, e.SceneId, conn)
+		return ack
 	}else if msgName == protoExitSceneReq{
 		e := exitSceneReq{}
 		json.Unmarshal(data, &e)
-		s.exitScene(userId, e.SceneId, conn)
+		ack := s.exitScene(userId, e.SceneId, conn)
+		return ack
 	}else{
 		if ok, state := GUserMgr.UserIsIn(userId); ok {
 			if t, isOk := s.scenes[state.SceneId]; isOk{
-				t.GameMessage(userId, msgName, data)
+				ack := t.GameMessage(userId, msgName, data)
+				return ack
 			}
 		}
 	}
+	return nil
 }
 
 

@@ -35,7 +35,7 @@ func (s *enterGame) EveryThingHandle(req liFace.IRequest, rsp liFace.IRespond) {
 			req.GetConnection().SetProperty("userId", reqInfo.UserId)
 		}
 		data, _ := json.Marshal(ackInfo)
-		req.GetConnection().SendMsg(proto.GameEnterGameAck, data)
+		req.GetConnection().RpcCall(proto.GameEnterGameAck, data)
 	}
 }
 

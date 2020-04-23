@@ -116,7 +116,7 @@ func (s* sts) Ping(req liFace.IRequest, rsp liFace.IRespond){
 	info := proto.PingPong{}
 	info.CurTime = time.Now().Unix()
 	data, _ := json.Marshal(info)
-	req.GetConnection().SendMsg(proto.SystemPong, data)
+	rsp.GetMessage().SetBody(data)
 }
 
 func (s* sts) Pong(req liFace.IRequest, rsp liFace.IRespond){
@@ -133,6 +133,6 @@ func (s*sts) ServerListReq(req liFace.IRequest, rsp liFace.IRespond){
 	ack := proto.ServerListAck{}
 	ack.ServerMap = s.serverMap
 	data, _ := json.Marshal(ack)
-	req.GetConnection().SendMsg(proto.SystemServerListAck, data)
+	rsp.GetMessage().SetBody(data)
 
 }

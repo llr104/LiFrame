@@ -72,7 +72,7 @@ func loginPingTimer(v ...interface{})  {
 
 	data ,err := json.Marshal(info)
 	if err == nil{
-		conn.SendMsg(proto.SystemPing, data)
+		conn.RpcCall(proto.SystemPing, data, nil)
 	}else{
 		utils.Log.Info("loginPingTimer error:%s", err.Error())
 	}

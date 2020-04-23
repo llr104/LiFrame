@@ -21,6 +21,17 @@ func (r *Request) GetMsgName() string {
 	return r.msg.GetMsgName()
 }
 
+func (r *Request) GetSeq() uint32 {
+	return r.msg.GetSeq()
+}
+
+func (r *Request) GetMessage() liFace.IMessage {
+	return r.msg
+}
+
+func (r *Request) SetMessage(msg liFace.IMessage)  {
+	r.msg = msg
+}
 
 type Respond struct {
 	msg  	liFace.IMessage
@@ -33,11 +44,23 @@ func(r *Respond) GetData() []byte {
 	return r.msg.GetBody()
 }
 
-//获取响应的消息的ID
+
+
 func (r *Respond) GetRequest() liFace.IRequest {
 	return r.req
 }
 
+func (r *Respond) SetRequest(req liFace.IRequest)  {
+	r.req = req
+}
+
+func (r *Respond) GetMessage() liFace.IMessage {
+	return r.msg
+}
+
+func (r *Respond) SetMessage(msg liFace.IMessage)  {
+	r.msg = msg
+}
 
 
 

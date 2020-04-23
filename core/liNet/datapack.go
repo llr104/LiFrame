@@ -1,19 +1,19 @@
 package liNet
 
 import (
-	"github.com/llr104/LiFrame/core/liFace"
-	"github.com/llr104/LiFrame/utils"
 	"bytes"
 	"encoding/binary"
 	"errors"
+	"github.com/llr104/LiFrame/core/liFace"
+	"github.com/llr104/LiFrame/utils"
 	"github.com/thinkoner/openssl"
 )
 
-//|---dataLen---|---nameLen---|-----------------data-----------------|
-//|---4 bytes---|---4 bytes---|----4 bytes----|--------dataLen-------|
-//|------------------------------------------------------------------|
-//|---dataLen---|---nameLen---|------seq------|---name---|----msg----|
-//|------------------------------------------------------------------|
+//|---dataLen---|---nameLen---|--------------------------data-----------------------------|
+//|---4 bytes---|---4 bytes---|----4 bytes----|----1 byte----|--------dataLen-------------|
+//|---------------------------------------------------------------------------------------|
+//|---dataLen---|---nameLen---|------seq------|-----type-----|---name---|-------msg-------|
+//|---------------------------------------------------------------------------------------|
 
 var DataPackKey = []byte("msgprotokey12345")
 //封包拆包类实例，暂时不需要成员
@@ -26,8 +26,8 @@ func NewDataPack() *DataPack {
 
 //获取包头长度方法
 func(dp *DataPack) GetHeadLen() uint32 {
-	//dataLen uint32(4字节) +  nameLen uint32(4字节) + seq uint32(4字节)
-	return 12
+	//dataLen uint32(4字节) +  nameLen uint32(4字节) + seq uint32(4字节) + type byte(1字节)
+	return 13
 }
 
 //封包方法(压缩数据)
@@ -42,7 +42,7 @@ func(dp *DataPack) Pack(msg liFace.IMessage)([]byte, error) {
 		return nil, err
 	}else{
 		body = dst
-		dataLen = uint32(len(dst)) + msg.GetNameLen()+4
+		dataLen = uint32(len(dst)) + msg.GetNameLen()+4+1
 	}
 
 	//写dataLen
@@ -59,6 +59,12 @@ func(dp *DataPack) Pack(msg liFace.IMessage)([]byte, error) {
 	if err := binary.Write(dataBuff, binary.LittleEndian, msg.GetSeq()); err != nil {
 		return nil, err
 	}
+
+	//写type
+	if err := binary.Write(dataBuff, binary.LittleEndian, msg.GetType()); err != nil {
+		return nil, err
+	}
+
 
 	//写msgName
 	if err := binary.Write(dataBuff, binary.LittleEndian, msg.GetMsgNameByte()); err != nil {
@@ -96,9 +102,13 @@ func(dp *DataPack) Unpack(binaryData []byte)(liFace.IMessage, error) {
 		return nil, err
 	}
 
+	//读type
+	if err := binary.Read(dataBuff, binary.LittleEndian, &msg.Type); err != nil {
+		return nil, err
+	}
 
 	//bodyLen
-	msg.BodyLen = dataLen-msg.NameLen-4
+	msg.BodyLen = dataLen-msg.NameLen-4-1
 	//判断dataLen的长度是否超出我们允许的最大包长度
 	if utils.GlobalObject.MaxPacketSize > 0 && dataLen > utils.GlobalObject.MaxPacketSize {
 		return nil, errors.New("too large msg Data received")

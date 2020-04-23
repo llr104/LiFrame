@@ -71,7 +71,7 @@ func (connMgr *ConnManager) BroadcastMsg(msgName string, data []byte){
 	defer connMgr.connLock.Unlock()
 
 	for _, conn := range connMgr.connections {
-		conn.SendMsg(msgName, data)
+		conn.RpcCall(msgName, data, nil)
 	}
 }
 

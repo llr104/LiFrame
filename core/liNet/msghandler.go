@@ -40,62 +40,80 @@ func (mh *MsgHandle) SendMsgToTaskQueue(request liFace.IRequest, respond liFace.
 
 //马上以非阻塞方式处理消息
 func (mh *MsgHandle) DoMsgHandler(request liFace.IRequest, respond liFace.IRespond) {
-	msgName := request.GetMsgName()
-	arr := strings.Split(msgName,".")
-	isFound := false
 
-	if len(arr) == 2{
-		//绝对匹配
-		nameSpace := arr[0]
-		funcName := arr[1]
+	//执行对应处理方法
+	rpcType := request.GetMessage().GetType()
+	if rpcType == liFace.RPC_Ack {
 
-		if l, ok := mh.Apis[nameSpace]; ok {
-			for handler := l.Front(); nil != handler; handler = handler.Next() {
-				//t := reflect.TypeOf(handler)
-				//fmt.Println("DoMsgHandler reflect type",t)
-				v := reflect.ValueOf(handler.Value)
-				//fmt.Println("DoMsgHandler reflect value",v)
-				method := v.MethodByName(funcName)
-				if method.IsValid() == false {
-					utils.Log.Warn("DoMsgHandler warning %s function not found",funcName)
-				}else{
+		m := request.GetMessage()
+		respond.SetMessage(m)
+		request.GetConnection().CheckRpc(request.GetSeq(), respond)
 
-					//执行对应处理方法
-					isFound = true
-					router := handler.Value.(liFace.IRouter)
-					ret := router.PreHandle(request, respond)
+	}else{
+		msgName := request.GetMsgName()
+		arr := strings.Split(msgName,".")
+		isFound := false
 
-					if ret {
-						in := make([]reflect.Value, 2)
-						in[0] = reflect.ValueOf(request)
-						in[1] = reflect.ValueOf(respond)
-						method.Call(in)
-						router.PostHandle(request, respond)
+		if len(arr) == 2{
+			//绝对匹配
+			nameSpace := arr[0]
+			funcName := arr[1]
+
+			if l, ok := mh.Apis[nameSpace]; ok {
+				for handler := l.Front(); nil != handler; handler = handler.Next() {
+					//t := reflect.TypeOf(handler)
+					//fmt.Println("DoMsgHandler reflect type",t)
+					v := reflect.ValueOf(handler.Value)
+					//fmt.Println("DoMsgHandler reflect value",v)
+					method := v.MethodByName(funcName)
+					if method.IsValid() == false {
+						utils.Log.Warn("DoMsgHandler warning %s function not found",funcName)
 					}else{
-						utils.Log.Warn("DoMsgHandler skip: %s",msgName)
+						isFound = true
+						router := handler.Value.(liFace.IRouter)
+						ret := router.PreHandle(request, respond)
+						if ret {
+							in := make([]reflect.Value, 2)
+							in[0] = reflect.ValueOf(request)
+							in[1] = reflect.ValueOf(respond)
+							method.Call(in)
+							router.PostHandle(request, respond)
+							//回复client
+							respond.SetRequest(request)
+							request.GetConnection().RpcReply(request.GetMsgName(), request.GetSeq(), respond.GetData())
+
+						}else{
+							utils.Log.Warn("DoMsgHandler skip: %s",msgName)
+							//回复client
+							respond.SetRequest(request)
+							request.GetConnection().RpcReply(request.GetMsgName(), request.GetSeq(), respond.GetData())
+						}
 					}
 				}
 			}
 		}
-	}
 
-	//查看是否有通配匹配
-	if l, ok := mh.Apis["*.*"]; ok{
-		isFound = true
-		respond := Respond{
-			msg:&Message{},
-			req:request,
+		//查看是否有通配匹配
+		if l, ok := mh.Apis["*.*"]; ok{
+			isFound = true
+			respond := Respond{
+				msg:&Message{},
+				req:request,
+			}
+			respond.msg.SetSeq(respond.msg.GetSeq())
+
+			for handler := l.Front(); nil != handler; handler = handler.Next() {
+				router := handler.Value.(liFace.IRouter)
+				router.EveryThingHandle(request, &respond)
+				//回复client
+				respond.SetRequest(request)
+				request.GetConnection().RpcReply(request.GetMsgName(), request.GetSeq(), respond.GetData())
+			}
 		}
-		respond.msg.SetSeq(respond.msg.GetSeq())
 
-		for handler := l.Front(); nil != handler; handler = handler.Next() {
-			router := handler.Value.(liFace.IRouter)
-			router.EveryThingHandle(request, &respond)
+		if isFound == false{
+			utils.Log.Warning("DoMsgHandler not found: %s handler",msgName)
 		}
-	}
-
-	if isFound == false{
-		utils.Log.Warning("DoMsgHandler not found: %s handler",msgName)
 	}
 
 }

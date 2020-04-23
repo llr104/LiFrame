@@ -10,6 +10,7 @@ type Message struct {
 	Name    []byte  //消息的ID
 	Seq  	uint32	//序列号
 	Body    []byte  //消息的内容
+	Type    byte
 }
 
 
@@ -78,4 +79,12 @@ func (msg *Message) SetSeq(seq uint32) {
 
 func (msg *Message) GetSeq() uint32  {
 	return msg.Seq
+}
+
+func (msg *Message) SetType(t byte){
+	msg.Type = t
+}
+
+func (msg *Message) GetType() byte {
+	return msg.Type
 }

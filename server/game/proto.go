@@ -10,14 +10,11 @@ const protoLogoutReq = "logoutReq"
 const protoLogoutAck = "logoutAck"
 
 const protoSceneListReq = "sceneListReq"
-const protoSceneListAck = "sceneListAck"
-
 const protoEnterSceneReq = "enterSceneReq"
-const protoEnterSceneAck = "enterSceneAck"
+
 const protoExitSceneReq = "exitSceneReq"
 const protoExitSceneAck = "exitSceneAck"
 const protoSceneReq = "sceneReq"
-const protoSceneAck = "sceneAck"
 const protoMoveReq = "moveReq"
 const protoMovePush = "movePush"
 const protoAttackReq = "attackReq"

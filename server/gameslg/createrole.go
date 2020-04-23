@@ -46,7 +46,7 @@ func (s *createRole) QryRoleReq(req liFace.IRequest, rsp liFace.IRespond)  {
 		}
 
 		data, _ := json.Marshal(ackInfo)
-		req.GetConnection().SendMsg(slgproto.BirthQryRoleAck, data)
+		req.GetConnection().RpcCall(slgproto.BirthQryRoleAck, data)
 	}else{
 		if p, err := req.GetConnection().GetProperty("roleId"); err == nil {
 
@@ -63,7 +63,7 @@ func (s *createRole) QryRoleReq(req liFace.IRequest, rsp liFace.IRespond)  {
 		}
 
 		data, _ := json.Marshal(ackInfo)
-		req.GetConnection().SendMsg(slgproto.BirthQryRoleAck, data)
+		req.GetConnection().RpcCall(slgproto.BirthQryRoleAck, data)
 	}
 }
 
@@ -117,5 +117,5 @@ func (s *createRole) NewRoleReq(req liFace.IRequest, rsp liFace.IRespond) {
 	}
 
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(slgproto.BirthNewRoleAck, data)
+	req.GetConnection().RpcCall(slgproto.BirthNewRoleAck, data)
 }

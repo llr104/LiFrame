@@ -22,14 +22,14 @@ func (s *MasterClientRouter) NameSpace() string {
 	return "System"
 }
 
-func (s *MasterClientRouter) Pong(req liFace.IRequest, rsp liFace.IRespond) {
+func (s *MasterClientRouter) Pong(rsp liFace.IRespond) {
 	utils.Log.Info("Pong")
 }
 
-func (s *MasterClientRouter) ServerListAck(req liFace.IRequest, rsp liFace.IRespond) {
+func (s *MasterClientRouter) ServerListAck(rsp liFace.IRespond) {
 
 	ackInfo := proto.ServerListAck{}
-	err := json.Unmarshal(req.GetData(), &ackInfo)
+	err := json.Unmarshal(rsp.GetData(), &ackInfo)
 	utils.Log.Info("ServerListAck: %v", ackInfo)
 	if err != nil{
 		utils.Log.Info("ServerListAck error:%s",err.Error())

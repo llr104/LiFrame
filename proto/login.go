@@ -49,3 +49,9 @@ type JoinWorldAck struct {
 	Session      string
 	UserId		 uint32	
 }
+
+type SessionAck struct {
+	BaseAck
+	Session      string
+	UserId		 uint32
+}

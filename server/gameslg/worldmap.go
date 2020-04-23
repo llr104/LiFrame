@@ -52,7 +52,7 @@ func (s *worldMap) QryWorldMap(req liFace.IRequest)  {
 	}
 
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(slgproto.WorldMapQryWorldMapAck, data)
+	req.GetConnection().RpcCall(slgproto.WorldMapQryWorldMapAck, data)
 }
 
 /*
@@ -101,7 +101,7 @@ func (s *worldMap) GarrisonCity(req liFace.IRequest)  {
 	}
 
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(slgproto.WorldMapGarrisonCityAck, data)
+	req.GetConnection().RpcCall(slgproto.WorldMapGarrisonCityAck, data)
 }
 
 /*
@@ -146,5 +146,5 @@ func (s *worldMap) AttackCityReq(req liFace.IRequest)  {
 
 	ackInfo.General = *general
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().SendMsg(slgproto.WorldMapAttackCityAck, data)
+	req.GetConnection().RpcCall(slgproto.WorldMapAttackCityAck, data)
 }
