@@ -35,7 +35,7 @@ func (s *MasterClientRouter) ServerListAck(rsp liFace.IRespond) {
 
 }
 
-func (s *MasterClientRouter) ShutDown(req liFace.IRequest, rsp liFace.IRespond) {
+func (s *MasterClientRouter) ShutDown(req liFace.IRequest, rsp liFace.IMessage) {
 	utils.Log.Info("ShutDown:%s", req.GetMessage().GetMsgName())
 
 	if s.isShutDown == false {

@@ -39,19 +39,19 @@ func (s *sts) NameSpace() string {
 	return "System"
 }
 
-func (s* sts) Ping(req liFace.IRequest, rsp liFace.IRespond){
+func (s* sts) Ping(req liFace.IRequest, rsp liFace.IMessage){
 	utils.Log.Info("Ping")
 	info := proto.PingPong{}
 	info.CurTime = time.Now().Unix()
 	data, _ := json.Marshal(info)
-	rsp.GetMessage().SetBody(data)
+	rsp.SetBody(data)
 }
 
 
 /*
 校验session
 */
-func (s *sts) CheckSessionReq(req liFace.IRequest, rsp liFace.IRespond) {
+func (s *sts) CheckSessionReq(req liFace.IRequest, rsp liFace.IMessage) {
 	msg := req.GetMessage()
 	reqInfo := proto.CheckSessionReq{}
 	ackInfo := proto.CheckSessionAck{}
@@ -73,14 +73,14 @@ func (s *sts) CheckSessionReq(req liFace.IRequest, rsp liFace.IRespond) {
 	ackInfo.ConnId = reqInfo.ConnId
 
 	data, _ := json.Marshal(ackInfo)
-	rsp.GetMessage().SetBody(data)
+	rsp.SetBody(data)
 
 }
 
 /*
 更新session操作
 */
-func (s *sts) SessionUpdateReq(req liFace.IRequest, rsp liFace.IRespond) {
+func (s *sts) SessionUpdateReq(req liFace.IRequest, rsp liFace.IMessage) {
 
 	reqInfo := proto.SessionUpdateReq{}
 	ackInfo := proto.SessionUpdateAck{}
@@ -103,11 +103,11 @@ func (s *sts) SessionUpdateReq(req liFace.IRequest, rsp liFace.IRespond) {
 	}
 
 	data, _ := json.Marshal(ackInfo)
-	rsp.GetMessage().SetBody(data)
+	rsp.SetBody(data)
 
 }
 
-func (s* sts) UserOnOrOffReq(req liFace.IRequest, rsp liFace.IRespond) {
+func (s* sts) UserOnOrOffReq(req liFace.IRequest, rsp liFace.IMessage) {
 
 	reqInfo := proto.UserOnlineOrOffLineReq{}
 	json.Unmarshal(req.GetMessage().GetBody(), &reqInfo)
@@ -119,6 +119,6 @@ func (s* sts) UserOnOrOffReq(req liFace.IRequest, rsp liFace.IRespond) {
 	ackInfo.UserId = reqInfo.UserId
 
 	data, _ := json.Marshal(ackInfo)
-	rsp.GetMessage().SetBody(data)
+	rsp.SetBody(data)
 
 }

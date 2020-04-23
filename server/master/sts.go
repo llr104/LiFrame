@@ -75,7 +75,7 @@ func (s *sts) liveCheck() {
 }
 
 
-func (s*sts) ServerInfoReport(req liFace.IRequest, rsp liFace.IRespond){
+func (s*sts) ServerInfoReport(req liFace.IRequest, rsp liFace.IMessage){
 	msg := req.GetMessage()
 	remote := req.GetConnection().GetTCPConnection().RemoteAddr().String()
 	info := proto.ServerInfoReport{}
@@ -111,16 +111,16 @@ func (s*sts) ServerInfoReport(req liFace.IRequest, rsp liFace.IRespond){
 
 }
 
-func (s* sts) Ping(req liFace.IRequest, rsp liFace.IRespond){
+func (s* sts) Ping(req liFace.IRequest, rsp liFace.IMessage){
 	utils.Log.Info("Ping")
 	info := proto.PingPong{}
 	info.CurTime = time.Now().Unix()
 	data, _ := json.Marshal(info)
-	rsp.GetMessage().SetBody(data)
+	rsp.SetBody(data)
 }
 
 
-func (s*sts) ServerListReq(req liFace.IRequest, rsp liFace.IRespond){
+func (s*sts) ServerListReq(req liFace.IRequest, rsp liFace.IMessage){
 	msg := req.GetMessage()
 	utils.Log.Info("ServerListReq req : %s", req.GetConnection().GetTCPConnection().RemoteAddr())
 	info := proto.ServerListReq{}
@@ -130,6 +130,6 @@ func (s*sts) ServerListReq(req liFace.IRequest, rsp liFace.IRespond){
 	ack := proto.ServerListAck{}
 	ack.ServerMap = s.serverMap
 	data, _ := json.Marshal(ack)
-	rsp.GetMessage().SetBody(data)
+	rsp.SetBody(data)
 
 }

@@ -27,7 +27,7 @@ func (s *enterGame) NameSpace() string {
 	return "*.*"
 }
 
-func (s *enterGame) EveryThingHandle(req liFace.IRequest, rsp liFace.IRespond) {
+func (s *enterGame) EveryThingHandle(req liFace.IRequest, rsp liFace.IMessage) {
 
 	if gameutils.STS.IsShutDown() {
 		return
@@ -51,7 +51,7 @@ func (s *enterGame) EveryThingHandle(req liFace.IRequest, rsp liFace.IRespond) {
 			}
 		}
 		data, _ := json.Marshal(ackInfo)
-		rsp.GetMessage().SetBody(data)
+		rsp.SetBody(data)
 
 	}else if msg.GetMsgName() == protoLogoutReq{
 		//通知场景
@@ -62,14 +62,14 @@ func (s *enterGame) EveryThingHandle(req liFace.IRequest, rsp liFace.IRespond) {
 		}
 
 		req.GetConnection().RemoveProperty("userId")
-		rsp.GetMessage().SetBody(nil)
+		rsp.SetBody(nil)
 
 	} else if msg.GetMsgName() == protoHeartBeatReq{
 		h := heartBeat{}
 		json.Unmarshal(msg.GetBody(), &h)
 		h.ServerTimeStamp = time.Now().UnixNano() / 1e6
 		data, _ := json.Marshal(h)
-		rsp.GetMessage().SetBody(data)
+		rsp.SetBody(data)
 	} else{
 		//验证连接是否已经授权能进入游戏了
 		userId, err := req.GetConnection().GetProperty("userId")
@@ -77,7 +77,7 @@ func (s *enterGame) EveryThingHandle(req liFace.IRequest, rsp liFace.IRespond) {
 			d := userId.(uint32)
 			ack := game.gameMessage(d, msg.GetMsgName(), msg.GetBody(), req.GetConnection())
 			data, _:= json.Marshal(ack)
-			rsp.GetMessage().SetBody(data)
+			rsp.SetBody(data)
 		}else{
 			v := msg.GetMsgName()
 			fmt.Println(v)

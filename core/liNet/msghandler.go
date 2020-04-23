@@ -26,7 +26,7 @@ func NewMsgHandle(workerSize uint32) *MsgHandle {
 }
 
 //将消息交给TaskQueue,由worker进行处理
-func (mh *MsgHandle) SendMsgToTaskQueue(request liFace.IRequest, respond liFace.IRespond) {
+func (mh *MsgHandle) SendMsgToTaskQueue(request liFace.IRequest) {
 	//根据ConnID来分配当前的连接应该由哪个worker负责处理
 	//轮询的平均分配法则
 
@@ -39,16 +39,13 @@ func (mh *MsgHandle) SendMsgToTaskQueue(request liFace.IRequest, respond liFace.
 
 
 //马上以非阻塞方式处理消息
-func (mh *MsgHandle) DoMsgHandler(request liFace.IRequest, respond liFace.IRespond) {
+func (mh *MsgHandle) DoMsgHandler(request liFace.IRequest, respond liFace.IMessage) {
 
 	//执行对应处理方法
 	rpcType := request.GetMessage().GetType()
-	if rpcType == liFace.RPC_Ack {
-
+	if rpcType == liFace.RpcAck {
 		m := request.GetMessage()
-		respond.SetMessage(m)
-		request.GetConnection().CheckRpc(request.GetMessage().GetSeq(), respond)
-
+		request.GetConnection().CheckRpc(request.GetMessage().GetSeq(), m)
 	}else{
 		msgName := request.GetMessage().GetMsgName()
 		arr := strings.Split(msgName,".")
@@ -79,14 +76,12 @@ func (mh *MsgHandle) DoMsgHandler(request liFace.IRequest, respond liFace.IRespo
 							method.Call(in)
 							router.PostHandle(request, respond)
 							//回复client
-							respond.SetRequest(request)
-							request.GetConnection().RpcReply(request.GetMessage().GetMsgName(), request.GetMessage().GetSeq(), respond.GetData())
+							request.GetConnection().RpcReply(request.GetMessage().GetMsgName(), request.GetMessage().GetSeq(), respond.GetBody())
 
 						}else{
 							utils.Log.Warn("DoMsgHandler skip: %s",msgName)
 							//回复client
-							respond.SetRequest(request)
-							request.GetConnection().RpcReply(request.GetMessage().GetMsgName(), request.GetMessage().GetSeq(), respond.GetData())
+							request.GetConnection().RpcReply(request.GetMessage().GetMsgName(), request.GetMessage().GetSeq(), respond.GetBody())
 						}
 					}
 				}
@@ -96,18 +91,14 @@ func (mh *MsgHandle) DoMsgHandler(request liFace.IRequest, respond liFace.IRespo
 		//查看是否有通配匹配
 		if l, ok := mh.Apis["*.*"]; ok{
 			isFound = true
-			respond := Respond{
-				msg:&Message{},
-				req:request,
-			}
-			respond.msg.SetSeq(respond.msg.GetSeq())
+			respond := Message{}
+			respond.SetSeq(request.GetMessage().GetSeq())
 
 			for handler := l.Front(); nil != handler; handler = handler.Next() {
 				router := handler.Value.(liFace.IRouter)
 				router.EveryThingHandle(request, &respond)
 				//回复client
-				respond.SetRequest(request)
-				request.GetConnection().RpcReply(request.GetMessage().GetMsgName(), request.GetMessage().GetSeq(), respond.GetData())
+				request.GetConnection().RpcReply(request.GetMessage().GetMsgName(), request.GetMessage().GetSeq(), respond.GetBody())
 			}
 		}
 
@@ -146,10 +137,7 @@ func (mh *MsgHandle) StartOneWorker(workerID int, taskQueue chan liFace.IRequest
 		select {
 			//有消息则取出队列的Request，并执行绑定的业务方法
 			case request := <-taskQueue:
-				rsp := Respond{
-					msg:&Message{},
-					req:request,
-				}
+				rsp := Message{}
 				mh.DoMsgHandler(request, &rsp)
 			case isExit := <-taskExit:
 				if isExit {

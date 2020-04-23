@@ -144,14 +144,11 @@ func (c *Connection) StartReader() {
 			msg:  msg,
 		}
 
-		rsp := Respond{
-			msg:&Message{},
-			req:&req,
-		}
+		rsp := Message{}
 
 		if utils.GlobalObject.ServerWorkerSize > 0 {
 			//已经启动工作池机制，将消息交给Worker处理
-			c.MsgHandler.SendMsgToTaskQueue(&req, &rsp)
+			c.MsgHandler.SendMsgToTaskQueue(&req)
 		} else {
 			//从绑定好的消息和对应的处理方法中执行对应的Handle方法
 			go c.MsgHandler.DoMsgHandler(&req, &rsp)
@@ -229,7 +226,7 @@ func (c *Connection) RpcCall(msgName string, data []byte, f func(rsp liFace.IRes
 		c.lastSeq++
 	}
 
-	m, err := c.send(msgName, c.lastSeq, liFace.RPC_Req, data)
+	m, err := c.send(msgName, c.lastSeq, liFace.RpcReq, data)
 	if err == nil{
 		r := Request{msg:m,conn:c}
 		rpc := connReq{
@@ -242,12 +239,12 @@ func (c *Connection) RpcCall(msgName string, data []byte, f func(rsp liFace.IRes
 }
 
 func (c *Connection) RpcReply(msgName string, seq uint32, data []byte) error{
-	_, err := c.send(msgName, seq, liFace.RPC_Ack, data)
+	_, err := c.send(msgName, seq, liFace.RpcAck, data)
 	return err
 }
 
 func (c *Connection) RpcPush(msgName string, data []byte) error{
-	_, err := c.send(msgName, 0, liFace.RPC_Push, data)
+	_, err := c.send(msgName, 0, liFace.RpcPush, data)
 	return err
 }
 
@@ -273,7 +270,7 @@ func (c *Connection) send(msgName string, seq uint32, t byte, data []byte) (liFa
 	return p , nil
 }
 
-func (c *Connection) CheckRpc(seq uint32, rsp liFace.IRespond) bool{
+func (c *Connection) CheckRpc(seq uint32, rsp liFace.IMessage) bool{
 	c.rpcLock.Lock()
 	defer c.rpcLock.Unlock()
 
@@ -281,11 +278,10 @@ func (c *Connection) CheckRpc(seq uint32, rsp liFace.IRespond) bool{
 	if isOk == false {
 		return false
 	}else{
-		rsp.SetRequest(f.req)
+		r := Respond{msg:rsp, req:f.req}
 		if f.function != nil{
-			f.function(rsp)
+			f.function(&r)
 		}
-
 		delete(c.rpcMap, seq)
 		return true
 	}

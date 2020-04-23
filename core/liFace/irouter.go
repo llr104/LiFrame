@@ -7,7 +7,7 @@ package liFace
 type IRouter interface{
 	NameSpace() string
 	After()
-	EveryThingHandle(req IRequest, rsp IRespond)
-	PreHandle(request IRequest, respond IRespond) bool //在处理conn业务之前的钩子方法
-	PostHandle(request IRequest, respond IRespond)     //处理conn业务之后的钩子方法
+	EveryThingHandle(req IRequest, rsp IMessage)
+	PreHandle(request IRequest, rsp IMessage) bool //在处理conn业务之前的钩子方法
+	PostHandle(request IRequest, rsp IMessage)     //处理conn业务之后的钩子方法
 }

@@ -13,7 +13,6 @@ type IRequest interface{
 /*
 	IRespond 接口：
 */
-
 type IRespond interface{
 	GetData() []byte            //获取请求消息的数据
 	GetRequest() IRequest

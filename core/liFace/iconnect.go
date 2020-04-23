@@ -3,9 +3,9 @@ package liFace
 import "net"
 
 const (
-	RPC_Push = iota   	//0
-	RPC_Req
-	RPC_Ack
+	RpcPush = iota //0
+	RpcReq
+	RpcAck
 )
 
 //定义连接接口
@@ -29,7 +29,7 @@ type IConnection interface {
 	RpcCall(msgName string, data []byte, f func(rsp IRespond)) error
 	RpcReply(msgName string, seq uint32, data []byte) error
 	RpcPush(msgName string, data []byte) error
-	CheckRpc(seq uint32, rsp IRespond) bool
+	CheckRpc(seq uint32, rsp IMessage) bool
 
 	//设置链接属性
 	SetProperty(key string, value interface{})

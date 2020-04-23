@@ -22,7 +22,7 @@ func (s *router) NameSpace() string {
 	return "*.*"
 }
 
-func (s *router) EveryThingHandle(req liFace.IRequest, rsp liFace.IRespond) {
+func (s *router) EveryThingHandle(req liFace.IRequest, rsp liFace.IMessage) {
 
 	conn, err := req.GetConnection().GetProperty("gateConn")
 	if err != nil{

@@ -53,7 +53,7 @@ func (s *sts) IsShutDown() bool {
 	return s.isShutDown
 }
 
-func (s* sts) UserOnOrOffReq(req liFace.IRequest, rsp liFace.IRespond) {
+func (s* sts) UserOnOrOffReq(req liFace.IRequest, rsp liFace.IMessage) {
 	msg := req.GetMessage()
 	reqInfo := proto.UserOnlineOrOffLineReq{}
 	json.Unmarshal(msg.GetBody(), &reqInfo)
@@ -65,7 +65,7 @@ func (s* sts) UserOnOrOffReq(req liFace.IRequest, rsp liFace.IRespond) {
 	ackInfo.UserId = reqInfo.UserId
 
 	data, _ := json.Marshal(ackInfo)
-	rsp.GetMessage().SetBody(data)
+	rsp.SetBody(data)
 
 	if reqInfo.Type == proto.UserOffline {
 		s.userOffline(reqInfo.UserId)

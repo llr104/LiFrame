@@ -30,7 +30,7 @@ func (s *enterLogin) NameSpace() string {
 /*
 登录
 */
-func (s *enterLogin) LoginReq(req liFace.IRequest, rsp liFace.IRespond) {
+func (s *enterLogin) LoginReq(req liFace.IRequest, rsp liFace.IMessage) {
 	beginTime := time.Now().Nanosecond()
 
 	reqInfo := proto.LoginReq{}
@@ -70,7 +70,7 @@ func (s *enterLogin) LoginReq(req liFace.IRequest, rsp liFace.IRespond) {
 	}
 
 	data, _ := json.Marshal(ackInfo)
-	rsp.GetMessage().SetBody(data)
+	rsp.SetBody(data)
 
 	endTime := time.Now().Nanosecond()
 	diff := endTime-beginTime
@@ -83,7 +83,7 @@ func (s *enterLogin) LoginReq(req liFace.IRequest, rsp liFace.IRespond) {
 /*
 注册
 */
-func (s *enterLogin) RegisterReq(req liFace.IRequest, rsp liFace.IRespond) {
+func (s *enterLogin) RegisterReq(req liFace.IRequest, rsp liFace.IMessage) {
 
 	reqInfo := proto.RegisterReq{}
 	ackInfo := proto.RegisterAck{}
@@ -116,7 +116,7 @@ func (s *enterLogin) RegisterReq(req liFace.IRequest, rsp liFace.IRespond) {
 	}
 
 	data, _ := json.Marshal(ackInfo)
-	rsp.GetMessage().SetBody(data)
+	rsp.SetBody(data)
 
 }
 
@@ -124,7 +124,7 @@ func (s *enterLogin) RegisterReq(req liFace.IRequest, rsp liFace.IRespond) {
 /*
 根据负载分配world服务器
 */
-func (s *enterLogin) DistributeWorldReq(req liFace.IRequest, rsp liFace.IRespond) {
+func (s *enterLogin) DistributeWorldReq(req liFace.IRequest, rsp liFace.IMessage) {
 
 	reqInfo := proto.DistributeServerReq{}
 	ackInfo := proto.DistributeServerAck{}
@@ -144,7 +144,7 @@ func (s *enterLogin) DistributeWorldReq(req liFace.IRequest, rsp liFace.IRespond
 	}
 
 	data, _ := json.Marshal(ackInfo)
-	rsp.GetMessage().SetBody(data)
+	rsp.SetBody(data)
 
 }
 
