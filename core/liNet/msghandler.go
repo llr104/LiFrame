@@ -47,10 +47,10 @@ func (mh *MsgHandle) DoMsgHandler(request liFace.IRequest, respond liFace.IRespo
 
 		m := request.GetMessage()
 		respond.SetMessage(m)
-		request.GetConnection().CheckRpc(request.GetSeq(), respond)
+		request.GetConnection().CheckRpc(request.GetMessage().GetSeq(), respond)
 
 	}else{
-		msgName := request.GetMsgName()
+		msgName := request.GetMessage().GetMsgName()
 		arr := strings.Split(msgName,".")
 		isFound := false
 
@@ -80,13 +80,13 @@ func (mh *MsgHandle) DoMsgHandler(request liFace.IRequest, respond liFace.IRespo
 							router.PostHandle(request, respond)
 							//回复client
 							respond.SetRequest(request)
-							request.GetConnection().RpcReply(request.GetMsgName(), request.GetSeq(), respond.GetData())
+							request.GetConnection().RpcReply(request.GetMessage().GetMsgName(), request.GetMessage().GetSeq(), respond.GetData())
 
 						}else{
 							utils.Log.Warn("DoMsgHandler skip: %s",msgName)
 							//回复client
 							respond.SetRequest(request)
-							request.GetConnection().RpcReply(request.GetMsgName(), request.GetSeq(), respond.GetData())
+							request.GetConnection().RpcReply(request.GetMessage().GetMsgName(), request.GetMessage().GetSeq(), respond.GetData())
 						}
 					}
 				}
@@ -107,7 +107,7 @@ func (mh *MsgHandle) DoMsgHandler(request liFace.IRequest, respond liFace.IRespo
 				router.EveryThingHandle(request, &respond)
 				//回复client
 				respond.SetRequest(request)
-				request.GetConnection().RpcReply(request.GetMsgName(), request.GetSeq(), respond.GetData())
+				request.GetConnection().RpcReply(request.GetMessage().GetMsgName(), request.GetMessage().GetSeq(), respond.GetData())
 			}
 		}
 

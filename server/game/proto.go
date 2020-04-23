@@ -5,15 +5,10 @@ import (
 )
 
 const protoHeartBeatReq = "heartBeatReq"
-const protoHeartBeatAck = "heartBeatAck"
 const protoLogoutReq = "logoutReq"
-const protoLogoutAck = "logoutAck"
-
 const protoSceneListReq = "sceneListReq"
 const protoEnterSceneReq = "enterSceneReq"
-
 const protoExitSceneReq = "exitSceneReq"
-const protoExitSceneAck = "exitSceneAck"
 const protoSceneReq = "sceneReq"
 const protoMoveReq = "moveReq"
 const protoMovePush = "movePush"

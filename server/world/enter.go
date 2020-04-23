@@ -22,7 +22,8 @@ func init() {
 }
 
 func (s *enterWorld) PreHandle(req liFace.IRequest, rsp liFace.IRespond) bool{
-	name := req.GetMsgName()
+	msg := req.GetMessage()
+	name := msg.GetMsgName()
 	if name == proto.EnterWorldJoinWorldReq{
 		return true
 	}
@@ -46,10 +47,10 @@ func (s *enterWorld) NameSpace() string {
 }
 
 func (s *enterWorld) JoinWorldReq(req liFace.IRequest, rsp liFace.IRespond) {
-
+	msg := req.GetMessage()
 	reqInfo := proto.JoinWorldReq{}
 	ackInfo := proto.JoinWorldAck{}
-	err := json.Unmarshal(req.GetData(), &reqInfo)
+	err := json.Unmarshal(msg.GetBody(), &reqInfo)
 	utils.Log.Info("JoinWorldReq: %v", reqInfo)
 	if err != nil{
 		utils.Log.Info("JoinWorldReq req error:",err.Error())
@@ -97,11 +98,12 @@ func (s *enterWorld) JoinWorldReq(req liFace.IRequest, rsp liFace.IRespond) {
 }
 
 func (s *enterWorld) UserInfoReq(req liFace.IRequest, rsp liFace.IRespond) {
-	utils.Log.Info("UserInfoReq begin: %s", req.GetMsgName())
+	msg := req.GetMessage()
+	utils.Log.Info("UserInfoReq begin: %s", msg.GetMsgName())
 	reqInfo := proto.UserInfoReq{}
 	ackInfo := proto.UserInfoAck{}
 
-	err := json.Unmarshal(req.GetData(), &reqInfo)
+	err := json.Unmarshal(msg.GetBody(), &reqInfo)
 	if err != nil{
 		utils.Log.Info("UserInfoReq req error:",err.Error())
 		ackInfo.Code = proto.Code_Illegal

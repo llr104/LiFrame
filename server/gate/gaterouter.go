@@ -29,15 +29,16 @@ func (s *router) EveryThingHandle(req liFace.IRequest, rsp liFace.IRespond) {
 		utils.Log.Warn("EveryThingHandle not found gateConn")
 	}
 
-	msgName := req.GetMsgName()
+	msg := req.GetMessage()
+	msgName := msg.GetMsgName()
 	gateConn := conn.(*liNet.WsConnection)
 
 	proxy, e :=  req.GetConnection().GetProperty("proxy")
 	if e != nil{
-		gateConn.Push("", msgName,  req.GetData())
+		gateConn.Push("", msgName,  msg.GetBody())
 	}else{
 		proxyName := proxy.(string)
-		gateConn.Response(proxyName, msgName, req.GetSeq(), req.GetData())
+		gateConn.Response(proxyName, msgName, msg.GetSeq(), msg.GetBody())
 	}
 }
 
@@ -48,13 +49,14 @@ func (s *router) Handle(rsp liFace.IRespond) {
 		utils.Log.Warn("Handle not found gateConn")
 	}
 
-	msgName := req.GetMsgName()
+	msg := req.GetMessage()
+	msgName := msg.GetMsgName()
 	gateConn := conn.(*liNet.WsConnection)
 	if msgName == proto.EnterLoginLoginReq{
 		loginAck := proto.LoginAck{}
-		err := json.Unmarshal(req.GetData(),&loginAck)
+		err := json.Unmarshal(msg.GetBody(), &loginAck)
 		if err == nil && loginAck.Code == proto.Code_Success{
-			gateConn.SetProperty("session",loginAck.Session)
+			gateConn.SetProperty("session", loginAck.Session)
 			gateConn.SetProperty("userId", loginAck.Id)
 			//处理踢号
 			MyGate.userEnter(gateConn)
@@ -70,7 +72,7 @@ func (s *router) Handle(rsp liFace.IRespond) {
 		gateConn.Push("", msgName,  rsp.GetData())
 	}else{
 		proxyName := proxy.(string)
-		gateConn.Response(proxyName, msgName, req.GetSeq(), rsp.GetData())
+		gateConn.Response(proxyName, msgName, msg.GetSeq(), rsp.GetData())
 	}
 
 }

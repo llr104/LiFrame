@@ -11,19 +11,7 @@ type Request struct {
 func(r *Request) GetConnection() liFace.IConnection {
 	return r.conn
 }
-//获取请求消息的数据
-func(r *Request) GetData() []byte {
-	return r.msg.GetBody()
-}
 
-//获取请求的消息的ID
-func (r *Request) GetMsgName() string {
-	return r.msg.GetMsgName()
-}
-
-func (r *Request) GetSeq() uint32 {
-	return r.msg.GetSeq()
-}
 
 func (r *Request) GetMessage() liFace.IMessage {
 	return r.msg

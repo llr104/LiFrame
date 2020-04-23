@@ -76,7 +76,7 @@ func (s *sts) liveCheck() {
 
 
 func (s*sts) ServerInfoReport(req liFace.IRequest, rsp liFace.IRespond){
-
+	msg := req.GetMessage()
 	remote := req.GetConnection().GetTCPConnection().RemoteAddr().String()
 	info := proto.ServerInfoReport{}
 	sArr := strings.Split(remote, ":")
@@ -85,7 +85,7 @@ func (s*sts) ServerInfoReport(req liFace.IRequest, rsp liFace.IRespond){
 	}
 
 	ip := sArr[0]
-	err := json.Unmarshal(req.GetData(), &info)
+	err := json.Unmarshal(msg.GetBody(), &info)
 	utils.Log.Info("ServerInfoReport %v ", info)
 
 	if err != nil{
@@ -119,15 +119,12 @@ func (s* sts) Ping(req liFace.IRequest, rsp liFace.IRespond){
 	rsp.GetMessage().SetBody(data)
 }
 
-func (s* sts) Pong(req liFace.IRequest, rsp liFace.IRespond){
-	utils.Log.Info("Pong")
-}
 
 func (s*sts) ServerListReq(req liFace.IRequest, rsp liFace.IRespond){
-
+	msg := req.GetMessage()
 	utils.Log.Info("ServerListReq req : %s", req.GetConnection().GetTCPConnection().RemoteAddr())
 	info := proto.ServerListReq{}
-	json.Unmarshal(req.GetData(), &info)
+	json.Unmarshal(msg.GetBody(), &info)
 
 	//发送服务器列表
 	ack := proto.ServerListAck{}

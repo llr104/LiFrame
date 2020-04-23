@@ -6,9 +6,6 @@ package liFace
 */
 type IRequest interface{
 	GetConnection() IConnection //获取请求连接信息
-	GetData() []byte            //获取请求消息的数据
-	GetMsgName() string         //获取请求的消息名
-	GetSeq() uint32
 	GetMessage() IMessage
 	SetMessage(msg IMessage)
 }

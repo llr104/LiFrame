@@ -36,7 +36,7 @@ func (s *enterLogin) LoginReq(req liFace.IRequest, rsp liFace.IRespond) {
 	reqInfo := proto.LoginReq{}
 	ackInfo := proto.LoginAck{}
 
-	err := json.Unmarshal(req.GetData(), &reqInfo)
+	err := json.Unmarshal(req.GetMessage().GetBody(), &reqInfo)
 	if err != nil {
 		ackInfo.Code = proto.Code_Illegal
 		utils.Log.Info("LoginReq error:%s", err.Error())
@@ -87,7 +87,7 @@ func (s *enterLogin) RegisterReq(req liFace.IRequest, rsp liFace.IRespond) {
 
 	reqInfo := proto.RegisterReq{}
 	ackInfo := proto.RegisterAck{}
-	err := json.Unmarshal(req.GetData(), &reqInfo)
+	err := json.Unmarshal(req.GetMessage().GetBody(), &reqInfo)
 	utils.Log.Info("RegisterReq end: %v", reqInfo)
 	if err != nil {
 		ackInfo.Code = proto.Code_Illegal
@@ -129,7 +129,7 @@ func (s *enterLogin) DistributeWorldReq(req liFace.IRequest, rsp liFace.IRespond
 	reqInfo := proto.DistributeServerReq{}
 	ackInfo := proto.DistributeServerAck{}
 	utils.Log.Info("DistributeWorldAck: %v", reqInfo)
-	if err := json.Unmarshal(req.GetData(), &reqInfo); err != nil {
+	if err := json.Unmarshal(req.GetMessage().GetBody(), &reqInfo); err != nil {
 		ackInfo.Code = proto.Code_Illegal
 		utils.Log.Info("DistributeWorldReq error:%s", err.Error())
 	} else {

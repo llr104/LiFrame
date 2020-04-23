@@ -87,7 +87,7 @@ func mPingTimer(v ...interface{})  {
 
 	data ,err := json.Marshal(info)
 	if err == nil{
-		conn.RpcCall(proto.SystemPing, data, MClientRouter.Pong)
+		conn.RpcCall(proto.SystemPing, data, nil)
 	}else{
 		utils.Log.Info("mReportTimer error:%s", err.Error())
 	}

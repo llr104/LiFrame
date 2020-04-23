@@ -44,21 +44,18 @@ func (s* sts) Ping(req liFace.IRequest, rsp liFace.IRespond){
 	info := proto.PingPong{}
 	info.CurTime = time.Now().Unix()
 	data, _ := json.Marshal(info)
-	req.GetConnection().RpcCall(proto.SystemPong, data, nil)
+	rsp.GetMessage().SetBody(data)
 }
 
-func (s* sts) Pong(req liFace.IRequest, rsp liFace.IRespond){
-	utils.Log.Info("Pong")
-}
 
 /*
 校验session
 */
 func (s *sts) CheckSessionReq(req liFace.IRequest, rsp liFace.IRespond) {
-
+	msg := req.GetMessage()
 	reqInfo := proto.CheckSessionReq{}
 	ackInfo := proto.CheckSessionAck{}
-	err := json.Unmarshal(req.GetData(), &reqInfo)
+	err := json.Unmarshal(msg.GetBody(), &reqInfo)
 	utils.Log.Info("CheckSessionReq: %v", reqInfo)
 	if err != nil {
 		ackInfo.Code = proto.Code_Illegal
@@ -93,7 +90,7 @@ func (s *sts) SessionUpdateReq(req liFace.IRequest, rsp liFace.IRespond) {
 	ackInfo.ConnId = reqInfo.ConnId
 	ackInfo.OpType = reqInfo.OpType
 	utils.Log.Info("SessionUpdateReq: %v", reqInfo)
-	if err := json.Unmarshal(req.GetData(), &reqInfo); err != nil {
+	if err := json.Unmarshal(req.GetMessage().GetBody(), &reqInfo); err != nil {
 		ackInfo.Code = proto.Code_Illegal
 		utils.Log.Info("SessionUpdateReq error:%s", err.Error())
 	} else {
@@ -113,7 +110,7 @@ func (s *sts) SessionUpdateReq(req liFace.IRequest, rsp liFace.IRespond) {
 func (s* sts) UserOnOrOffReq(req liFace.IRequest, rsp liFace.IRespond) {
 
 	reqInfo := proto.UserOnlineOrOffLineReq{}
-	json.Unmarshal(req.GetData(), &reqInfo)
+	json.Unmarshal(req.GetMessage().GetBody(), &reqInfo)
 
 	utils.Log.Info("UserOnOrOffReq: %v", reqInfo)
 

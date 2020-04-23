@@ -8,7 +8,6 @@ const GateExitProxy = "gate.ExitProxy"
 
 const SystemShutDown = "System.ShutDown"
 const SystemPing = "System.Ping"
-const SystemPong = "System.Pong"
 const SystemServerInfoReport = "System.ServerInfoReport"
 const SystemServerListReq = "System.ServerListReq"
 const SystemCheckSessionReq = "System.CheckSessionReq"

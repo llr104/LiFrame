@@ -32,12 +32,12 @@ func (s *enterGame) EveryThingHandle(req liFace.IRequest, rsp liFace.IRespond) {
 	if gameutils.STS.IsShutDown() {
 		return
 	}
-
+	msg := req.GetMessage()
 	//进入请求，授权
-	if req.GetMsgName() == proto.GameEnterGameReq{
+	if msg.GetMsgName() == proto.GameEnterGameReq{
 		reqInfo := proto.EnterGameReq{}
 		ackInfo := proto.EnterGameAck{}
-		if err := json.Unmarshal(req.GetData(), &reqInfo); err != nil {
+		if err := json.Unmarshal(msg.GetBody(), &reqInfo); err != nil {
 			ackInfo.Code = proto.Code_Illegal
 			utils.Log.Info("GameEnterGameReq error:%s", err.Error())
 		} else {
@@ -53,7 +53,7 @@ func (s *enterGame) EveryThingHandle(req liFace.IRequest, rsp liFace.IRespond) {
 		data, _ := json.Marshal(ackInfo)
 		rsp.GetMessage().SetBody(data)
 
-	}else if req.GetMsgName() == protoLogoutReq{
+	}else if msg.GetMsgName() == protoLogoutReq{
 		//通知场景
 		userId, err := req.GetConnection().GetProperty("userId")
 		if err == nil {
@@ -64,9 +64,9 @@ func (s *enterGame) EveryThingHandle(req liFace.IRequest, rsp liFace.IRespond) {
 		req.GetConnection().RemoveProperty("userId")
 		rsp.GetMessage().SetBody(nil)
 
-	} else if req.GetMsgName() == protoHeartBeatReq{
+	} else if msg.GetMsgName() == protoHeartBeatReq{
 		h := heartBeat{}
-		json.Unmarshal(req.GetData(), &h)
+		json.Unmarshal(msg.GetBody(), &h)
 		h.ServerTimeStamp = time.Now().UnixNano() / 1e6
 		data, _ := json.Marshal(h)
 		rsp.GetMessage().SetBody(data)
@@ -75,11 +75,11 @@ func (s *enterGame) EveryThingHandle(req liFace.IRequest, rsp liFace.IRespond) {
 		userId, err := req.GetConnection().GetProperty("userId")
 		if err == nil {
 			d := userId.(uint32)
-			ack := game.gameMessage(d, req.GetMsgName(), req.GetData(), req.GetConnection())
+			ack := game.gameMessage(d, msg.GetMsgName(), msg.GetBody(), req.GetConnection())
 			data, _:= json.Marshal(ack)
 			rsp.GetMessage().SetBody(data)
 		}else{
-			v := req.GetMsgName()
+			v := msg.GetMsgName()
 			fmt.Println(v)
 			req.GetConnection().RpcCall(proto.AuthError, nil, nil)
 		}

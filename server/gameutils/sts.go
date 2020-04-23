@@ -54,9 +54,9 @@ func (s *sts) IsShutDown() bool {
 }
 
 func (s* sts) UserOnOrOffReq(req liFace.IRequest, rsp liFace.IRespond) {
-
+	msg := req.GetMessage()
 	reqInfo := proto.UserOnlineOrOffLineReq{}
-	json.Unmarshal(req.GetData(), &reqInfo)
+	json.Unmarshal(msg.GetBody(), &reqInfo)
 
 	utils.Log.Info("UserOnOrOffReq: %v", reqInfo)
 

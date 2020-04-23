@@ -22,10 +22,6 @@ func (s *MasterClientRouter) NameSpace() string {
 	return "System"
 }
 
-func (s *MasterClientRouter) Pong(rsp liFace.IRespond) {
-	utils.Log.Info("Pong")
-}
-
 func (s *MasterClientRouter) ServerListAck(rsp liFace.IRespond) {
 
 	ackInfo := proto.ServerListAck{}
@@ -40,7 +36,7 @@ func (s *MasterClientRouter) ServerListAck(rsp liFace.IRespond) {
 }
 
 func (s *MasterClientRouter) ShutDown(req liFace.IRequest, rsp liFace.IRespond) {
-	utils.Log.Info("ShutDown:%s", req.GetMsgName())
+	utils.Log.Info("ShutDown:%s", req.GetMessage().GetMsgName())
 
 	if s.isShutDown == false {
 		//是否需要做一些退出操作

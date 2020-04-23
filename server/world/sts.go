@@ -49,15 +49,13 @@ func (s* sts) Ping(req liFace.IRequest, rsp liFace.IRespond){
 	rsp.GetMessage().SetBody(data)
 }
 
-func (s* sts) Pong(req liFace.IRequest, rsp liFace.IRespond){
-	utils.Log.Info("Pong")
-}
 
 func (s *sts) CheckSessionAck(rsp liFace.IRespond) {
 
 	req := rsp.GetRequest()
+	msg := req.GetMessage()
 	reqInfo := proto.CheckSessionAck{}
-	err := json.Unmarshal(req.GetData(), &reqInfo)
+	err := json.Unmarshal(msg.GetBody(), &reqInfo)
 	utils.Log.Info("CheckSessionAck: %v", reqInfo)
 	if err != nil{
 		utils.Log.Info("CheckSessionAck req error:", err.Error())
@@ -98,9 +96,9 @@ func (s *sts) CheckSessionAck(rsp liFace.IRespond) {
 }
 
 func (s* sts) UserOnOrOffReq(req liFace.IRequest, rsp liFace.IRespond) {
-
+	msg := req.GetMessage()
 	reqInfo := proto.UserOnlineOrOffLineReq{}
-	json.Unmarshal(req.GetData(), &reqInfo)
+	json.Unmarshal(msg.GetBody(), &reqInfo)
 
 	utils.Log.Info("UserOnOrOffReq: %v", reqInfo)
 
