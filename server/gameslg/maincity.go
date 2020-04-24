@@ -23,20 +23,20 @@ func (s *mainCity) NameSpace() string {
 	return "mainCity"
 }
 
-func (s *mainCity) PreHandle(req liFace.IRequest, rsp liFace.IRespond) bool{
+func (s *mainCity) PreHandle(req liFace.IRequest, rsp liFace.IMessage) bool{
 	_, err := req.GetConnection().GetProperty("roleId")
 	if err == nil {
 		return true
 	}else{
-		utils.Log.Warning("%s not has roleId", req.GetMsgName())
+		utils.Log.Warning("%s not has roleId", req.GetMessage().GetMsgName())
 		return false
 	}
 }
 
-func (s *mainCity) QryBuildingQeq(req liFace.IRequest, rsp liFace.IRespond) {
+func (s *mainCity) QryBuildingQeq(req liFace.IRequest, rsp liFace.IMessage) {
 	reqInfo := slgproto.QryBuildingQeq{}
 	ackInfo := slgproto.QryBuildingAck{}
-	json.Unmarshal(req.GetData(), &reqInfo)
+	json.Unmarshal(req.GetMessage().GetBody(), &reqInfo)
 	ackInfo.Code = slgproto.CodeSlgSuccess
 
 	p, _ := req.GetConnection().GetProperty("roleId")
@@ -49,13 +49,13 @@ func (s *mainCity) QryBuildingQeq(req liFace.IRequest, rsp liFace.IRespond) {
 		ackInfo.Yield = playerMgr.getYield(roleId, reqInfo.BuildType)
 	}
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().RpcCall(slgproto.MainCityQryBuildingAck, data)
+	rsp.SetBody(data)
 }
 
-func (s *mainCity) UpBuildingQeq(req liFace.IRequest, rsp liFace.IRespond) {
+func (s *mainCity) UpBuildingQeq(req liFace.IRequest, rsp liFace.IMessage) {
 	reqInfo := slgproto.UpBuildingQeq{}
 	ackInfo := slgproto.UpBuildingAck{}
-	json.Unmarshal(req.GetData(), &reqInfo)
+	json.Unmarshal(req.GetMessage().GetBody(), &reqInfo)
 
 	p, _ := req.GetConnection().GetProperty("roleId")
 	roleId := p.(uint32)
@@ -73,14 +73,14 @@ func (s *mainCity) UpBuildingQeq(req liFace.IRequest, rsp liFace.IRespond) {
 		ackInfo.Code = slgproto.CodeBuildingUpError
 	}
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().RpcCall(slgproto.MainCityUpBuildingAck, data)
+	rsp.SetBody(data)
 }
 
 
-func (s *mainCity) QryGeneralReq(req liFace.IRequest, rsp liFace.IRespond) {
+func (s *mainCity) QryGeneralReq(req liFace.IRequest, rsp liFace.IMessage) {
 	reqInfo := slgproto.QryGeneralReq{}
 	ackInfo := slgproto.QryGeneralAck{}
-	json.Unmarshal(req.GetData(), &reqInfo)
+	json.Unmarshal(req.GetMessage().GetBody(), &reqInfo)
 
 	p, _ := req.GetConnection().GetProperty("roleId")
 	roleId := p.(uint32)
@@ -92,6 +92,6 @@ func (s *mainCity) QryGeneralReq(req liFace.IRequest, rsp liFace.IRespond) {
 		ackInfo.Code = slgproto.CodeGeneralError
 	}
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().RpcCall(slgproto.MainCityQryGeneralAck, data)
+	rsp.SetBody(data)
 }
 

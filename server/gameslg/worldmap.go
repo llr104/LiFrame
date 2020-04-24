@@ -25,21 +25,21 @@ func (s *worldMap) NameSpace() string {
 	return "worldMap"
 }
 
-func (s *worldMap) PreHandle(req liFace.IRequest, rsp liFace.IRespond) bool{
+func (s *worldMap) PreHandle(req liFace.IRequest, rsp liFace.IMessage) bool{
 	_, err := req.GetConnection().GetProperty("roleId")
 	if err == nil {
 		return true
 	}else{
-		utils.Log.Warning("%s not has roleId", req.GetMsgName())
+		utils.Log.Warning("%s not has roleId", req.GetMessage().GetMsgName())
 		return false
 	}
 }
 
 
-func (s *worldMap) QryWorldMap(req liFace.IRequest)  {
+func (s *worldMap) QryWorldMap(req liFace.IRequest, rsp liFace.IMessage)  {
 	reqInfo := slgproto.QryWorldMapReq{}
 	ackInfo := slgproto.QryWorldMapAck{}
-	json.Unmarshal(req.GetData(), &reqInfo)
+	json.Unmarshal(req.GetMessage().GetBody(), &reqInfo)
 	ackInfo.Code = slgproto.CodeSlgSuccess
 
 	n := data.CityMgr.Count()
@@ -52,16 +52,16 @@ func (s *worldMap) QryWorldMap(req liFace.IRequest)  {
 	}
 
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().RpcCall(slgproto.WorldMapQryWorldMapAck, data)
+	rsp.SetBody(data)
 }
 
 /*
 驻守城池
 */
-func (s *worldMap) GarrisonCity(req liFace.IRequest)  {
+func (s *worldMap) GarrisonCity(req liFace.IRequest, rsp liFace.IMessage)  {
 	reqInfo := slgproto.GarrisonCityReq{}
 	ackInfo := slgproto.GarrisonCityAck{}
-	json.Unmarshal(req.GetData(), &reqInfo)
+	json.Unmarshal(req.GetMessage().GetBody(), &reqInfo)
 
 	p, _ := req.GetConnection().GetProperty("roleId")
 	roleId := p.(uint32)
@@ -101,16 +101,16 @@ func (s *worldMap) GarrisonCity(req liFace.IRequest)  {
 	}
 
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().RpcCall(slgproto.WorldMapGarrisonCityAck, data)
+	rsp.SetBody(data)
 }
 
 /*
 攻击城池
 */
-func (s *worldMap) AttackCityReq(req liFace.IRequest)  {
+func (s *worldMap) AttackCityReq(req liFace.IRequest, rsp liFace.IMessage)  {
 	reqInfo := slgproto.AttackCityReq{}
 	ackInfo := slgproto.AttackCityAck{}
-	json.Unmarshal(req.GetData(), &reqInfo)
+	json.Unmarshal(req.GetMessage().GetBody(), &reqInfo)
 
 	p, _ := req.GetConnection().GetProperty("roleId")
 	roleId := p.(uint32)
@@ -146,5 +146,5 @@ func (s *worldMap) AttackCityReq(req liFace.IRequest)  {
 
 	ackInfo.General = *general
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().RpcCall(slgproto.WorldMapAttackCityAck, data)
+	rsp.SetBody(data)
 }

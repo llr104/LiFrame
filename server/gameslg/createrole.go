@@ -22,10 +22,10 @@ func (s *createRole) NameSpace() string {
 	return "birth"
 }
 
-func (s *createRole) QryRoleReq(req liFace.IRequest, rsp liFace.IRespond)  {
+func (s *createRole) QryRoleReq(req liFace.IRequest, rsp liFace.IMessage)  {
 	reqInfo := slgproto.QryRoleReq{}
 	ackInfo := slgproto.QryRoleAck{}
-	json.Unmarshal(req.GetData(), &reqInfo)
+	json.Unmarshal(req.GetMessage().GetBody(), &reqInfo)
 	ackInfo.Type = reqInfo.Type
 
 	if reqInfo.Type == 0{
@@ -46,7 +46,7 @@ func (s *createRole) QryRoleReq(req liFace.IRequest, rsp liFace.IRespond)  {
 		}
 
 		data, _ := json.Marshal(ackInfo)
-		req.GetConnection().RpcCall(slgproto.BirthQryRoleAck, data)
+		rsp.SetBody(data)
 	}else{
 		if p, err := req.GetConnection().GetProperty("roleId"); err == nil {
 
@@ -63,14 +63,14 @@ func (s *createRole) QryRoleReq(req liFace.IRequest, rsp liFace.IRespond)  {
 		}
 
 		data, _ := json.Marshal(ackInfo)
-		req.GetConnection().RpcCall(slgproto.BirthQryRoleAck, data)
+		rsp.SetBody(data)
 	}
 }
 
-func (s *createRole) NewRoleReq(req liFace.IRequest, rsp liFace.IRespond) {
+func (s *createRole) NewRoleReq(req liFace.IRequest, rsp liFace.IMessage) {
 	reqInfo := slgproto.NewRoleReq{}
 	ackInfo := slgproto.NewRoleAck{}
-	json.Unmarshal(req.GetData(), &reqInfo)
+	json.Unmarshal(req.GetMessage().GetBody(), &reqInfo)
 	p, err := req.GetConnection().GetProperty("userId")
 
 	if err != nil{
@@ -117,5 +117,5 @@ func (s *createRole) NewRoleReq(req liFace.IRequest, rsp liFace.IRespond) {
 	}
 
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().RpcCall(slgproto.BirthNewRoleAck, data)
+	rsp.SetBody(data)
 }

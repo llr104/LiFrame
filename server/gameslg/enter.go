@@ -23,11 +23,11 @@ func (s *enterGame) NameSpace() string {
 	return "*.*"
 }
 
-func (s *enterGame) EveryThingHandle(req liFace.IRequest, rsp liFace.IRespond) {
-	if req.GetMsgName() == proto.GameEnterGameReq{
+func (s *enterGame) EveryThingHandle(req liFace.IRequest, rsp liFace.IMessage) {
+	if req.GetMessage().GetMsgName() == proto.GameEnterGameReq{
 		reqInfo := proto.EnterGameReq{}
 		ackInfo := proto.EnterGameAck{}
-		if err := json.Unmarshal(req.GetData(), &reqInfo); err != nil {
+		if err := json.Unmarshal(req.GetMessage().GetBody(), &reqInfo); err != nil {
 			ackInfo.Code = proto.Code_Illegal
 			utils.Log.Info("GameEnterGameReq error:%s", err.Error())
 		} else {
@@ -35,7 +35,7 @@ func (s *enterGame) EveryThingHandle(req liFace.IRequest, rsp liFace.IRespond) {
 			req.GetConnection().SetProperty("userId", reqInfo.UserId)
 		}
 		data, _ := json.Marshal(ackInfo)
-		req.GetConnection().RpcCall(proto.GameEnterGameAck, data)
+		rsp.SetBody(data)
 	}
 }
 

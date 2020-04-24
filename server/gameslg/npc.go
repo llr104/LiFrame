@@ -36,21 +36,21 @@ func (s *npc) NameSpace() string {
 	return "npc"
 }
 
-func (s *npc) PreHandle(req liFace.IRequest, rsp liFace.IRespond) bool{
+func (s *npc) PreHandle(req liFace.IRequest, rsp liFace.IMessage) bool{
 	_, err := req.GetConnection().GetProperty("roleId")
 	if err == nil {
 		return true
 	}else{
-		utils.Log.Warning("%s not has roleId", req.GetMsgName())
+		utils.Log.Warning("%s not has roleId", req.GetMessage().GetMsgName())
 		return false
 	}
 }
 
 
-func (s *npc) QrySceneReq(req liFace.IRequest)  {
+func (s *npc) QrySceneReq(req liFace.IRequest, rsp liFace.IMessage)  {
 	reqInfo := slgproto.QryNpcSceneReq{}
 	ackInfo := slgproto.QryNpcSceneAck{}
-	json.Unmarshal(req.GetData(), &reqInfo)
+	json.Unmarshal(req.GetMessage().GetBody(), &reqInfo)
 	ackInfo.Code = slgproto.CodeSlgSuccess
 
 	n := len(s.scenes)
@@ -62,6 +62,6 @@ func (s *npc) QrySceneReq(req liFace.IRequest)  {
 	}
 
 	data, _ := json.Marshal(ackInfo)
-	req.GetConnection().RpcCall(slgproto.NpcQrySceneAck, data)
+	rsp.SetBody(data)
 
 }
