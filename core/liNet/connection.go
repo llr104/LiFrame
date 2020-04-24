@@ -9,11 +9,13 @@ import (
 	"math"
 	"net"
 	"sync"
+	"time"
 )
 
 type connReq struct {
 	function func(rsp liFace.IRespond)
 	req liFace.IRequest
+	time int64
 }
 
 type Connection struct {
@@ -232,6 +234,7 @@ func (c *Connection) RpcCall(msgName string, data []byte, f func(rsp liFace.IRes
 		rpc := connReq{
 			function: f,
 			req:      &r,
+			time:	time.Now().UnixNano()/1000,
 		}
 		c.rpcMap[c.lastSeq] = rpc
 	}
@@ -274,18 +277,34 @@ func (c *Connection) CheckRpc(seq uint32, rsp liFace.IMessage) bool{
 	c.rpcLock.Lock()
 	defer c.rpcLock.Unlock()
 
-	f, isOk := c.rpcMap[seq]
+	rpc, isOk := c.rpcMap[seq]
 	if isOk == false {
 		return false
 	}else{
-		r := Respond{msg:rsp, req:f.req}
-		if f.function != nil{
-			f.function(&r)
+		r := Respond{msg:rsp, req:rpc.req}
+		if rpc.function != nil{
+			rpc.function(&r)
 		}
 		delete(c.rpcMap, seq)
 		return true
 	}
 
+}
+
+func (c *Connection) CheckTimeOut(){
+	c.rpcLock.Lock()
+	defer c.rpcLock.Unlock()
+
+	cur := time.Now().UnixNano()/1000
+	for _, rpc := range c.rpcMap {
+		if cur - rpc.time >= 15{
+			r := Respond{msg:nil, req:rpc.req}
+			if rpc.function != nil{
+				rpc.function(&r)
+			}
+			delete(c.rpcMap, rpc.req.GetMessage().GetSeq())
+		}
+	}
 }
 
 

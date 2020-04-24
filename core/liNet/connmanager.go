@@ -5,6 +5,7 @@ import (
 	"github.com/llr104/LiFrame/core/liFace"
 	"github.com/llr104/LiFrame/utils"
 	"sync"
+	"time"
 )
 
 /*
@@ -19,9 +20,11 @@ type ConnManager struct {
 	创建一个链接管理
  */
 func NewConnManager() *ConnManager {
-	return &ConnManager{
+	c := ConnManager{
 		connections:make(map[uint32]liFace.IConnection),
 	}
+	go c.checkTimeOut()
+	return &c
 }
 
 //添加链接
@@ -71,7 +74,7 @@ func (connMgr *ConnManager) BroadcastMsg(msgName string, data []byte){
 	defer connMgr.connLock.Unlock()
 
 	for _, conn := range connMgr.connections {
-		conn.RpcCall(msgName, data, nil)
+		conn.RpcPush(msgName, data)
 	}
 }
 
@@ -94,4 +97,15 @@ func (connMgr *ConnManager) ClearConn() {
 	}
 
 	utils.Log.Info("Clear All Connections successfully: conn num = %d", connMgr.Len())
+}
+
+func (connMgr *ConnManager) checkTimeOut() {
+	for {
+		connMgr.connLock.Lock()
+		for _, conn := range connMgr.connections {
+			conn.CheckTimeOut()
+		}
+		connMgr.connLock.Unlock()
+		time.Sleep(1 * time.Second)
+	}
 }
