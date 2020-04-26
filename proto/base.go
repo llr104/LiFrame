@@ -20,9 +20,8 @@ const EnterWorldSession = "EnterWorld.Session"
 const EnterLoginLoginReq = "EnterLogin.LoginReq"
 const EnterLoginRegisterReq = "EnterLogin.RegisterReq"
 
-
 const GameEnterGameReq  = "enterGameReq"
-const GameEnterGameAck  = "enterGameAck"
+
 
 type BaseAck struct {
 	Code   int

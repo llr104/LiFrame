@@ -64,7 +64,7 @@ func (s *sts) CheckSessionAck(rsp liFace.IRespond) {
 		ackInfo.UserId = reqInfo.UserId
 		ackInfo.Session = reqInfo.Session
 		data, _ := json.Marshal(ackInfo)
-		req.GetConnection().RpcCall(proto.EnterWorldSession, data,nil)
+		req.GetConnection().RpcPush(proto.EnterWorldSession, data)
 
 	}else{
 
@@ -90,7 +90,7 @@ func (s *sts) CheckSessionAck(rsp liFace.IRespond) {
 			ackInfo.UserId = reqInfo.UserId
 			ackInfo.Session = reqInfo.Session
 			data, _ := json.Marshal(ackInfo)
-			conn.RpcCall(proto.EnterWorldSession, data, nil)
+			conn.RpcPush(proto.EnterWorldSession, data)
 		}
 	}
 }

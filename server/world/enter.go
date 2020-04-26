@@ -37,7 +37,7 @@ func (s *enterWorld) PreHandle(req liFace.IRequest, rsp liFace.IMessage) bool{
 		ackInfo := proto.SessionAck{}
 		ackInfo.Code = proto.Code_Session_Error
 		data, _ := json.Marshal(ackInfo)
-		req.GetConnection().RpcCall(proto.EnterWorldSession, data, nil)
+		req.GetConnection().RpcPush(proto.EnterWorldSession, data)
 		return false
 	}
 }
