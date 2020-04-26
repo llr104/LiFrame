@@ -166,6 +166,8 @@ func (c *Connection) Start() {
 		go c.StartReader()
 		//2 开启用于写回客户端数据流程的Goroutine
 		go c.StartWriter()
+
+		go c.checkTimeOut()
 		//按照用户传递进来的创建连接时需要处理的业务，执行钩子方法
 		c.TcpNetWork.CallOnConnStart(c)
 	}
@@ -291,20 +293,30 @@ func (c *Connection) CheckRpc(seq uint32, rsp liFace.IMessage) bool{
 
 }
 
-func (c *Connection) CheckTimeOut(){
-	c.rpcLock.Lock()
-	defer c.rpcLock.Unlock()
+func (c *Connection) checkTimeOut(){
 
-	cur := time.Now().UnixNano()/1000
-	for _, rpc := range c.rpcMap {
-		if cur - rpc.time >= 15{
-			r := Respond{msg:nil, req:rpc.req}
-			if rpc.function != nil{
-				rpc.function(&r)
-			}
-			delete(c.rpcMap, rpc.req.GetMessage().GetSeq())
+	for {
+		c.rpcLock.Lock()
+		if c.IsClose(){
+			break
 		}
+		cur := time.Now().UnixNano()/1000
+		for _, rpc := range c.rpcMap {
+			if cur - rpc.time >= 5{
+				msg := Message{}
+				r := Respond{msg:&msg, req:rpc.req}
+				if rpc.function != nil{
+					rpc.function(&r)
+				}
+				delete(c.rpcMap, rpc.req.GetMessage().GetSeq())
+				utils.Log.Info("rpc %s timeout", rpc.req.GetMessage().GetMsgName())
+			}
+		}
+		c.rpcLock.Unlock()
+		time.Sleep(1 * time.Second)
 	}
+	utils.Log.Info("checkTimeOut end")
+
 }
 
 

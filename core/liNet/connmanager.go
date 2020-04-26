@@ -5,7 +5,6 @@ import (
 	"github.com/llr104/LiFrame/core/liFace"
 	"github.com/llr104/LiFrame/utils"
 	"sync"
-	"time"
 )
 
 /*
@@ -23,7 +22,6 @@ func NewConnManager() *ConnManager {
 	c := ConnManager{
 		connections:make(map[uint32]liFace.IConnection),
 	}
-	go c.checkTimeOut()
 	return &c
 }
 
@@ -99,13 +97,4 @@ func (connMgr *ConnManager) ClearConn() {
 	utils.Log.Info("Clear All Connections successfully: conn num = %d", connMgr.Len())
 }
 
-func (connMgr *ConnManager) checkTimeOut() {
-	for {
-		connMgr.connLock.Lock()
-		for _, conn := range connMgr.connections {
-			conn.CheckTimeOut()
-		}
-		connMgr.connLock.Unlock()
-		time.Sleep(1 * time.Second)
-	}
-}
+

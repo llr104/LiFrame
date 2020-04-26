@@ -30,7 +30,7 @@ type IConnection interface {
 	RpcReply(msgName string, seq uint32, data []byte) error
 	RpcPush(msgName string, data []byte) error
 	CheckRpc(seq uint32, rsp IMessage) bool
-	CheckTimeOut()
+
 
 	//设置链接属性
 	SetProperty(key string, value interface{})
