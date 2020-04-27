@@ -49,7 +49,7 @@ func (s *router) Handle(rsp liFace.IRespond) {
 		utils.Log.Warn("Handle not found gateConn")
 	}
 
-	msg := req.GetMessage()
+	msg := rsp.GetMessage()
 	msgName := msg.GetMsgName()
 	gateConn := conn.(*liNet.WsConnection)
 	if msgName == proto.EnterLoginLoginReq{

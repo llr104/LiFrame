@@ -236,7 +236,7 @@ func (c *Connection) RpcCall(msgName string, data []byte, f func(rsp liFace.IRes
 		rpc := connReq{
 			function: f,
 			req:      &r,
-			time:	time.Now().UnixNano()/1000,
+			time:	time.Now().UnixNano(),
 		}
 		c.rpcMap[c.lastSeq] = rpc
 	}
@@ -300,10 +300,14 @@ func (c *Connection) checkTimeOut(){
 		if c.IsClose(){
 			break
 		}
-		cur := time.Now().UnixNano()/1000
+		cur := time.Now().UnixNano()
 		for _, rpc := range c.rpcMap {
-			if cur - rpc.time >= 5{
+			diff := cur - rpc.time
+			utils.Log.Info("checkTimeOut diff: %d, timeout time:%d", diff, 10*time.Second)
+			if  diff >= int64(10*time.Second){
 				msg := Message{}
+				msg.SetMsgName(rpc.req.GetMessage().GetMsgName())
+				msg.SetSeq(rpc.req.GetMessage().GetSeq())
 				r := Respond{msg:&msg, req:rpc.req}
 				if rpc.function != nil{
 					rpc.function(&r)
