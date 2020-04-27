@@ -64,7 +64,7 @@ func (mh *MsgHandle) DoMsgHandler(request liFace.IRequest, respond liFace.IMessa
 					//fmt.Println("DoMsgHandler reflect value",v)
 					method := v.MethodByName(funcName)
 					if method.IsValid() == false {
-						utils.Log.Warn("DoMsgHandler warning %s function not found",funcName)
+						utils.Log.Warn("DoMsgHandler warning %s successFun not found",funcName)
 					}else{
 						isFound = true
 						router := handler.Value.(liFace.IRouter)

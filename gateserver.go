@@ -159,7 +159,7 @@ func routerToTarget(wsConn* liNet.WsConnection, msgName string, msgProxyId strin
 				isLive = true
 				proxyClient.GetConn().SetProperty("gateConn", wsConn)
 				proxyClient.GetConn().SetProperty("proxy", msgProxyId)
-				proxyClient.GetConn().RpcCall(msgName, sendData, gate.Router.Handle)
+				proxyClient.GetConn().RpcCall(msgName, sendData, gate.Router.Handle, gate.Router.HandleFail)
 			}
 		}else{
 

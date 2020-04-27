@@ -26,7 +26,7 @@ type IConnection interface {
 	RemoteAddr() net.Addr
 
 	//直接将Message数据发送数据给远程的TCP客户端
-	RpcCall(msgName string, data []byte, f func(rsp IRespond)) error
+	RpcCall(msgName string, data []byte, success func(rsp IRespond), fail func(rsp IRespond)) error
 	RpcReply(msgName string, seq uint32, data []byte) error
 	RpcPush(msgName string, data []byte) error
 	CheckRpc(seq uint32, rsp IMessage) bool

@@ -13,9 +13,10 @@ import (
 )
 
 type connReq struct {
-	function func(rsp liFace.IRespond)
-	req liFace.IRequest
-	time int64
+	successFun func(rsp liFace.IRespond)
+	failFun    func(rsp liFace.IRespond)
+	req        liFace.IRequest
+	time       int64
 }
 
 type Connection struct {
@@ -220,7 +221,7 @@ func (c *Connection) RemoteAddr() net.Addr {
 
 
 //直接将Message数据发送数据给远程的TCP客户端
-func (c *Connection) RpcCall(msgName string, data []byte, f func(rsp liFace.IRespond)) error {
+func (c *Connection) RpcCall(msgName string, data []byte, success func(rsp liFace.IRespond), fail func(rsp liFace.IRespond)) error {
 	c.rpcLock.Lock()
 	defer c.rpcLock.Unlock()
 
@@ -234,9 +235,10 @@ func (c *Connection) RpcCall(msgName string, data []byte, f func(rsp liFace.IRes
 	if err == nil{
 		r := Request{msg:m,conn:c}
 		rpc := connReq{
-			function: f,
-			req:      &r,
-			time:	time.Now().UnixNano(),
+			successFun: success,
+			failFun:    fail,
+			req:        &r,
+			time:       time.Now().UnixNano(),
 		}
 		c.rpcMap[c.lastSeq] = rpc
 	}
@@ -284,8 +286,8 @@ func (c *Connection) CheckRpc(seq uint32, rsp liFace.IMessage) bool{
 		return false
 	}else{
 		r := Respond{msg:rsp, req:rpc.req}
-		if rpc.function != nil{
-			rpc.function(&r)
+		if rpc.successFun != nil{
+			rpc.successFun(&r)
 		}
 		delete(c.rpcMap, seq)
 		return true
@@ -309,8 +311,8 @@ func (c *Connection) checkTimeOut(){
 				msg.SetMsgName(rpc.req.GetMessage().GetMsgName())
 				msg.SetSeq(rpc.req.GetMessage().GetSeq())
 				r := Respond{msg:&msg, req:rpc.req}
-				if rpc.function != nil{
-					rpc.function(&r)
+				if rpc.failFun != nil{
+					rpc.failFun(&r)
 				}
 				delete(c.rpcMap, rpc.req.GetMessage().GetSeq())
 				utils.Log.Info("rpc %s timeout", rpc.req.GetMessage().GetMsgName())

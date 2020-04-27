@@ -76,3 +76,28 @@ func (s *router) Handle(rsp liFace.IRespond) {
 	}
 
 }
+
+func (s *router) HandleFail(rsp liFace.IRespond) {
+	req := rsp.GetRequest()
+	conn, err := req.GetConnection().GetProperty("gateConn")
+	if err != nil{
+		utils.Log.Warn("Handle not found gateConn")
+	}
+
+	ack := proto.BaseAck{}
+	ack.Code =proto.Code_ReqFail
+
+	msg := rsp.GetMessage()
+	msgName := msg.GetMsgName()
+	gateConn := conn.(*liNet.WsConnection)
+    data, _ := json.Marshal(ack)
+    msg.SetBody(data)
+
+	proxy, e :=  req.GetConnection().GetProperty("proxy")
+	if e != nil{
+		gateConn.Push("", msgName,  rsp.GetData())
+	}else{
+		proxyName := proxy.(string)
+		gateConn.Response(proxyName, msgName, msg.GetSeq(), rsp.GetData())
+	}
+}

@@ -3,7 +3,7 @@ package proto
 const (
 	Code_Success = iota   	//0
 	Code_Illegal
-	Code_User_Not_Exist
+	Code_ReqFail
 	Code_User_Error 		//账号或密码错误
 	Code_User_Exist
 	Code_User_Forbid

@@ -81,7 +81,7 @@ func (s *enterGame) EveryThingHandle(req liFace.IRequest, rsp liFace.IMessage) {
 		}else{
 			v := msg.GetMsgName()
 			fmt.Println(v)
-			req.GetConnection().RpcCall(proto.AuthError, nil, nil)
+			req.GetConnection().RpcCall(proto.AuthError, nil, nil, nil)
 		}
 	}
 

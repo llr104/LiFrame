@@ -73,7 +73,7 @@ func (s *enterWorld) JoinWorldReq(req liFace.IRequest, rsp liFace.IMessage) {
 					data, _ := json.Marshal(ackInfo)
 					rsp.SetBody(data)
 					sessionData, _ := json.Marshal(sessionReq)
-					conn.RpcCall(proto.SystemCheckSessionReq, sessionData, STS.CheckSessionAck)
+					conn.RpcCall(proto.SystemCheckSessionReq, sessionData, STS.CheckSessionAck, nil)
 				}else{
 					ackInfo.Code = proto.Code_Session_Error
 					data, _ := json.Marshal(ackInfo)
@@ -164,7 +164,7 @@ func (s *enterWorld) UserLogoutReq(req liFace.IRequest, rsp liFace.IMessage) {
 				data, _ := json.Marshal(sessReq)
 				conn := client.GetConn()
 				if conn != nil{
-					conn.RpcCall(proto.SystemSessionUpdateReq, data, nil)
+					conn.RpcCall(proto.SystemSessionUpdateReq, data, nil, nil)
 				}
 			}
 		}
