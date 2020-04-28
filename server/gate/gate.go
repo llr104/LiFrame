@@ -92,8 +92,14 @@ func (g*gate) ProxyClient(wsConn* liNet.WsConnection, msgProxyId string, router 
 		}
 	}
 
-	proxyClient, _ := g.onlineProxyMap[handshakeId][msgProxyId]
-	return proxyClient, nil
+	proxyClient, ok := g.onlineProxyMap[handshakeId][msgProxyId]
+	if ok{
+		return proxyClient, nil
+	}else{
+		text := fmt.Sprintf("handshakeId %s msgProxy %s not found", handshakeId, msgProxyId)
+		return nil, errors.New(text)
+	}
+
 }
 
 func (g*gate) CloseProxy(wsConn* liNet.WsConnection, msgProxyId string) {
