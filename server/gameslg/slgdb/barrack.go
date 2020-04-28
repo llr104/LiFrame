@@ -37,7 +37,7 @@ func NewRoleAllBarracks(roleId uint32) [] *Barrack{
 
 
 func InsertBarracksToDB(arr []*Barrack) []*Barrack{
-	orm.NewOrm().InsertMulti(1, arr)
+	orm.NewOrm().InsertMulti(len(arr), arr)
 	return arr
 }
 

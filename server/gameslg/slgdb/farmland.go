@@ -36,7 +36,7 @@ func NewRoleAllBFarmlands(roleId uint32) [] *Farmland{
 }
 
 func InsertFarmlandsToDB(arr []*Farmland) []*Farmland{
-	orm.NewOrm().InsertMulti(1, arr)
+	orm.NewOrm().InsertMulti(len(arr), arr)
 	return arr
 }
 

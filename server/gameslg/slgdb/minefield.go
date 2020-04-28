@@ -36,7 +36,7 @@ func NewRoleAllMines(roleId uint32) [] *Mine{
 }
 
 func InsertMinesToDB(arr []*Mine) []*Mine{
-	orm.NewOrm().InsertMulti(1, arr)
+	orm.NewOrm().InsertMulti(len(arr), arr)
 	return arr
 }
 

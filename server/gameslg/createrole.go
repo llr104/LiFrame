@@ -7,6 +7,7 @@ import (
 	"github.com/llr104/LiFrame/server/gameslg/slgdb"
 	"github.com/llr104/LiFrame/server/gameslg/slgproto"
 	"github.com/llr104/LiFrame/utils"
+	"time"
 )
 
 var CreateRole createRole
@@ -73,6 +74,7 @@ func (s *createRole) NewRoleReq(req liFace.IRequest, rsp liFace.IMessage) {
 	json.Unmarshal(req.GetMessage().GetBody(), &reqInfo)
 	p, err := req.GetConnection().GetProperty("userId")
 
+	beginTime := time.Now().UnixNano()
 	if err != nil{
 		ackInfo.Code = slgproto.CodeNotAuth
 	}else{
@@ -90,6 +92,7 @@ func (s *createRole) NewRoleReq(req liFace.IRequest, rsp liFace.IMessage) {
 				ackInfo.Role = r
 				ackInfo.Code = slgproto.CodeSlgSuccess
 				req.GetConnection().SetProperty("roleId", r.RoleId)
+
 				//创建好角色直接开放所有的建筑
 				arr1 := slgdb.NewRoleAllDwellings(uint32(id))
 				slgdb.InsertDwellingsToDB(arr1)
@@ -108,6 +111,7 @@ func (s *createRole) NewRoleReq(req liFace.IRequest, rsp liFace.IMessage) {
 
 				playerMgr.addPlayer(&r, arr2, arr1, arr4, arr3, arr5)
 
+
 				utils.Log.Info("new role:%d", id)
 			}else {
 				ackInfo.Code = slgproto.CodeDbError
@@ -115,7 +119,8 @@ func (s *createRole) NewRoleReq(req liFace.IRequest, rsp liFace.IMessage) {
 			}
 		}
 	}
-
+	endTime := time.Now().UnixNano()
+	utils.Log.Info("NewRoleReq use time second: %d, millisecond: %d", (endTime-beginTime)/int64(time.Second), (endTime-beginTime)/int64(time.Millisecond))
 	data, _ := json.Marshal(ackInfo)
 	rsp.SetBody(data)
 }

@@ -38,7 +38,7 @@ func NewRoleAllDwellings(roleId uint32) [] *Dwelling{
 }
 
 func InsertDwellingsToDB(arr []*Dwelling) []*Dwelling{
-	orm.NewOrm().InsertMulti(1, arr)
+	orm.NewOrm().InsertMulti(len(arr), arr)
 	return arr
 }
 

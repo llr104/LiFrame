@@ -36,7 +36,7 @@ func NewRoleAllBLumbers(roleId uint32) [] *Lumber{
 }
 
 func InsertLumbersToDB(arr []*Lumber) []*Lumber{
-	orm.NewOrm().InsertMulti(1, arr)
+	orm.NewOrm().InsertMulti(len(arr), arr)
 	return arr
 }
 
