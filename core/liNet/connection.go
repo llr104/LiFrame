@@ -149,7 +149,7 @@ func (c *Connection) StartReader() {
 
 		rsp := Message{}
 
-		if utils.GlobalObject.ServerWorkerSize > 0 {
+		if utils.GlobalObject.AppConfig.ServerWorkerSize > 0 {
 			//已经启动工作池机制，将消息交给Worker处理
 			c.MsgHandler.SendMsgToTaskQueue(&req)
 		} else {

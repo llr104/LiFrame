@@ -13,13 +13,7 @@ import (
 	一些参数也可以通过 用户根据 LiFrame.json来配置
 */
 type GlobalObj struct {
-
 	AppConfig        Config
-	MaxPacketSize    uint32 //都需数据包的最大值
-	MaxConn          int    //当前服务器主机允许的最大链接个数
-	ServerWorkerSize uint32 //业务工作Worker池的数量
-	MaxWorkerTaskLen uint32 //业务工作Worker对应负责的任务队列最大任务存储数量
-	MaxMsgChanLen    uint32 //SendBuffMsg发送消息的缓冲最大长度
 }
 
 /*
@@ -68,11 +62,6 @@ func init() {
 	Log.EnableFuncCallDepth(true)
 	//初始化GlobalObject变量，设置一些默认值
 	GlobalObject = &GlobalObj{
-		MaxConn:          12000,
-		MaxPacketSize:    40960,
-		ServerWorkerSize: 2,
-		MaxWorkerTaskLen: 1024,
-		MaxMsgChanLen:    1024,
 		AppConfig:        NewConfig(),
 	}
 

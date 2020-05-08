@@ -110,7 +110,7 @@ func(dp *DataPack) Unpack(binaryData []byte)(liFace.IMessage, error) {
 	//bodyLen
 	msg.BodyLen = dataLen-msg.NameLen-4-1
 	//判断dataLen的长度是否超出我们允许的最大包长度
-	if utils.GlobalObject.MaxPacketSize > 0 && dataLen > utils.GlobalObject.MaxPacketSize {
+	if utils.GlobalObject.AppConfig.MaxPacketSize > 0 && dataLen > utils.GlobalObject.AppConfig.MaxPacketSize {
 		return nil, errors.New("too large msg Data received")
 	}
 

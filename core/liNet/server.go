@@ -33,13 +33,14 @@ type Server struct {
  */
 func NewServer () *Server{
 
+	utils.Log.Info("ServerWorkerSize %d:", utils.GlobalObject.AppConfig.ServerWorkerSize)
 	s:= &Server {
 		id:         utils.GlobalObject.AppConfig.ServerId,
 		name:       utils.GlobalObject.AppConfig.ServerName,
 		ipVersion:  "tcp4",
 		ip:         utils.GlobalObject.AppConfig.Host,
 		port:       utils.GlobalObject.AppConfig.TcpPort,
-		msgHandler: NewMsgHandle(utils.GlobalObject.ServerWorkerSize),
+		msgHandler: NewMsgHandle(utils.GlobalObject.AppConfig.ServerWorkerSize),
 		connMgr:    NewConnManager(),
 		exit:       make(chan bool, 1),
 	}
@@ -107,8 +108,7 @@ func (s *Server) Start() {
 			utils.Log.Info("Get conn remote addr = %s", conn.RemoteAddr().String())
 
 			//3.2 设置服务器最大连接控制,如果超过最大连接，那么则关闭此新的连接
-			if s.connMgr.Len() >= utils.GlobalObject.MaxConn {
-
+			if s.connMgr.Len() >= utils.GlobalObject.AppConfig.MaxConn {
 				utils.Log.Error("too much connect %d", s.connMgr.Len())
 				conn.Close()
 				continue

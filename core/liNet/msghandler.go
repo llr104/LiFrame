@@ -20,20 +20,16 @@ func NewMsgHandle(workerSize uint32) *MsgHandle {
 		Apis: make(map[string]*list.List),
 		WorkerPoolSize:workerSize,
 		//一个worker对应一个queue
-		TaskQueue:make([]chan liFace.IRequest, utils.GlobalObject.ServerWorkerSize),
-		TaskExit:make([]chan bool, utils.GlobalObject.ServerWorkerSize),
+		TaskQueue:make([]chan liFace.IRequest, workerSize),
+		TaskExit:make([]chan bool, workerSize),
 	}
 }
 
 //将消息交给TaskQueue,由worker进行处理
 func (mh *MsgHandle) SendMsgToTaskQueue(request liFace.IRequest) {
 	//根据ConnID来分配当前的连接应该由哪个worker负责处理
-	//轮询的平均分配法则
-
 	//得到需要处理此条连接的workerID
 	workerID := request.GetConnection().GetConnID() % mh.WorkerPoolSize
-	//fmt.Println("Add ConnID=", request.GetConnection().GetConnID()," request msgID=", request.GetMsgName(), "to workerID=", workerID)
-	//将请求消息发送给任务队列
 	mh.TaskQueue[workerID] <- request
 }
 
@@ -130,7 +126,7 @@ func (mh *MsgHandle) AddRouter(router liFace.IRouter) {
 }
 
 //启动一个Worker工作流程
-func (mh *MsgHandle) StartOneWorker(workerID int, taskQueue chan liFace.IRequest,taskExit chan bool) {
+func (mh *MsgHandle) startOneWorker(workerID int, taskQueue chan liFace.IRequest,taskExit chan bool) {
 	utils.Log.Info("Worker ID = %d is started.", workerID)
 	//不断的等待队列中的消息
 	for {
@@ -154,11 +150,11 @@ func (mh *MsgHandle) StartWorkerPool() {
 	for i:= 0; i < int(mh.WorkerPoolSize); i++ {
 		//一个worker被启动
 		//给当前worker对应的任务队列开辟空间
-		mh.TaskQueue[i] = make(chan liFace.IRequest, utils.GlobalObject.MaxWorkerTaskLen)
+		mh.TaskQueue[i] = make(chan liFace.IRequest, utils.GlobalObject.AppConfig.MaxWorkerTaskLen)
 		mh.TaskExit[i] = make(chan bool, 1)
 
 		//启动当前Worker，阻塞的等待对应的任务队列是否有消息传递进来
-		go mh.StartOneWorker(i, mh.TaskQueue[i], mh.TaskExit[i])
+		go mh.startOneWorker(i, mh.TaskQueue[i], mh.TaskExit[i])
 	}
 }
 

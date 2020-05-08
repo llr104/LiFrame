@@ -31,6 +31,11 @@ type Config struct {
 	Master    		ClientConfig
 	DataBase        DBConfig
 	Http      		HttpConfig
+
+	MaxPacketSize    uint32 //都需数据包的最大值
+	MaxConn          int    //当前服务器主机允许的最大链接个数
+	ServerWorkerSize uint32 //业务工作Worker池的数量
+	MaxWorkerTaskLen uint32 //业务工作Worker对应负责的任务队列最大任务存储数量
 }
 
 func NewConfig() Config {
@@ -40,5 +45,11 @@ func NewConfig() Config {
 	c.ServerName = "Default Server"
 	c.ServerId = "Server1"
 	c.LogFile = "./logout/run.log"
+
+
+    c.MaxConn = 12000
+	c.MaxPacketSize = 40960
+	c.ServerWorkerSize = 2
+	c.MaxWorkerTaskLen = 1024
 	return c
 }

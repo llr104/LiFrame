@@ -11,6 +11,7 @@
     "Port":3306,
     "IP": "127.0.0.1"
   },
-  "Master":{"RemoteHost": "127.0.0.1", "RemoteTcpPort": 8001, "ClientName": "WorldClientName1", "ClientId": "WorldClientId1"}
+  "Master":{"RemoteHost": "127.0.0.1", "RemoteTcpPort": 8001, "ClientName": "WorldClientName1", "ClientId": "WorldClientId1"},
+  "ServerWorkerSize":100
 }
 
