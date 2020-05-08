@@ -133,6 +133,7 @@ func (mh *MsgHandle) startOneWorker(workerID int, taskQueue chan liFace.IRequest
 		select {
 			//有消息则取出队列的Request，并执行绑定的业务方法
 			case request := <-taskQueue:
+				utils.Log.Info("DoMsgHandler Worker ID = %d", workerID)
 				rsp := Message{}
 				mh.DoMsgHandler(request, &rsp)
 			case isExit := <-taskExit:
