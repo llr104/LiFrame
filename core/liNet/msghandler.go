@@ -2,11 +2,28 @@ package liNet
 
 import (
 	"container/list"
+	"fmt"
 	"github.com/llr104/LiFrame/core/liFace"
 	"github.com/llr104/LiFrame/utils"
 	"reflect"
+	"runtime"
 	"strings"
 )
+
+// print stack trace for debug
+func trace(message string) string {
+	var pcs [32]uintptr
+	n := runtime.Callers(3, pcs[:]) // skip first 3 caller
+
+	var str strings.Builder
+	str.WriteString(message + "\nTraceback:")
+	for _, pc := range pcs[:n] {
+		fn := runtime.FuncForPC(pc)
+		file, line := fn.FileLine(pc)
+		str.WriteString(fmt.Sprintf("\n\t%s:%d", file, line))
+	}
+	return str.String()
+}
 
 type MsgHandle struct {
 	Apis           map[string] *list.List //存放每个msgName 所对应的处理方法的map属性
@@ -36,6 +53,13 @@ func (mh *MsgHandle) SendMsgToTaskQueue(request liFace.IRequest) {
 
 //马上以非阻塞方式处理消息
 func (mh *MsgHandle) DoMsgHandler(request liFace.IRequest, respond liFace.IMessage) {
+
+	defer func() {
+		if err := recover(); err != nil {
+			message := fmt.Sprintf("%s", err)
+			utils.Log.Emergency(trace(message))
+		}
+	}()
 
 	//执行对应处理方法
 	rpcType := request.GetMessage().GetType()
