@@ -18,6 +18,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 )
@@ -33,6 +34,7 @@ var wsUpgrader = websocket.Upgrader{
 }
 
 func wsHandler(resp http.ResponseWriter, req *http.Request) {
+
 	// 应答客户端告知升级连接为websocket
 	wsSocket, err := wsUpgrader.Upgrade(resp, req, nil)
 	if err != nil {
@@ -54,6 +56,25 @@ func handleOnClose(wsConn *liNet.WsConnection)  {
 }
 
 func handleWsMessage(wsConn *liNet.WsConnection, req *liNet.WsMessageReq, rsp* liNet.WsMessageRsp) {
+
+	defer func() {
+		if err := recover(); err != nil {
+			message := fmt.Sprintf("%s", err)
+			var pcs [32]uintptr
+			n := runtime.Callers(3, pcs[:]) // skip first 3 caller
+
+			var str strings.Builder
+			str.WriteString(message + "\nTraceback:")
+			for _, pc := range pcs[:n] {
+				fn := runtime.FuncForPC(pc)
+				file, line := fn.FileLine(pc)
+				str.WriteString(fmt.Sprintf("\n\t%s:%d", file, line))
+			}
+			utils.Log.Emergency( str.String())
+		}
+	}()
+
+
 	if req.MsgType == websocket.TextMessage{
 		return
 	}
@@ -140,6 +161,7 @@ func handleWsMessage(wsConn *liNet.WsConnection, req *liNet.WsMessageReq, rsp* l
 }
 
 func routerToTarget(wsConn* liNet.WsConnection, msgName string, msgProxyId string, body string, rsp* liNet.WsMessageRsp){
+
 	isAuth := false
 	if proto.EnterLoginLoginReq == msgName || proto.EnterLoginRegisterReq == msgName{
 		isAuth = true
