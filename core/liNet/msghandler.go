@@ -150,7 +150,7 @@ func (mh *MsgHandle) AddRouter(router liFace.IRouter) {
 }
 
 //启动一个Worker工作流程
-func (mh *MsgHandle) startOneWorker(workerID int, taskQueue chan liFace.IRequest,taskExit chan bool) {
+func (mh *MsgHandle) startOneWorker(workerID int, taskQueue chan liFace.IRequest, taskExit chan bool) {
 	utils.Log.Info("Worker ID = %d is started.", workerID)
 	//不断的等待队列中的消息
 	for {
