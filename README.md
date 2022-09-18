@@ -35,7 +35,7 @@ go get github.com/llr104/LiFrame
 
 
 
-# slg三国已经开源了，基于liframe基础上做了改动的架构
+# slg三国已经开源了，基于liFrame基础上做了改动的架构
 
 **服务器源码：https://github.com/llr104/slgserver** 
 
