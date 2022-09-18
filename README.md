@@ -1,6 +1,7 @@
 # LiFrame服务器架构，基于go开发 --武汉疫情期间宅在家中无所事事的成果
 
 ## 通过go命令获取项目
+
 ```bash
 go get github.com/llr104/LiFrame
 ```
@@ -30,4 +31,12 @@ go get github.com/llr104/LiFrame
 ## 对应的demo客户端 https://github.com/llr104/LiFrameDemo
 ## 众志成城，共同战疫，武汉加油，中国加油，世界加油
 ## 如果你有对项目有建议或疑惑，QQ群1054084192欢迎拍砖
-## 后面会基于该架构完成一个slg的三国游戏，slg的服务器代码会全部上传到GitHub，slg的客户端暂时不开源
+## ~~后面会基于该架构完成一个slg的三国游戏，slg的服务器代码会全部上传到GitHub，slg的客户端暂时不开源~~ 
+
+
+
+# slg三国已经开源了，基于liframe基础上做了改动的架构
+
+**服务器源码：https://github.com/llr104/slgserver** 
+**客户端源码：https://github.com/llr104/slgclient**
+
